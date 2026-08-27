@@ -9,7 +9,7 @@ pnpm install
 pnpm dev
 ```
 
-Mở `http://localhost:3000/trace/`.
+Mở `http://localhost:3000/traceability/`.
 
 ## Build và deploy
 
@@ -21,7 +21,7 @@ Kết quả tĩnh nằm trong `out/`. Workflow `.github/workflows/pages.yml` t�
 
 Trong GitHub, vào **Settings → Pages → Build and deployment → Source** và chọn **GitHub Actions**.
 
-- Website: `https://hadao-tech.github.io/trace/`
-- Trang sản phẩm: `https://hadao-tech.github.io/trace/heritage/stt-01/`
+- Website: `https://vtcrdcenter.github.io/traceability/`
+- Trang sản phẩm: `https://vtcrdcenter.github.io/traceability/heritage/stt-01/`
 
 Đây là hồ sơ trình diễn. Phần chứng nhận không tự khẳng định xác nhận chính thức khi chưa có số hồ sơ hoặc văn bản do đơn vị có thẩm quyền cung cấp.

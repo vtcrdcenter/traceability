@@ -3,7 +3,7 @@ import Image from "next/image";
 import { Award, Check, ChevronDown, Diamond, Fingerprint, Landmark, MapPin, PackageCheck, QrCode, ScrollText, ShieldCheck, Sparkles } from "lucide-react";
 
 export const metadata: Metadata = { title: "Dấu ấn Hoàng triều · STT-01", description: "Hồ sơ số của sản phẩm văn hóa Dấu ấn Hoàng triều đã phát hành trên thị trường." };
-const BASE = "/trace";
+const BASE = "/traceability";
 const details = [
   ["01", "Nền mũ", "Sắc đen huyền, viền kim loại ánh vàng."],
   ["02", "Cánh chuồn", "Hình rồng, mây cách điệu và chuỗi hạt."],

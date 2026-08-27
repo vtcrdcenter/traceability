@@ -2,8 +2,8 @@ import type { NextConfig } from "next";
 const nextConfig: NextConfig = {
   agentRules: false,
   output: "export",
-  basePath: "/trace",
-  assetPrefix: "/trace",
+  basePath: "/traceability",
+  assetPrefix: "/traceability",
   trailingSlash: true,
   images: { unoptimized: true },
 };

@@ -1,90 +1,22 @@
-<section id="identity" className="hero section-pad">
-  <div className="hero-copy">
-    <p className="eyebrow">01 — NHẬN DIỆN SẢN PHẨM</p>
+import type { Metadata } from "next";
+import Image from "next/image";
+import { ArrowDown, Check, CheckCircle2, FileBadge2, FileCheck2, FileText, Fingerprint, Info, Landmark, PackageCheck, Ruler, ShieldCheck, Sparkles } from "lucide-react";
+import TraceHeader from "../../components/TraceHeader";
 
-    <h1>
-      Dấu Ấn
-      <br />
-      <em>Thượng Triều Nguyễn</em>
-    </h1>
+export const metadata: Metadata = { title: "Dấu Ấn Thượng Triều Nguyễn · STT-01", description: "Hồ sơ truy xuất sản phẩm Dấu Ấn Thượng Triều Nguyễn." };
+const BASE = "/traceability";
+const journey = [["01","Nguồn văn hóa","Mũ thượng triều triều Nguyễn","Có hồ sơ ảnh nguồn"],["02","Phát triển thiết kế","Phương án STT-01","Có hồ sơ thiết kế"],["03","Bảo chứng văn hóa","Mã bảo chứng 01","Ngày 29/08/2026"],["04","Sản xuất & kiểm tra","Thông tin lô / serial","Dữ liệu giả định"],["05","Cấp mã & phát hành","STT-01-HERITAGE","Mã demo"]];
+function Note({children,dark=false}:{children:React.ReactNode;dark?:boolean}){return <div className={`data-note ${dark?"dark":""}`}><Info size={14}/><span>{children}</span></div>}
+function Heading({n,kicker,title,intro,light=false}:{n:string;kicker:string;title:string;intro:string;light?:boolean}){return <header className={`section-heading ${light?"light":""}`}><span className="section-number">{n}</span><div><p className="eyebrow">{kicker}</p><h2>{title}</h2><p>{intro}</p></div></header>}
 
-    <p className="hero-lead">
-      Hồ sơ nhận diện và truy xuất của sản phẩm được phát triển từ nguồn
-      tư liệu mỹ thuật cung đình triều Nguyễn.
-    </p>
-
-    <div className="hero-meta">
-      <span>
-        <small>MÃ SẢN PHẨM</small>
-        <b>STT-01</b>
-      </span>
-
-      <span>
-        <small>PHIÊN BẢN</small>
-        <b>01-01</b>
-      </span>
-
-      <span>
-        <small>MÃ TRUY XUẤT</small>
-        <b>STT-01-HERITAGE</b>
-      </span>
-    </div>
-
-    <Note>Đã ghi nhận trên hệ thống truy xuất</Note>
-
-    <div className="hero-actions">
-      <a href="#verify" className="primary-button">
-        Xác thực sản phẩm <ArrowDown size={15} />
-      </a>
-      <a href="#heritage">Xem nguồn văn hóa</a>
-    </div>
-  </div>
-
-  <div className="hero-image">
-    <span className="edition">
-      STT<b>01</b>
-    </span>
-
-    <Image
-      src={`${BASE}/heritage/product-studio.jpg`}
-      alt="Sản phẩm Dấu Ấn Thượng Triều Nguyễn"
-      width={1304}
-      height={1206}
-      priority
-    />
-
-    <div className="status-chip">
-      <CheckCircle2 />
-      <span>
-        <small>TRẠNG THÁI HỒ SƠ</small>
-        <b>Đã ghi nhận trên hệ thống truy xuất</b>
-      </span>
-    </div>
-  </div>
-
-  <div className="trust-strip">
-    <div>
-      <CheckCircle2 />
-      <span>
-        <small>XÁC THỰC</small>
-        <b>Mã truy xuất hợp lệ</b>
-      </span>
-    </div>
-
-    <div>
-      <Landmark />
-      <span>
-        <small>BẢO CHỨNG</small>
-        <b>Đã bảo chứng</b>
-      </span>
-    </div>
-
-    <div>
-      <FileBadge2 />
-      <span>
-        <small>QUYỀN TÁC GIẢ</small>
-        <b>Đã được cấp chứng nhận quyền tác giả</b>
-      </span>
-    </div>
-  </div>
-</section>
+export default function HeritageProductPage(){return <main className="trace-page">
+  <TraceHeader/>
+  <section id="identity" className="hero section-pad"><div className="hero-copy"><p className="eyebrow">01 — NHẬN DIỆN SẢN PHẨM</p><h1>Dấu Ấn<br/><em>Thượng Triều Nguyễn</em></h1><p className="hero-lead">Một lát cắt của mỹ thuật cung đình được chuyển hóa thành vật phẩm lưu niệm đương đại.</p><div className="hero-meta"><span><small>MÃ SẢN PHẨM</small><b>STT-01</b></span><span><small>PHIÊN BẢN</small><b>01-01</b></span><span><small>MÃ TRUY XUẤT</small><b>STT-01-HERITAGE</b></span></div><Note>Mã truy xuất được ghi nhận trong hồ sơ sản phẩm.</Note><div className="hero-actions"><a href="#verification" className="primary-button">Xác thực sản phẩm <ArrowDown size={15}/></a><a href="#heritage">Khám phá nguồn văn hóa</a></div></div><div className="hero-image"><span className="edition">STT<b>01</b></span><Image src={`${BASE}/heritage/product-studio.jpg`} alt="Sản phẩm magnet Dấu Ấn Thượng Triều Nguyễn" width={1304} height={1206} priority/><div className="status-chip"><CheckCircle2/><span><small>TRẠNG THÁI</small><b>Mã truy xuất hợp lệ</b></span></div></div><div className="trust-strip"><div><CheckCircle2/><span><small>XÁC THỰC</small><b>Mã truy xuất hợp lệ</b></span></div><div><Landmark/><span><small>BẢO CHỨNG</small><b>Đã bảo chứng</b></span></div><div><FileBadge2/><span><small>QUYỀN TÁC GIẢ</small><b>Đã được cấp chứng nhận</b></span></div></div></section>
+  <section id="verification" className="content-section section-pad"><Heading n="02" kicker="XÁC THỰC SẢN PHẨM" title="Một mã định danh, một hồ sơ minh bạch." intro="Giao diện chỉ xác nhận mã demo tồn tại trong hệ thống mẫu; không kết luận sản phẩm chính hãng hay chống sao chép QR."/><div className="verification-grid"><article className="code-card"><Fingerprint/><span className="valid"><Check/> MÃ TRUY XUẤT HỢP LỆ</span><h3>STT-01-HERITAGE</h3><p>Liên kết với sản phẩm STT-01, phiên bản 01-01.</p><Note dark>Mã demo phục vụ thiết kế giao diện.</Note></article><article className="info-card"><p className="eyebrow">ĐỊNH DANH SẢN PHẨM</p><dl><div><dt>Tên sản phẩm</dt><dd>Dấu Ấn Thượng Triều Nguyễn</dd></div><div><dt>Mã / phiên bản</dt><dd>STT-01 / 01-01</dd></div><div><dt>Lô sản xuất</dt><dd>LOT-2026-08-001 <i>GIẢ ĐỊNH</i></dd></div><div><dt>Serial</dt><dd>00012345 <i>GIẢ ĐỊNH</i></dd></div></dl></article></div></section>
+  <section id="heritage" className="content-section heritage-section section-pad"><Heading n="03" kicker="NGUỒN VĂN HÓA" title="Từ vật phẩm cung đình đến ký ức mang về." intro="Thiết kế khai thác ngôn ngữ tạo hình của mũ thượng triều triều Nguyễn và chuyển dịch thành vật phẩm nhỏ gọn cho đời sống đương đại."/><div className="heritage-grid"><figure><Image src={`${BASE}/heritage/heritage-hat-front.png`} alt="Ảnh gốc mũ thượng triều nhìn từ phía trước" width={872} height={862}/><figcaption>ẢNH NGUỒN DO NGƯỜI DÙNG CUNG CẤP</figcaption></figure><div className="design-notes"><p className="eyebrow">GIẢI MÃ NGÔN NGỮ TẠO HÌNH</p>{[["01","Hình dáng tổng thể","Hai cánh dựng cao tạo trục nhận diện chính."],["02","Cánh chuồn","Chi tiết vươn cao được cô đọng thành hai mảng đối xứng."],["03","Rồng và mây","Họa tiết được chuyển hóa thành nhịp trang trí nhiều lớp."],["04","Sắc vàng – đỏ – lục","Bảng màu gợi liên tưởng mỹ thuật cung đình."]].map(([n,t,d])=><article key={n}><span>{n}</span><div><h3>{t}</h3><p>{d}</p></div></article>)}<Note dark>Số kiểm kê 2325 & 2326 là dữ liệu giả định, chưa được xác minh.</Note></div></div></section>
+  <section id="attestation" className="content-section wine-section section-pad"><Heading light n="04" kicker="BẢO CHỨNG & QUYỀN TÁC GIẢ" title="Hai lớp hồ sơ, hai phạm vi giá trị." intro="Bảo chứng văn hóa và quyền tác giả được tổ chức thành hai tài liệu riêng trong hồ sơ sản phẩm."/><div className="certificate-grid"><article><Landmark/><p className="eyebrow">BẢO CHỨNG VĂN HÓA</p><h3>Bảo tàng Lịch sử Quốc gia</h3><span className="seal-label">ĐÃ BẢO CHỨNG</span><dl><div><dt>Mã bảo chứng</dt><dd>01</dd></div><div><dt>Ngày</dt><dd>29/08/2026</dd></div></dl><div className="mini-certificate"><Image src={`${BASE}/heritage/museum-logo.png`} alt="Bảo tàng Lịch sử Quốc gia" width={338} height={338}/><p>CHỨNG THƯ BẢO CHỨNG<br/><b>GIÁ TRỊ VĂN HÓA</b></p><Image src={`${BASE}/heritage/museum-red-seal.png`} alt="Dấu chứng thư" width={480} height={480}/></div></article><article><FileBadge2/><p className="eyebrow">QUYỀN TÁC GIẢ</p><h3>Giấy chứng nhận đăng ký quyền tác giả</h3><span className="seal-label gold">ĐÃ ĐƯỢC CẤP CHỨNG NHẬN</span><dl><div><dt>Chủ sở hữu</dt><dd>DESIGNER</dd></div><div><dt>Số giấy / ngày cấp</dt><dd>8854/2026/QTG · 26/08/2026</dd></div></dl><Image className="copyright-paper" src={`${BASE}/heritage/copyright-certificate.png`} alt="Giấy chứng nhận đăng ký quyền tác giả" width={768} height={1024}/></article></div></section>
+  <section id="journey" className="content-section section-pad"><Heading n="05" kicker="HÀNH TRÌNH SẢN PHẨM" title="Một chuỗi hình thành có thể lần theo." intro="Mỗi dấu mốc nối nguồn văn hóa, thiết kế và hồ sơ sản phẩm. Nhãn trạng thái cho biết mức độ dữ liệu hiện có."/><div className="journey">{journey.map(([n,t,d,s],i)=><article key={n}><span className="step-number">{n}</span><div className="step-line"/><div>{i===0&&<Image src={`${BASE}/heritage/heritage-hat-rear.png`} alt="Chi tiết mũ thượng triều" width={878} height={890}/>}<FileCheck2/><small>{t}</small><h3>{d}</h3><p>{s}</p></div></article>)}</div></section>
+  <section id="details" className="content-section details-section section-pad"><Heading n="06" kicker="THÔNG TIN CHI TIẾT" title="Nhỏ trong kích thước, giàu trong lớp nghĩa." intro="Thông tin cơ bản giúp nhận biết sản phẩm; dữ liệu quản trị lô và serial được đặt riêng tại khu xác thực."/><div className="details-grid"><div className="product-gallery"><Image src={`${BASE}/heritage/product-lifestyle.jpg`} alt="Magnet trong bối cảnh sử dụng" width={1448} height={1086}/><Image src={`${BASE}/heritage/product-studio.jpg`} alt="Cận cảnh sản phẩm magnet" width={1304} height={1206}/></div><div className="specs"><article><PackageCheck/><small>LOẠI SẢN PHẨM</small><b>Vật phẩm nam châm trang trí</b></article><article><Ruler/><small>KÍCH THƯỚC</small><b>70 × 60 × 8 mm</b></article><article><Sparkles/><small>NGUỒN THIẾT KẾ</small><b>Mỹ thuật cung đình triều Nguyễn</b></article><div className="missing-data"><p className="eyebrow">MINH BẠCH DỮ LIỆU</p><p>Chất liệu và đơn vị sản xuất chưa được cung cấp trong dữ liệu đã chốt, vì vậy giao diện không tự suy đoán.</p></div></div></div></section>
+  <section id="records" className="records section-pad"><div><p className="eyebrow">HỒ SƠ XÁC THỰC</p><h2>Tài liệu được tổ chức tại một nơi.</h2><p>Chứng thư bảo chứng, giấy chứng nhận quyền tác giả và tư liệu nguồn được liên kết cùng hồ sơ sản phẩm.</p></div><div>{[["Chứng thư bảo chứng","Bảo tàng Lịch sử Quốc gia"],["Giấy chứng nhận quyền tác giả","Số 8854/2026/QTG"],["Hồ sơ ảnh nguồn văn hóa","Mũ thượng triều triều Nguyễn"],["Hồ sơ thiết kế sản phẩm","Phương án STT-01"]].map(([t,s])=><div className="record-row" key={t}><FileText/><span><b>{t}</b><small>{s}</small></span><ShieldCheck/></div>)}</div></section>
+  <footer><div className="footer-brand"><span className="brand-seal">ẤN</span><span><b>DẤU ẤN</b><small>DI SẢN VIỆT</small></span></div><div className="footer-operator"><Image src={`${BASE}/heritage/vtc-logo.png`} alt="VTC" width={4000} height={2160}/><span><small>NỀN TẢNG ĐƯỢC VẬN HÀNH BỞI</small><b>VTC</b></span></div><a href="#identity">Trở về đầu trang ↑</a></footer>
+</main>}

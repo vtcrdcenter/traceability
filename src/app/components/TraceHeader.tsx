@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 
 const traceNav = [
   ["01", "Tổng quan", "overview"],
-  ["02", "Sản phẩm", "product-info"],
+  ["02", "Thông tin", "product-info"],
   ["03", "Nguồn văn hóa", "heritage"],
   ["04", "Chuyển hóa", "design-development"],
   ["05", "Bảo chứng", "attestation"],
@@ -56,7 +56,7 @@ export default function TraceHeader() {
   }, []);
 
   /* =========================================================
-     PROGRESS TOÀN TRANG
+     THANH TIẾN TRÌNH CUỘN TRANG
   ========================================================= */
   useEffect(() => {
     const updateProgress = () => {
@@ -69,7 +69,10 @@ export default function TraceHeader() {
 
       const value =
         scrollable > 0
-          ? Math.min(100, Math.max(0, (scrollTop / scrollable) * 100))
+          ? Math.min(
+              100,
+              Math.max(0, (scrollTop / scrollable) * 100)
+            )
           : 0;
 
       setProgress(value);
@@ -90,24 +93,23 @@ export default function TraceHeader() {
   }, []);
 
   /* =========================================================
-     ĐÓNG MOBILE MENU KHI RESIZE LÊN DESKTOP
+     ĐÓNG MENU MOBILE KHI CHUYỂN SANG DESKTOP
   ========================================================= */
   useEffect(() => {
-    const closeOnDesktop = () => {
-      if (window.innerWidth >= 980) {
+    const handleResize = () => {
+      if (window.innerWidth >= 1180) {
         setOpen(false);
       }
     };
 
-    window.addEventListener("resize", closeOnDesktop);
+    window.addEventListener("resize", handleResize);
 
-    return () => {
-      window.removeEventListener("resize", closeOnDesktop);
-    };
+    return () =>
+      window.removeEventListener("resize", handleResize);
   }, []);
 
   /* =========================================================
-     KHÓA SCROLL KHI MOBILE MENU MỞ
+     KHÓA SCROLL KHI MENU MOBILE MỞ
   ========================================================= */
   useEffect(() => {
     if (open) {
@@ -121,14 +123,14 @@ export default function TraceHeader() {
     };
   }, [open]);
 
-  const handleMobileLink = () => {
+  const closeMobileMenu = () => {
     setOpen(false);
   };
 
   return (
     <>
       <header className="site-header">
-        {/* BRAND */}
+        {/* LOGO / TÊN NỀN TẢNG */}
         <a
           className="brand"
           href="#overview"
@@ -144,7 +146,7 @@ export default function TraceHeader() {
           </span>
         </a>
 
-        {/* DESKTOP NAVIGATION */}
+        {/* MENU DESKTOP */}
         <nav
           className="desktop-nav"
           aria-label="Điều hướng hồ sơ sản phẩm"
@@ -157,7 +159,9 @@ export default function TraceHeader() {
                 key={id}
                 href={`#${id}`}
                 className={isActive ? "active" : ""}
-                aria-current={isActive ? "location" : undefined}
+                aria-current={
+                  isActive ? "location" : undefined
+                }
               >
                 <i>{number}</i>
                 <span>{title}</span>
@@ -166,14 +170,14 @@ export default function TraceHeader() {
           })}
         </nav>
 
-        {/* ACTIONS */}
+        {/* CTA + MENU MOBILE */}
         <div className="header-actions">
           <a
             className="header-cta"
             href="#verification"
             aria-label="Truy xuất sản phẩm"
           >
-            <QrCode size={16} />
+            <QrCode size={17} />
             <span>Truy xuất</span>
           </a>
 
@@ -182,64 +186,97 @@ export default function TraceHeader() {
             type="button"
             aria-expanded={open}
             aria-controls="mobile-navigation"
-            aria-label={open ? "Đóng menu" : "Mở menu"}
-            onClick={() => setOpen((value) => !value)}
+            aria-label={
+              open ? "Đóng menu" : "Mở menu"
+            }
+            onClick={() =>
+              setOpen((value) => !value)
+            }
           >
-            {open ? <X size={22} /> : <Menu size={22} />}
+            {open ? (
+              <X size={23} />
+            ) : (
+              <Menu size={23} />
+            )}
           </button>
         </div>
 
-        {/* PAGE PROGRESS */}
+        {/* PROGRESS */}
         <span
           className="header-progress"
-          style={{ width: `${progress}%` }}
+          style={{
+            width: `${progress}%`,
+          }}
           aria-hidden="true"
         />
       </header>
 
       {/* =====================================================
-          MOBILE MENU
+          MENU MOBILE / TABLET
       ===================================================== */}
       <nav
         id="mobile-navigation"
-        className={`mobile-nav ${open ? "open" : ""}`}
+        className={`mobile-nav ${
+          open ? "open" : ""
+        }`}
         aria-label="Điều hướng hồ sơ sản phẩm trên thiết bị di động"
         aria-hidden={!open}
       >
         <div className="mobile-nav-heading">
           <small>HỒ SƠ SẢN PHẨM</small>
-          <strong>Dấu Ấn Thượng Triều Nguyễn</strong>
+
+          <strong>
+            Dấu Ấn Thượng Triều Nguyễn
+          </strong>
+
+          <p>
+            Chọn nội dung cần xem trong hồ sơ
+            truy xuất.
+          </p>
         </div>
 
         <div className="mobile-nav-list">
-          {traceNav.map(([number, title, id]) => {
-            const isActive = active === id;
+          {traceNav.map(
+            ([number, title, id]) => {
+              const isActive = active === id;
 
-            return (
-              <a
-                key={id}
-                href={`#${id}`}
-                className={isActive ? "active" : ""}
-                aria-current={isActive ? "location" : undefined}
-                onClick={handleMobileLink}
-              >
-                <i>{number}</i>
+              return (
+                <a
+                  key={id}
+                  href={`#${id}`}
+                  className={
+                    isActive ? "active" : ""
+                  }
+                  aria-current={
+                    isActive
+                      ? "location"
+                      : undefined
+                  }
+                  onClick={closeMobileMenu}
+                >
+                  <i>{number}</i>
 
-                <span>{title}</span>
+                  <span>{title}</span>
 
-                <b aria-hidden="true">→</b>
-              </a>
-            );
-          })}
+                  <b aria-hidden="true">
+                    →
+                  </b>
+                </a>
+              );
+            }
+          )}
         </div>
 
         <a
           className="mobile-cta"
           href="#verification"
-          onClick={handleMobileLink}
+          onClick={closeMobileMenu}
         >
           <QrCode size={18} />
-          <span>Truy xuất sản phẩm</span>
+
+          <span>
+            Truy xuất sản phẩm
+          </span>
         </a>
       </nav>
     </>

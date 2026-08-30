@@ -1,5 +1,9 @@
 import type { Metadata } from "next";
 
+/* =========================================================
+   ENGLISH METADATA
+========================================================= */
+
 export const metadata: Metadata = {
   title: {
     default: "Cultural Product Traceability · VTC",
@@ -7,19 +11,19 @@ export const metadata: Metadata = {
   },
 
   description:
-    "VTC cultural product traceability platform providing product verification, heritage references, attestation, copyright information and access to the VTC Merch ecosystem.",
+    "VTC cultural product traceability platform providing product verification, heritage references, cultural attestation, copyright information and access to the VTC Merch ecosystem.",
 
   keywords: [
     "VTC",
     "traceability",
     "cultural product",
     "heritage product",
-    "VTC Merch",
+    "Vietnamese heritage",
     "product verification",
     "cultural attestation",
     "copyright",
+    "VTC Merch",
     "Nguyen Dynasty",
-    "Vietnamese heritage",
   ],
 
   authors: [
@@ -50,10 +54,11 @@ export const metadata: Metadata = {
 
     siteName: "VTC Traceability Platform",
 
-    title: "Cultural Product Traceability · VTC",
+    title:
+      "Cultural Product Traceability · VTC",
 
     description:
-      "Verify cultural product information, explore heritage references, attestation records, copyright information and the VTC Merch ecosystem.",
+      "Verify cultural product information, explore heritage references, cultural attestation, copyright records and the VTC Merch ecosystem.",
   },
 
   robots: {
@@ -61,6 +66,10 @@ export const metadata: Metadata = {
     follow: true,
   },
 };
+
+/* =========================================================
+   ENGLISH LAYOUT
+========================================================= */
 
 export default function EnglishLayout({
   children,

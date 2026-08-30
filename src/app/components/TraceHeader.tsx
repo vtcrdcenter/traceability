@@ -18,76 +18,113 @@ export default function TraceHeader() {
   const [open, setOpen] = useState(false);
 
   /* =========================================================
-     XÁC ĐỊNH SECTION ĐANG ĐƯỢC XEM
+     ACTIVE SECTION + SCROLL PROGRESS
   ========================================================= */
   useEffect(() => {
-    const sections = traceNav
-      .map(([, , id]) => document.getElementById(id))
-      .filter(Boolean) as HTMLElement[];
+    let frame: number | null = null;
 
-    if (!sections.length) return;
+    const updateHeaderState = () => {
+      if (frame !== null) {
+        cancelAnimationFrame(frame);
+      }
 
-    const observer = new IntersectionObserver(
-      (entries) => {
-        const visible = entries
-          .filter((entry) => entry.isIntersecting)
-          .sort(
-            (a, b) =>
-              Math.abs(a.boundingClientRect.top) -
-              Math.abs(b.boundingClientRect.top)
+      frame = requestAnimationFrame(() => {
+        /* ---------------------------------------------
+           PAGE PROGRESS
+        --------------------------------------------- */
+        const scrollTop =
+          window.scrollY ||
+          document.documentElement.scrollTop;
+
+        const scrollable =
+          document.documentElement.scrollHeight -
+          window.innerHeight;
+
+        const progressValue =
+          scrollable > 0
+            ? Math.min(
+                100,
+                Math.max(
+                  0,
+                  (scrollTop / scrollable) * 100
+                )
+              )
+            : 0;
+
+        setProgress(progressValue);
+
+        /* ---------------------------------------------
+           FORCE OVERVIEW AT TOP
+        --------------------------------------------- */
+        if (scrollTop < 80) {
+          setActive("overview");
+          frame = null;
+          return;
+        }
+
+        /* ---------------------------------------------
+           VIRTUAL READING LINE
+
+           Header: ~78px
+           Reading line: khoảng 30% viewport
+        --------------------------------------------- */
+        const marker =
+          Math.min(
+            280,
+            window.innerHeight * 0.3
           );
 
-        if (visible.length > 0) {
-          setActive(visible[0].target.id);
+        let currentId =
+          traceNav[0][2];
+
+        for (const [, , id] of traceNav) {
+          const section =
+            document.getElementById(id);
+
+          if (!section) continue;
+
+          const rect =
+            section.getBoundingClientRect();
+
+          /*
+           * Khi đầu section đã đi qua đường marker,
+           * section đó trở thành active.
+           */
+          if (rect.top <= marker) {
+            currentId = id;
+          } else {
+            break;
+          }
         }
-      },
-      {
-        rootMargin: "-22% 0px -64% 0px",
-        threshold: [0, 0.05, 0.15, 0.3],
-      }
-    );
 
-    sections.forEach((section) => {
-      observer.observe(section);
-    });
+        /* ---------------------------------------------
+           FORCE LAST SECTION NEAR PAGE BOTTOM
+        --------------------------------------------- */
+        const nearBottom =
+          window.innerHeight +
+            window.scrollY >=
+          document.documentElement
+            .scrollHeight -
+            40;
 
-    return () => {
-      observer.disconnect();
-    };
-  }, []);
+        if (nearBottom) {
+          currentId =
+            traceNav[
+              traceNav.length - 1
+            ][2];
+        }
 
-  /* =========================================================
-     THANH TIẾN TRÌNH CUỘN TRANG
-  ========================================================= */
-  useEffect(() => {
-    const updateProgress = () => {
-      const scrollTop =
-        window.scrollY ||
-        document.documentElement.scrollTop;
+        setActive(currentId);
 
-      const scrollable =
-        document.documentElement.scrollHeight -
-        window.innerHeight;
-
-      const value =
-        scrollable > 0
-          ? Math.min(
-              100,
-              Math.max(
-                0,
-                (scrollTop / scrollable) * 100
-              )
-            )
-          : 0;
-
-      setProgress(value);
+        frame = null;
+      });
     };
 
-    updateProgress();
+    updateHeaderState();
 
     window.addEventListener(
       "scroll",
-      updateProgress,
+      updateHeaderState,
       {
         passive: true,
       }
@@ -95,24 +132,28 @@ export default function TraceHeader() {
 
     window.addEventListener(
       "resize",
-      updateProgress
+      updateHeaderState
     );
 
     return () => {
       window.removeEventListener(
         "scroll",
-        updateProgress
+        updateHeaderState
       );
 
       window.removeEventListener(
         "resize",
-        updateProgress
+        updateHeaderState
       );
+
+      if (frame !== null) {
+        cancelAnimationFrame(frame);
+      }
     };
   }, []);
 
   /* =========================================================
-     ĐÓNG MENU KHI CHUYỂN SANG DESKTOP
+     CLOSE MOBILE MENU ON DESKTOP
   ========================================================= */
   useEffect(() => {
     const handleResize = () => {
@@ -135,15 +176,11 @@ export default function TraceHeader() {
   }, []);
 
   /* =========================================================
-     KHÓA SCROLL KHI MOBILE MENU MỞ
+     LOCK BODY SCROLL WHEN MENU IS OPEN
   ========================================================= */
   useEffect(() => {
-    if (open) {
-      document.body.style.overflow =
-        "hidden";
-    } else {
-      document.body.style.overflow = "";
-    }
+    document.body.style.overflow =
+      open ? "hidden" : "";
 
     return () => {
       document.body.style.overflow = "";
@@ -157,9 +194,7 @@ export default function TraceHeader() {
   return (
     <>
       <header className="site-header">
-        {/* ===================================================
-            BRAND
-        =================================================== */}
+        {/* BRAND */}
         <a
           className="brand"
           href="#overview"
@@ -174,13 +209,13 @@ export default function TraceHeader() {
 
           <span className="brand-copy">
             <b>NỀN TẢNG TRUY XUẤT</b>
-            <small>SẢN PHẨM VĂN HÓA</small>
+            <small>
+              SẢN PHẨM VĂN HÓA
+            </small>
           </span>
         </a>
 
-        {/* ===================================================
-            DESKTOP NAVIGATION
-        =================================================== */}
+        {/* DESKTOP NAV */}
         <nav
           className="desktop-nav"
           aria-label="Điều hướng hồ sơ sản phẩm"
@@ -206,7 +241,6 @@ export default function TraceHeader() {
                   }
                 >
                   <i>{number}</i>
-
                   <span>{title}</span>
                 </a>
               );
@@ -214,9 +248,7 @@ export default function TraceHeader() {
           )}
         </nav>
 
-        {/* ===================================================
-            HEADER ACTIONS
-        =================================================== */}
+        {/* ACTIONS */}
         <div className="header-actions">
           <a
             className="header-cta"
@@ -224,7 +256,6 @@ export default function TraceHeader() {
             aria-label="Truy xuất sản phẩm"
           >
             <QrCode size={17} />
-
             <span>Truy xuất</span>
           </a>
 
@@ -252,9 +283,7 @@ export default function TraceHeader() {
           </button>
         </div>
 
-        {/* ===================================================
-            SCROLL PROGRESS
-        =================================================== */}
+        {/* PROGRESS BAR */}
         <span
           className="header-progress"
           style={{
@@ -265,7 +294,7 @@ export default function TraceHeader() {
       </header>
 
       {/* =====================================================
-          MOBILE / TABLET NAV
+          MOBILE NAVIGATION
       ===================================================== */}
       <nav
         id="mobile-navigation"
@@ -276,16 +305,18 @@ export default function TraceHeader() {
         aria-hidden={!open}
       >
         <div className="mobile-nav-heading">
-          <small>HỒ SƠ SẢN PHẨM</small>
+          <small>
+            HỒ SƠ SẢN PHẨM
+          </small>
 
           <strong>
             Dấu Ấn Thượng Triều Nguyễn
           </strong>
 
           <p>
-            Thông tin truy xuất, câu chuyện
-            văn hóa và hồ sơ xác thực của
-            sản phẩm.
+            Thông tin truy xuất, câu
+            chuyện văn hóa và hồ sơ
+            xác thực của sản phẩm.
           </p>
         </div>
 
@@ -329,7 +360,9 @@ export default function TraceHeader() {
         <a
           className="mobile-cta"
           href="#verification"
-          onClick={closeMobileMenu}
+          onClick={
+            closeMobileMenu
+          }
         >
           <QrCode size={18} />
 

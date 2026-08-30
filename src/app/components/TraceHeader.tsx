@@ -8,7 +8,6 @@ import {
 } from "lucide-react";
 import {
   usePathname,
-  useRouter,
 } from "next/navigation";
 import {
   useEffect,
@@ -21,6 +20,12 @@ import {
   getStt01Content,
   type Locale,
 } from "../data/stt-01";
+
+/* =========================================================
+   CONFIG
+========================================================= */
+
+const BASE_PATH = "/traceability";
 
 /* =========================================================
    TYPES
@@ -58,15 +63,60 @@ const languageOptions: LanguageOption[] = [
 ];
 
 /* =========================================================
-   HELPERS
+   PATH HELPERS
+========================================================= */
+
+/**
+ * Next.js có thể trả pathname:
+ *
+ * /heritage/stt-01
+ *
+ * hoặc trong một số trường hợp:
+ *
+ * /traceability/heritage/stt-01
+ *
+ * Hàm này chuẩn hóa để logic locale luôn hoạt động đúng.
+ */
+function normalizePathname(
+  pathname: string
+) {
+  if (
+    pathname === BASE_PATH ||
+    pathname === `${BASE_PATH}/`
+  ) {
+    return "/";
+  }
+
+  if (
+    pathname.startsWith(
+      `${BASE_PATH}/`
+    )
+  ) {
+    const normalized =
+      pathname.slice(
+        BASE_PATH.length
+      );
+
+    return normalized || "/";
+  }
+
+  return pathname || "/";
+}
+
+/* =========================================================
+   LOCALE FROM PATH
 ========================================================= */
 
 function getLocaleFromPathname(
   pathname: string
 ): Locale {
+  const normalized =
+    normalizePathname(pathname);
+
   if (
-    pathname === "/en" ||
-    pathname.startsWith("/en/")
+    normalized === "/en" ||
+    normalized === "/en/" ||
+    normalized.startsWith("/en/")
   ) {
     return "en";
   }
@@ -74,25 +124,66 @@ function getLocaleFromPathname(
   return "vi";
 }
 
+/* =========================================================
+   BUILD LOCALIZED URL
+========================================================= */
+
 function getLocalizedPath(
   pathname: string,
   locale: Locale
 ) {
-  const pathWithoutEnglishPrefix =
-    pathname.replace(/^\/en(?=\/|$)/, "");
+  const normalized =
+    normalizePathname(pathname);
 
-  if (locale === "en") {
-    const normalized =
-      pathWithoutEnglishPrefix || "/";
+  /*
+   * Xóa prefix /en nếu đang ở trang EN.
+   *
+   * /en/heritage/stt-01
+   * =>
+   * /heritage/stt-01
+   */
+  let contentPath =
+    normalized.replace(
+      /^\/en(?=\/|$)/,
+      ""
+    );
 
-    if (normalized === "/") {
-      return "/en";
-    }
-
-    return `/en${normalized}`;
+  if (!contentPath) {
+    contentPath = "/";
   }
 
-  return pathWithoutEnglishPrefix || "/";
+  /*
+   * Chuẩn hóa trailing slash.
+   */
+  if (
+    contentPath !== "/" &&
+    contentPath.endsWith("/")
+  ) {
+    contentPath =
+      contentPath.slice(0, -1);
+  }
+
+  /* ---------------------------------------------------------
+     EN
+  --------------------------------------------------------- */
+
+  if (locale === "en") {
+    if (contentPath === "/") {
+      return `${BASE_PATH}/en/`;
+    }
+
+    return `${BASE_PATH}/en${contentPath}/`;
+  }
+
+  /* ---------------------------------------------------------
+     VI
+  --------------------------------------------------------- */
+
+  if (contentPath === "/") {
+    return `${BASE_PATH}/`;
+  }
+
+  return `${BASE_PATH}${contentPath}/`;
 }
 
 /* =========================================================
@@ -100,35 +191,70 @@ function getLocalizedPath(
 ========================================================= */
 
 export default function TraceHeader() {
-  const router = useRouter();
-  const pathname = usePathname();
+  const pathname =
+    usePathname();
+
+  /* =========================================================
+     LOCALE
+  ========================================================= */
 
   const locale = useMemo(
-    () => getLocaleFromPathname(pathname),
+    () =>
+      getLocaleFromPathname(
+        pathname
+      ),
     [pathname]
   );
 
+  /* =========================================================
+     CONTENT
+  ========================================================= */
+
   const content = useMemo(
-    () => getStt01Content(locale),
+    () =>
+      getStt01Content(
+        locale
+      ),
     [locale]
   );
 
-  const traceNav = content.nav;
+  const traceNav =
+    content.nav;
 
-  const [active, setActive] =
-    useState<SectionId>("overview");
+  /* =========================================================
+     STATE
+  ========================================================= */
 
-  const [progress, setProgress] =
-    useState(0);
+  const [
+    active,
+    setActive,
+  ] = useState<SectionId>(
+    "overview"
+  );
 
-  const [menuOpen, setMenuOpen] =
-    useState(false);
+  const [
+    progress,
+    setProgress,
+  ] = useState(0);
 
-  const [languageOpen, setLanguageOpen] =
-    useState(false);
+  const [
+    menuOpen,
+    setMenuOpen,
+  ] = useState(false);
+
+  const [
+    languageOpen,
+    setLanguageOpen,
+  ] = useState(false);
+
+  /* =========================================================
+     REFS
+  ========================================================= */
 
   const languageRef =
-    useRef<HTMLDivElement>(null);
+    useRef<HTMLDivElement>(
+      null
+    );
 
   /* =========================================================
      CURRENT LANGUAGE
@@ -136,11 +262,13 @@ export default function TraceHeader() {
 
   const selectedLanguage =
     languageOptions.find(
-      (item) => item.code === locale
-    ) ?? languageOptions[0];
+      (item) =>
+        item.code === locale
+    ) ??
+    languageOptions[0];
 
   /* =========================================================
-     HEADER TEXT
+     UI TEXT
   ========================================================= */
 
   const headerText =
@@ -207,103 +335,142 @@ export default function TraceHeader() {
   ========================================================= */
 
   useEffect(() => {
-    let frame: number | null = null;
+    let frame:
+      | number
+      | null = null;
 
-    const updateHeaderState = () => {
-      if (frame !== null) {
-        cancelAnimationFrame(frame);
-      }
-
-      frame = requestAnimationFrame(() => {
-        const scrollTop =
-          window.scrollY ||
-          document.documentElement.scrollTop;
-
-        const scrollable =
-          document.documentElement.scrollHeight -
-          window.innerHeight;
-
-        /* ---------------------------------------------
-           PAGE PROGRESS
-        --------------------------------------------- */
-
-        const progressValue =
-          scrollable > 0
-            ? Math.min(
-                100,
-                Math.max(
-                  0,
-                  (scrollTop / scrollable) * 100
-                )
-              )
-            : 0;
-
-        setProgress(progressValue);
-
-        /* ---------------------------------------------
-           TOP OF PAGE
-        --------------------------------------------- */
-
-        if (scrollTop < 80) {
-          setActive("overview");
-
-          frame = null;
-          return;
+    const updateHeaderState =
+      () => {
+        if (
+          frame !== null
+        ) {
+          cancelAnimationFrame(
+            frame
+          );
         }
 
-        /* ---------------------------------------------
-           READING MARKER
-        --------------------------------------------- */
+        frame =
+          requestAnimationFrame(
+            () => {
+              const scrollTop =
+                window.scrollY ||
+                document
+                  .documentElement
+                  .scrollTop;
 
-        const marker = Math.min(
-          280,
-          window.innerHeight * 0.3
-        );
+              const scrollable =
+                document
+                  .documentElement
+                  .scrollHeight -
+                window.innerHeight;
 
-        let currentId: SectionId =
-          "overview";
+              /* ---------------------------------------------
+                 PROGRESS
+              --------------------------------------------- */
 
-        for (const item of traceNav) {
-          const id =
-            item.id as SectionId;
+              const progressValue =
+                scrollable > 0
+                  ? Math.min(
+                      100,
+                      Math.max(
+                        0,
+                        (scrollTop /
+                          scrollable) *
+                          100
+                      )
+                    )
+                  : 0;
 
-          const section =
-            document.getElementById(id);
+              setProgress(
+                progressValue
+              );
 
-          if (!section) {
-            continue;
-          }
+              /* ---------------------------------------------
+                 TOP OF PAGE
+              --------------------------------------------- */
 
-          const rect =
-            section.getBoundingClientRect();
+              if (
+                scrollTop < 80
+              ) {
+                setActive(
+                  "overview"
+                );
 
-          if (rect.top <= marker) {
-            currentId = id;
-          } else {
-            break;
-          }
-        }
+                frame = null;
 
-        /* ---------------------------------------------
-           BOTTOM OF PAGE
-        --------------------------------------------- */
+                return;
+              }
 
-        const nearBottom =
-          window.innerHeight +
-            window.scrollY >=
-          document.documentElement
-            .scrollHeight -
-            40;
+              /* ---------------------------------------------
+                 READING MARKER
+              --------------------------------------------- */
 
-        if (nearBottom) {
-          currentId = "advanced";
-        }
+              const marker =
+                Math.min(
+                  280,
+                  window.innerHeight *
+                    0.3
+                );
 
-        setActive(currentId);
+              let currentId:
+                SectionId =
+                "overview";
 
-        frame = null;
-      });
-    };
+              for (
+                const item of
+                traceNav
+              ) {
+                const id =
+                  item.id as SectionId;
+
+                const section =
+                  document.getElementById(
+                    id
+                  );
+
+                if (!section) {
+                  continue;
+                }
+
+                const rect =
+                  section.getBoundingClientRect();
+
+                if (
+                  rect.top <=
+                  marker
+                ) {
+                  currentId =
+                    id;
+                } else {
+                  break;
+                }
+              }
+
+              /* ---------------------------------------------
+                 BOTTOM OF PAGE
+              --------------------------------------------- */
+
+              const nearBottom =
+                window.innerHeight +
+                  window.scrollY >=
+                document
+                  .documentElement
+                  .scrollHeight -
+                  40;
+
+              if (nearBottom) {
+                currentId =
+                  "advanced";
+              }
+
+              setActive(
+                currentId
+              );
+
+              frame = null;
+            }
+          );
+      };
 
     updateHeaderState();
 
@@ -331,22 +498,32 @@ export default function TraceHeader() {
         updateHeaderState
       );
 
-      if (frame !== null) {
-        cancelAnimationFrame(frame);
+      if (
+        frame !== null
+      ) {
+        cancelAnimationFrame(
+          frame
+        );
       }
     };
   }, [traceNav]);
 
   /* =========================================================
-     CLOSE MOBILE MENU ON DESKTOP
+     CLOSE MOBILE MENU WHEN DESKTOP
   ========================================================= */
 
   useEffect(() => {
-    const handleResize = () => {
-      if (window.innerWidth >= 1180) {
-        setMenuOpen(false);
-      }
-    };
+    const handleResize =
+      () => {
+        if (
+          window.innerWidth >=
+          1180
+        ) {
+          setMenuOpen(
+            false
+          );
+        }
+      };
 
     window.addEventListener(
       "resize",
@@ -362,36 +539,44 @@ export default function TraceHeader() {
   }, []);
 
   /* =========================================================
-     LOCK BODY SCROLL
+     BODY SCROLL LOCK
   ========================================================= */
 
   useEffect(() => {
     document.body.style.overflow =
-      menuOpen ? "hidden" : "";
+      menuOpen
+        ? "hidden"
+        : "";
 
     return () => {
-      document.body.style.overflow = "";
+      document.body.style.overflow =
+        "";
     };
   }, [menuOpen]);
 
   /* =========================================================
-     CLOSE LANGUAGE DROPDOWN WHEN CLICK OUTSIDE
+     CLICK OUTSIDE LANGUAGE MENU
   ========================================================= */
 
   useEffect(() => {
-    const handleOutsideClick = (
-      event: MouseEvent
-    ) => {
-      const target =
-        event.target as Node;
+    const handleOutsideClick =
+      (
+        event: MouseEvent
+      ) => {
+        const target =
+          event.target as Node;
 
-      if (
-        languageRef.current &&
-        !languageRef.current.contains(target)
-      ) {
-        setLanguageOpen(false);
-      }
-    };
+        if (
+          languageRef.current &&
+          !languageRef.current.contains(
+            target
+          )
+        ) {
+          setLanguageOpen(
+            false
+          );
+        }
+      };
 
     document.addEventListener(
       "mousedown",
@@ -407,18 +592,27 @@ export default function TraceHeader() {
   }, []);
 
   /* =========================================================
-     ESC KEY
+     ESCAPE KEY
   ========================================================= */
 
   useEffect(() => {
-    const handleKeyDown = (
-      event: KeyboardEvent
-    ) => {
-      if (event.key === "Escape") {
-        setLanguageOpen(false);
-        setMenuOpen(false);
-      }
-    };
+    const handleKeyDown =
+      (
+        event: KeyboardEvent
+      ) => {
+        if (
+          event.key ===
+          "Escape"
+        ) {
+          setLanguageOpen(
+            false
+          );
+
+          setMenuOpen(
+            false
+          );
+        }
+      };
 
     document.addEventListener(
       "keydown",
@@ -437,39 +631,64 @@ export default function TraceHeader() {
      LANGUAGE CHANGE
   ========================================================= */
 
-  const selectLanguage = (
-    nextLocale: Locale
-  ) => {
-    setLanguageOpen(false);
-    setMenuOpen(false);
-
-    if (nextLocale === locale) {
-      return;
-    }
-
-    const targetPath =
-      getLocalizedPath(
-        pathname,
-        nextLocale
+  const selectLanguage =
+    (
+      nextLocale: Locale
+    ) => {
+      setLanguageOpen(
+        false
       );
 
-    router.push(targetPath);
-  };
+      setMenuOpen(
+        false
+      );
+
+      if (
+        nextLocale === locale
+      ) {
+        return;
+      }
+
+      const targetPath =
+        getLocalizedPath(
+          pathname,
+          nextLocale
+        );
+
+      /*
+       * GitHub Pages + Next static export:
+       *
+       * Dùng navigation trực tiếp để đảm bảo URL luôn chứa:
+       *
+       * /traceability/
+       *
+       * Thay vì phụ thuộc client router.
+       */
+      window.location.href =
+        targetPath;
+    };
 
   /* =========================================================
-     NAV CLICK
+     NAVIGATION CLICK
   ========================================================= */
 
-  const handleNavClick = (
-    id: SectionId
-  ) => {
-    setActive(id);
-    setMenuOpen(false);
-    setLanguageOpen(false);
-  };
+  const handleNavClick =
+    (
+      id: SectionId
+    ) => {
+      setActive(id);
+
+      setMenuOpen(
+        false
+      );
+
+      setLanguageOpen(
+        false
+      );
+    };
 
   /* =========================================================
-     RETURN
+     RENDER
   ========================================================= */
 
   return (
@@ -490,7 +709,9 @@ export default function TraceHeader() {
             headerText.homeLabel
           }
           onClick={() =>
-            handleNavClick("overview")
+            handleNavClick(
+              "overview"
+            )
           }
         >
           <span
@@ -502,7 +723,10 @@ export default function TraceHeader() {
 
           <span className="brand-copy">
             <b>
-              {content.brand.title}
+              {
+                content.brand
+                  .title
+              }
             </b>
 
             <small>
@@ -515,7 +739,7 @@ export default function TraceHeader() {
         </a>
 
         {/* ===================================================
-            DESKTOP NAVIGATION
+            DESKTOP NAV
         =================================================== */}
 
         <nav
@@ -547,15 +771,21 @@ export default function TraceHeader() {
                       : undefined
                   }
                   onClick={() =>
-                    handleNavClick(id)
+                    handleNavClick(
+                      id
+                    )
                   }
                 >
                   <i>
-                    {item.number}
+                    {
+                      item.number
+                    }
                   </i>
 
                   <span>
-                    {item.label}
+                    {
+                      item.label
+                    }
                   </span>
                 </a>
               );
@@ -593,7 +823,9 @@ export default function TraceHeader() {
               }
               onClick={() =>
                 setLanguageOpen(
-                  (current) =>
+                  (
+                    current
+                  ) =>
                     !current
                 )
               }
@@ -610,6 +842,10 @@ export default function TraceHeader() {
               />
             </button>
 
+            {/* =============================================
+                LANGUAGE DROPDOWN
+            ============================================= */}
+
             <div
               id="language-options"
               className={`language-dropdown ${
@@ -625,11 +861,14 @@ export default function TraceHeader() {
               {languageOptions.map(
                 (item) => {
                   const isSelected =
-                    item.code === locale;
+                    item.code ===
+                    locale;
 
                   return (
                     <button
-                      key={item.code}
+                      key={
+                        item.code
+                      }
                       type="button"
                       role="menuitem"
                       className={
@@ -657,7 +896,9 @@ export default function TraceHeader() {
 
                       {isSelected && (
                         <Check
-                          size={15}
+                          size={
+                            15
+                          }
                           aria-hidden="true"
                         />
                       )}
@@ -685,51 +926,66 @@ export default function TraceHeader() {
                 : headerText.openMenu
             }
             onClick={() => {
-              setLanguageOpen(false);
+              setLanguageOpen(
+                false
+              );
 
               setMenuOpen(
-                (current) =>
+                (
+                  current
+                ) =>
                   !current
               );
             }}
           >
             {menuOpen ? (
-              <X size={23} />
+              <X
+                size={23}
+                aria-hidden="true"
+              />
             ) : (
-              <Menu size={23} />
+              <Menu
+                size={23}
+                aria-hidden="true"
+              />
             )}
           </button>
         </div>
 
         {/* ===================================================
-            PAGE PROGRESS
+            SCROLL PROGRESS
         =================================================== */}
 
         <span
           className="header-progress"
           style={{
-            width: `${progress}%`,
+            width:
+              `${progress}%`,
           }}
           aria-hidden="true"
         />
       </header>
 
       {/* =====================================================
-          MOBILE / TABLET NAVIGATION
+          MOBILE NAVIGATION
       ===================================================== */}
 
       <nav
         id="mobile-navigation"
         className={`mobile-nav ${
-          menuOpen ? "open" : ""
+          menuOpen
+            ? "open"
+            : ""
         }`}
         aria-label={
           headerText.mobileNavLabel
         }
-        aria-hidden={!menuOpen}
+        aria-hidden={
+          !menuOpen
+        }
       >
         {/* ===================================================
-            PRODUCT INFORMATION
+            PRODUCT INFO
         =================================================== */}
 
         <div className="mobile-nav-heading">
@@ -740,7 +996,10 @@ export default function TraceHeader() {
           </small>
 
           <strong>
-            {content.product.name}
+            {
+              content.product
+                .name
+            }
           </strong>
 
           <p>
@@ -751,7 +1010,7 @@ export default function TraceHeader() {
         </div>
 
         {/* ===================================================
-            MOBILE NAVIGATION LINKS
+            MOBILE NAV LINKS
         =================================================== */}
 
         <div className="mobile-nav-list">
@@ -778,15 +1037,21 @@ export default function TraceHeader() {
                       : undefined
                   }
                   onClick={() =>
-                    handleNavClick(id)
+                    handleNavClick(
+                      id
+                    )
                   }
                 >
                   <i>
-                    {item.number}
+                    {
+                      item.number
+                    }
                   </i>
 
                   <span>
-                    {item.label}
+                    {
+                      item.label
+                    }
                   </span>
 
                   <b aria-hidden="true">
@@ -804,18 +1069,23 @@ export default function TraceHeader() {
 
         <div className="mobile-language">
           <small>
-            {headerText.language}
+            {
+              headerText.language
+            }
           </small>
 
           <div>
             {languageOptions.map(
               (item) => {
                 const isSelected =
-                  item.code === locale;
+                  item.code ===
+                  locale;
 
                 return (
                   <button
-                    key={item.code}
+                    key={
+                      item.code
+                    }
                     type="button"
                     className={
                       isSelected
@@ -831,7 +1101,9 @@ export default function TraceHeader() {
                       )
                     }
                   >
-                    {item.label}
+                    {
+                      item.label
+                    }
                   </button>
                 );
               }

@@ -7,25 +7,44 @@ import {
   X,
 } from "lucide-react";
 import {
+  usePathname,
+  useRouter,
+} from "next/navigation";
+import {
   useEffect,
+  useMemo,
   useRef,
   useState,
 } from "react";
 
-const traceNav = [
-  ["01", "Tổng quan", "overview"],
-  ["02", "Xác thực", "verification"],
-  ["03", "Câu chuyện", "heritage-story"],
-  ["04", "VTC Merch", "merch"],
-  ["05", "Tài liệu", "documents"],
-  ["06", "Nâng cao", "advanced"],
-] as const;
+import {
+  getStt01Content,
+  type Locale,
+} from "../data/stt-01";
 
-type SectionId = (typeof traceNav)[number][2];
+/* =========================================================
+   TYPES
+========================================================= */
 
-type LanguageCode = "vi" | "en";
+type SectionId =
+  | "overview"
+  | "verification"
+  | "heritage-story"
+  | "merch"
+  | "documents"
+  | "advanced";
 
-const languages = [
+type LanguageOption = {
+  code: Locale;
+  short: string;
+  label: string;
+};
+
+/* =========================================================
+   LANGUAGE OPTIONS
+========================================================= */
+
+const languageOptions: LanguageOption[] = [
   {
     code: "vi",
     short: "VI",
@@ -36,9 +55,74 @@ const languages = [
     short: "EN",
     label: "English",
   },
-] as const;
+];
+
+/* =========================================================
+   HELPERS
+========================================================= */
+
+function getLocaleFromPathname(
+  pathname: string
+): Locale {
+  if (
+    pathname === "/en" ||
+    pathname.startsWith("/en/")
+  ) {
+    return "en";
+  }
+
+  return "vi";
+}
+
+function getLocalizedPath(
+  pathname: string,
+  locale: Locale
+) {
+  /*
+    VI:
+    /heritage/stt-01
+
+    EN:
+    /en/heritage/stt-01
+  */
+
+  const pathWithoutEnglishPrefix =
+    pathname.replace(/^\/en(?=\/|$)/, "");
+
+  if (locale === "en") {
+    const normalized =
+      pathWithoutEnglishPrefix || "/";
+
+    if (normalized === "/") {
+      return "/en";
+    }
+
+    return `/en${normalized}`;
+  }
+
+  return pathWithoutEnglishPrefix || "/";
+}
+
+/* =========================================================
+   COMPONENT
+========================================================= */
 
 export default function TraceHeader() {
+  const router = useRouter();
+  const pathname = usePathname();
+
+  const locale = useMemo(
+    () => getLocaleFromPathname(pathname),
+    [pathname]
+  );
+
+  const content = useMemo(
+    () => getStt01Content(locale),
+    [locale]
+  );
+
+  const traceNav = content.nav;
+
   const [active, setActive] =
     useState<SectionId>("overview");
 
@@ -51,11 +135,17 @@ export default function TraceHeader() {
   const [languageOpen, setLanguageOpen] =
     useState(false);
 
-  const [language, setLanguage] =
-    useState<LanguageCode>("vi");
-
   const languageRef =
     useRef<HTMLDivElement>(null);
+
+  /* =========================================================
+     CURRENT LANGUAGE
+  ========================================================= */
+
+  const selectedLanguage =
+    languageOptions.find(
+      (item) => item.code === locale
+    ) ?? languageOptions[0];
 
   /* =========================================================
      ACTIVE SECTION + SCROLL PROGRESS
@@ -78,7 +168,9 @@ export default function TraceHeader() {
           document.documentElement.scrollHeight -
           window.innerHeight;
 
-        /* PAGE PROGRESS */
+        /* ---------------------------------------------
+           SCROLL PROGRESS
+        --------------------------------------------- */
 
         const progressValue =
           scrollable > 0
@@ -93,7 +185,9 @@ export default function TraceHeader() {
 
         setProgress(progressValue);
 
-        /* ĐẦU TRANG */
+        /* ---------------------------------------------
+           ĐẦU TRANG = OVERVIEW
+        --------------------------------------------- */
 
         if (scrollTop < 80) {
           setActive("overview");
@@ -102,7 +196,9 @@ export default function TraceHeader() {
           return;
         }
 
-        /* ĐƯỜNG ĐỌC ẢO */
+        /* ---------------------------------------------
+           READING MARKER
+        --------------------------------------------- */
 
         const marker = Math.min(
           280,
@@ -110,9 +206,12 @@ export default function TraceHeader() {
         );
 
         let currentId: SectionId =
-          traceNav[0][2];
+          "overview";
 
-        for (const [, , id] of traceNav) {
+        for (const item of traceNav) {
+          const id =
+            item.id as SectionId;
+
           const section =
             document.getElementById(id);
 
@@ -130,7 +229,9 @@ export default function TraceHeader() {
           }
         }
 
-        /* CUỐI TRANG */
+        /* ---------------------------------------------
+           GẦN CUỐI TRANG = ADVANCED
+        --------------------------------------------- */
 
         const nearBottom =
           window.innerHeight +
@@ -140,10 +241,7 @@ export default function TraceHeader() {
             40;
 
         if (nearBottom) {
-          currentId =
-            traceNav[
-              traceNav.length - 1
-            ][2];
+          currentId = "advanced";
         }
 
         setActive(currentId);
@@ -182,10 +280,10 @@ export default function TraceHeader() {
         cancelAnimationFrame(frame);
       }
     };
-  }, []);
+  }, [traceNav]);
 
   /* =========================================================
-     ĐÓNG MOBILE MENU KHI LÊN DESKTOP
+     CLOSE MOBILE MENU ON DESKTOP
   ========================================================= */
 
   useEffect(() => {
@@ -209,7 +307,7 @@ export default function TraceHeader() {
   }, []);
 
   /* =========================================================
-     KHÓA SCROLL KHI MOBILE MENU MỞ
+     LOCK BODY SCROLL
   ========================================================= */
 
   useEffect(() => {
@@ -222,18 +320,19 @@ export default function TraceHeader() {
   }, [menuOpen]);
 
   /* =========================================================
-     ĐÓNG LANGUAGE DROPDOWN KHI CLICK RA NGOÀI
+     CLOSE LANGUAGE DROPDOWN WHEN CLICK OUTSIDE
   ========================================================= */
 
   useEffect(() => {
     const handleOutsideClick = (
       event: MouseEvent
     ) => {
+      const target =
+        event.target as Node;
+
       if (
         languageRef.current &&
-        !languageRef.current.contains(
-          event.target as Node
-        )
+        !languageRef.current.contains(target)
       ) {
         setLanguageOpen(false);
       }
@@ -253,7 +352,7 @@ export default function TraceHeader() {
   }, []);
 
   /* =========================================================
-     ĐÓNG DROPDOWN BẰNG ESC
+     ESC KEY
   ========================================================= */
 
   useEffect(() => {
@@ -279,33 +378,118 @@ export default function TraceHeader() {
     };
   }, []);
 
-  const closeMobileMenu = () => {
+  /* =========================================================
+     ROUTE CHANGE
+  ========================================================= */
+
+  useEffect(() => {
+    setMenuOpen(false);
+    setLanguageOpen(false);
+  }, [pathname]);
+
+  /* =========================================================
+     LANGUAGE CHANGE
+  ========================================================= */
+
+  const selectLanguage = (
+    nextLocale: Locale
+  ) => {
+    setLanguageOpen(false);
+    setMenuOpen(false);
+
+    if (nextLocale === locale) {
+      return;
+    }
+
+    const targetPath =
+      getLocalizedPath(
+        pathname,
+        nextLocale
+      );
+
+    router.push(targetPath);
+  };
+
+  /* =========================================================
+     NAV CLICK
+  ========================================================= */
+
+  const handleNavClick = (
+    id: SectionId
+  ) => {
+    setActive(id);
     setMenuOpen(false);
   };
 
-  const selectLanguage = (
-    code: LanguageCode
-  ) => {
-    setLanguage(code);
+  /* =========================================================
+     TEXTS ONLY USED BY HEADER
+  ========================================================= */
 
-    setLanguageOpen(false);
+  const headerText =
+    locale === "vi"
+      ? {
+          productRecord:
+            "HỒ SƠ SẢN PHẨM",
 
-    /*
-      Hiện tại chỉ thay đổi trạng thái hiển thị.
+          description:
+            "Thông tin truy xuất, câu chuyện văn hóa và hồ sơ xác thực của sản phẩm.",
 
-      Sau này khi có bản tiếng Anh, có thể đổi thành:
-      router.push("/en/...")
-      hoặc dùng hệ thống i18n.
-    */
-  };
+          chooseLanguage:
+            "Chọn ngôn ngữ",
 
-  const selectedLanguage =
-    languages.find(
-      (item) => item.code === language
-    ) ?? languages[0];
+          language:
+            "NGÔN NGỮ",
+
+          openMenu:
+            "Mở menu",
+
+          closeMenu:
+            "Đóng menu",
+
+          homeLabel:
+            "Nền tảng truy xuất — về đầu trang",
+
+          navLabel:
+            "Điều hướng hồ sơ sản phẩm",
+
+          mobileNavLabel:
+            "Điều hướng hồ sơ sản phẩm trên thiết bị di động",
+        }
+      : {
+          productRecord:
+            "PRODUCT RECORD",
+
+          description:
+            "Traceability information, cultural story and verification records for this product.",
+
+          chooseLanguage:
+            "Choose language",
+
+          language:
+            "LANGUAGE",
+
+          openMenu:
+            "Open menu",
+
+          closeMenu:
+            "Close menu",
+
+          homeLabel:
+            "Traceability Platform — back to top",
+
+          navLabel:
+            "Product record navigation",
+
+          mobileNavLabel:
+            "Product record navigation on mobile devices",
+        };
 
   return (
     <>
+      {/* =====================================================
+          HEADER
+      ===================================================== */}
+
       <header className="site-header">
         {/* ===================================================
             BRAND
@@ -314,7 +498,12 @@ export default function TraceHeader() {
         <a
           className="brand"
           href="#overview"
-          aria-label="Nền tảng truy xuất — về đầu trang"
+          aria-label={
+            headerText.homeLabel
+          }
+          onClick={() =>
+            handleNavClick("overview")
+          }
         >
           <span
             className="brand-seal"
@@ -325,11 +514,14 @@ export default function TraceHeader() {
 
           <span className="brand-copy">
             <b>
-              NỀN TẢNG TRUY XUẤT
+              {content.brand.title}
             </b>
 
             <small>
-              SẢN PHẨM VĂN HÓA
+              {
+                content.brand
+                  .subtitle
+              }
             </small>
           </span>
         </a>
@@ -340,10 +532,15 @@ export default function TraceHeader() {
 
         <nav
           className="desktop-nav"
-          aria-label="Điều hướng hồ sơ sản phẩm"
+          aria-label={
+            headerText.navLabel
+          }
         >
           {traceNav.map(
-            ([number, title, id]) => {
+            (item) => {
+              const id =
+                item.id as SectionId;
+
               const isActive =
                 active === id;
 
@@ -361,10 +558,17 @@ export default function TraceHeader() {
                       ? "location"
                       : undefined
                   }
+                  onClick={() =>
+                    handleNavClick(id)
+                  }
                 >
-                  <i>{number}</i>
+                  <i>
+                    {item.number}
+                  </i>
 
-                  <span>{title}</span>
+                  <span>
+                    {item.label}
+                  </span>
                 </a>
               );
             }
@@ -376,7 +580,9 @@ export default function TraceHeader() {
         =================================================== */}
 
         <div className="header-actions">
-          {/* LANGUAGE */}
+          {/* ===============================================
+              LANGUAGE SWITCHER
+          =============================================== */}
 
           <div
             className="language-menu"
@@ -394,6 +600,9 @@ export default function TraceHeader() {
                 languageOpen
               }
               aria-controls="language-options"
+              aria-label={
+                headerText.chooseLanguage
+              }
               onClick={() =>
                 setLanguageOpen(
                   (current) =>
@@ -421,13 +630,14 @@ export default function TraceHeader() {
                   : ""
               }`}
               role="menu"
-              aria-label="Chọn ngôn ngữ"
+              aria-label={
+                headerText.chooseLanguage
+              }
             >
-              {languages.map(
+              {languageOptions.map(
                 (item) => {
                   const isSelected =
-                    item.code ===
-                    language;
+                    item.code === locale;
 
                   return (
                     <button
@@ -470,17 +680,21 @@ export default function TraceHeader() {
             </div>
           </div>
 
-          {/* MOBILE MENU BUTTON */}
+          {/* ===============================================
+              MOBILE MENU BUTTON
+          =============================================== */}
 
           <button
             className="menu-toggle"
             type="button"
-            aria-expanded={menuOpen}
+            aria-expanded={
+              menuOpen
+            }
             aria-controls="mobile-navigation"
             aria-label={
               menuOpen
-                ? "Đóng menu"
-                : "Mở menu"
+                ? headerText.closeMenu
+                : headerText.openMenu
             }
             onClick={() =>
               setMenuOpen(
@@ -498,7 +712,7 @@ export default function TraceHeader() {
         </div>
 
         {/* ===================================================
-            SCROLL PROGRESS
+            PAGE PROGRESS
         =================================================== */}
 
         <span
@@ -519,28 +733,43 @@ export default function TraceHeader() {
         className={`mobile-nav ${
           menuOpen ? "open" : ""
         }`}
-        aria-label="Điều hướng hồ sơ sản phẩm trên thiết bị di động"
+        aria-label={
+          headerText.mobileNavLabel
+        }
         aria-hidden={!menuOpen}
       >
+        {/* ===================================================
+            PRODUCT INFORMATION
+        =================================================== */}
+
         <div className="mobile-nav-heading">
           <small>
-            HỒ SƠ SẢN PHẨM
+            {
+              headerText.productRecord
+            }
           </small>
 
           <strong>
-            Dấu Ấn Thượng Triều Nguyễn
+            {content.product.name}
           </strong>
 
           <p>
-            Thông tin truy xuất, câu
-            chuyện văn hóa và hồ sơ
-            xác thực của sản phẩm.
+            {
+              headerText.description
+            }
           </p>
         </div>
 
+        {/* ===================================================
+            MOBILE NAVIGATION LINKS
+        =================================================== */}
+
         <div className="mobile-nav-list">
           {traceNav.map(
-            ([number, title, id]) => {
+            (item) => {
+              const id =
+                item.id as SectionId;
+
               const isActive =
                 active === id;
 
@@ -558,13 +787,17 @@ export default function TraceHeader() {
                       ? "location"
                       : undefined
                   }
-                  onClick={
-                    closeMobileMenu
+                  onClick={() =>
+                    handleNavClick(id)
                   }
                 >
-                  <i>{number}</i>
+                  <i>
+                    {item.number}
+                  </i>
 
-                  <span>{title}</span>
+                  <span>
+                    {item.label}
+                  </span>
 
                   <b aria-hidden="true">
                     →
@@ -575,34 +808,43 @@ export default function TraceHeader() {
           )}
         </div>
 
-        {/* LANGUAGE TRÊN MOBILE */}
+        {/* ===================================================
+            MOBILE LANGUAGE
+        =================================================== */}
 
         <div className="mobile-language">
-          <small>NGÔN NGỮ</small>
+          <small>
+            {headerText.language}
+          </small>
 
           <div>
-            {languages.map(
-              (item) => (
-                <button
-                  key={item.code}
-                  type="button"
-                  className={
-                    language ===
-                    item.code
-                      ? "active"
-                      : ""
-                  }
-                  onClick={() => {
-                    selectLanguage(
-                      item.code
-                    );
+            {languageOptions.map(
+              (item) => {
+                const isSelected =
+                  item.code === locale;
 
-                    closeMobileMenu();
-                  }}
-                >
-                  {item.label}
-                </button>
-              )
+                return (
+                  <button
+                    key={item.code}
+                    type="button"
+                    className={
+                      isSelected
+                        ? "active"
+                        : ""
+                    }
+                    aria-pressed={
+                      isSelected
+                    }
+                    onClick={() =>
+                      selectLanguage(
+                        item.code
+                      )
+                    }
+                  >
+                    {item.label}
+                  </button>
+                );
+              }
             )}
           </div>
         </div>

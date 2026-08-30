@@ -1,5 +1,4 @@
 import Image from "next/image";
-
 import {
   CheckCircle2,
   FileText,
@@ -13,334 +12,472 @@ import {
   ShieldCheck,
 } from "lucide-react";
 
+import {
+  getStt01Content,
+  type Locale,
+} from "../data/stt-01";
+
+/* =========================================================
+   BASE PATH
+========================================================= */
+
 const BASE = "/traceability";
 
-const product = {
-  name: "Dấu Ấn Thượng Triều Nguyễn",
-  code: "STT-01",
-  traceCode: "STT-01-HERITAGE",
-  version: "01-01",
-  lot: "LOT-2026-08-001",
-  serial: "00012345",
+/* =========================================================
+   PROPS
+========================================================= */
+
+type AdvancedInfoProps = {
+  locale?: Locale;
 };
 
-const designMappings = [
-  {
-    source: "Dáng mũ tổng thể",
-    result:
-      "Giữ đường bao chính và thu gọn tỷ lệ để phù hợp với kích thước của sản phẩm nam châm.",
-  },
-  {
-    source: "Hai cánh mũ",
-    result:
-      "Giữ bố cục đối xứng và hướng vươn cao nhằm duy trì dấu hiệu nhận diện chính của hiện vật.",
-  },
-  {
-    source: "Hình tượng rồng",
-    result:
-      "Giản lược chi tiết và tổ chức lại trên bề mặt sản phẩm để phù hợp với kích thước nhỏ.",
-  },
-  {
-    source: "Họa tiết mây",
-    result:
-      "Chuyển thành các lớp trang trí đối xứng nhằm tạo chiều sâu cho cấu trúc nhiều lớp.",
-  },
-  {
-    source: "Điểm nhấn trung tâm",
-    result:
-      "Tổ chức lại thành chi tiết màu đỏ tại tâm để cân bằng bố cục và tạo điểm nhìn chính.",
-  },
-  {
-    source: "Chuỗi hạt và tua",
-    result:
-      "Tái cấu trúc thành hệ chi tiết trang trí ở phần dưới sản phẩm, giữ nhịp điệu của thiết kế gốc.",
-  },
-] as const;
+/* =========================================================
+   COMPONENT
+========================================================= */
 
-const journey = [
-  {
-    number: "01",
-    title: "Nghiên cứu nguồn văn hóa",
-    detail:
-      "Xác định hiện vật tham chiếu và các yếu tố tạo hình có thể khai thác.",
-  },
-  {
-    number: "02",
-    title: "Phát triển thiết kế",
-    detail:
-      "Lựa chọn và chuyển hóa các yếu tố văn hóa thành phương án sản phẩm.",
-  },
-  {
-    number: "03",
-    title: "Hoàn thiện phương án",
-    detail: `Phiên bản ${product.version}`,
-  },
-  {
-    number: "04",
-    title: "Bảo chứng văn hóa",
-    detail: "Mã bảo chứng 01 · 29/08/2026",
-  },
-  {
-    number: "05",
-    title: "Sản xuất và kiểm tra",
-    detail: product.lot,
-  },
-  {
-    number: "06",
-    title: "Cấp mã truy xuất",
-    detail: product.traceCode,
-  },
-] as const;
+export default function AdvancedInfo({
+  locale = "vi",
+}: AdvancedInfoProps) {
+  const content =
+    getStt01Content(locale);
 
-function Note({
-  children,
-  dark = false,
-}: {
-  children: React.ReactNode;
-  dark?: boolean;
-}) {
-  return (
-    <div className={`data-note ${dark ? "dark" : ""}`}>
-      <Info size={14} />
-      <span>{children}</span>
-    </div>
-  );
-}
+  const advanced =
+    content.advanced;
 
-function AdvancedHeading() {
-  return (
-    <header className="section-heading">
-      <span className="section-number">06</span>
+  const heritageSource =
+    advanced.sections.heritageSource;
 
-      <div>
-        <p className="eyebrow">THÔNG TIN NÂNG CAO</p>
+  const designTransformation =
+    advanced.sections.designTransformation;
 
-        <h2>Dành cho người muốn tìm hiểu sâu hơn.</h2>
+  const attestation =
+    advanced.sections.attestation;
 
-        <p>
-          Khu vực này tập hợp các thông tin chuyên sâu về nguồn văn hóa,
-          quá trình chuyển hóa thiết kế, bảo chứng, quyền tác giả, hành
-          trình phát triển và dữ liệu truy xuất.
-        </p>
-      </div>
-    </header>
-  );
-}
+  const copyright =
+    advanced.sections.copyright;
 
-export default function AdvancedInfo() {
+  const journey =
+    advanced.sections.journey;
+
+  const traceData =
+    advanced.sections.traceData;
+
+  /* =========================================================
+     LOCAL TEXTS
+  ========================================================= */
+
+  const ui =
+    locale === "vi"
+      ? {
+          sourceImageAlt:
+            "Nguồn tham chiếu mũ Cửu Long Thông Thiên",
+
+          conceptImageAlt:
+            "Bảng phát triển thiết kế Dấu Ấn Thượng Triều Nguyễn",
+
+          certificateAlt:
+            "Giấy chứng nhận đăng ký quyền tác giả",
+
+          museumLogoAlt:
+            "Bảo tàng Lịch sử Quốc gia",
+
+          sealAlt:
+            "Dấu xác nhận",
+
+          openSection:
+            "Mở nội dung",
+
+          traceStatus:
+            "Trạng thái truy xuất",
+
+          traceValid:
+            "Hợp lệ",
+
+          dataNote:
+            "Thông tin hiển thị theo hồ sơ truy xuất của sản phẩm.",
+        }
+      : {
+          sourceImageAlt:
+            "Reference image of the Cuu Long Thong Thien imperial court hat",
+
+          conceptImageAlt:
+            "Design development board for Nguyen Imperial Court Imprint",
+
+          certificateAlt:
+            "Copyright registration certificate",
+
+          museumLogoAlt:
+            "Vietnam National Museum of History",
+
+          sealAlt:
+            "Verification seal",
+
+          openSection:
+            "Open section",
+
+          traceStatus:
+            "Traceability status",
+
+          traceValid:
+            "Valid",
+
+          dataNote:
+            "Information displayed according to the product traceability record.",
+        };
+
   return (
     <section
       id="advanced"
       className="content-section section-pad advanced-section"
     >
-      <AdvancedHeading />
+      {/* =====================================================
+          SECTION HEADING
+      ===================================================== */}
+
+      <div className="section-heading">
+        <span className="section-number">
+          {advanced.number}
+        </span>
+
+        <div>
+          <p className="eyebrow">
+            {advanced.eyebrow}
+          </p>
+
+          <h2>
+            {advanced.title}
+          </h2>
+
+          <p>
+            {advanced.description}
+          </p>
+        </div>
+      </div>
 
       {/* =====================================================
-          01 — NGUỒN VĂN HÓA
+          01 — HERITAGE SOURCE
       ===================================================== */}
+
       <details className="advanced-accordion">
-        <summary>
-          <span>01</span>
+        <summary
+          aria-label={`${ui.openSection}: ${heritageSource.title}`}
+        >
+          <span>
+            {heritageSource.number}
+          </span>
 
-          <strong>Nguồn văn hóa chi tiết</strong>
+          <strong>
+            {heritageSource.title}
+          </strong>
 
-          <b aria-hidden="true">+</b>
+          <b aria-hidden="true">
+            +
+          </b>
         </summary>
 
         <div className="advanced-content">
           <div className="advanced-two-column">
-            <div>
-              <p className="eyebrow">HIỆN VẬT THAM CHIẾU</p>
+            {/* TEXT */}
 
-              <h3>Mũ Cửu Long Thông Thiên triều Nguyễn</h3>
+            <div>
+              <p className="eyebrow">
+                {heritageSource.eyebrow}
+              </p>
+
+              <h3>
+                {heritageSource.heading}
+              </h3>
 
               <p>
-                Hiện vật được sử dụng làm nguồn tham chiếu cho dáng tổng
-                thể, bố cục đối xứng và hệ thống chi tiết trang trí của
-                sản phẩm.
+                {
+                  heritageSource.description
+                }
               </p>
 
               <dl className="advanced-meta-list">
-                <div>
-                  <dt>Loại hình tham chiếu</dt>
-                  <dd>Hiện vật cung đình triều Nguyễn</dd>
-                </div>
+                {heritageSource.meta.map(
+                  (item) => (
+                    <div key={item.label}>
+                      <dt>
+                        {item.label}
+                      </dt>
 
-                <div>
-                  <dt>Yếu tố khai thác</dt>
-                  <dd>
-                    Dáng mũ, cánh mũ, rồng, mây và hệ chi tiết trang trí
-                  </dd>
-                </div>
-
-                <div>
-                  <dt>Mục đích sử dụng</dt>
-                  <dd>Tham chiếu phát triển thiết kế sản phẩm</dd>
-                </div>
+                      <dd>
+                        {item.value}
+                      </dd>
+                    </div>
+                  )
+                )}
               </dl>
 
-              <Note>
-                Khi công bố chính thức, phần này cần liên kết trực tiếp
-                tới tài liệu và hình ảnh do đơn vị lưu giữ hiện vật xác
-                nhận.
-              </Note>
+              <p className="data-note">
+                <Info size={14} />
+
+                <span>
+                  {ui.dataNote}
+                </span>
+              </p>
             </div>
+
+            {/* IMAGE */}
 
             <Image
               src={`${BASE}/heritage/heritage-hat-front.webp`}
-              alt="Mũ Cửu Long Thông Thiên triều Nguyễn"
-              width={820}
-              height={810}
-              sizes="(max-width: 760px) 100vw, 44vw"
+              alt={ui.sourceImageAlt}
+              width={900}
+              height={900}
             />
           </div>
         </div>
       </details>
 
       {/* =====================================================
-          02 — CHUYỂN HÓA THIẾT KẾ
+          02 — DESIGN TRANSFORMATION
       ===================================================== */}
+
       <details className="advanced-accordion">
-        <summary>
-          <span>02</span>
+        <summary
+          aria-label={`${ui.openSection}: ${designTransformation.title}`}
+        >
+          <span>
+            {
+              designTransformation.number
+            }
+          </span>
 
-          <strong>Chuyển hóa thiết kế</strong>
+          <strong>
+            {
+              designTransformation.title
+            }
+          </strong>
 
-          <b aria-hidden="true">+</b>
+          <b aria-hidden="true">
+            +
+          </b>
         </summary>
 
         <div className="advanced-content">
           <div className="advanced-design-layout">
+            {/* CONCEPT BOARD */}
+
             <div className="advanced-concept-image">
               <Image
                 src={`${BASE}/heritage/stt-01-concept-board.webp`}
-                alt="Hồ sơ phát triển thiết kế sản phẩm STT-01"
-                width={1100}
-                height={1020}
-                sizes="(max-width: 760px) 100vw, 44vw"
+                alt={ui.conceptImageAlt}
+                width={1000}
+                height={1200}
               />
 
-              <small>HỒ SƠ PHÁT TRIỂN · PHƯƠNG ÁN STT-01</small>
+              <small>
+                {
+                  designTransformation.caption
+                }
+              </small>
             </div>
 
-            <div className="advanced-design-list">
-              {designMappings.map((item, index) => (
-                <article key={item.source}>
-                  <span>
-                    {String(index + 1).padStart(2, "0")}
-                  </span>
+            {/* DESIGN MAPPING */}
 
-                  <div>
-                    <h3>{item.source}</h3>
+            <div>
+              <p className="eyebrow">
+                {
+                  designTransformation.eyebrow
+                }
+              </p>
 
-                    <p>{item.result}</p>
-                  </div>
-                </article>
-              ))}
+              <div className="advanced-design-list">
+                {designTransformation.mappings.map(
+                  (item) => (
+                    <article
+                      key={item.number}
+                    >
+                      <span>
+                        {item.number}
+                      </span>
+
+                      <div>
+                        <h3>
+                          {item.source}
+                        </h3>
+
+                        <p>
+                          {
+                            item.transformation
+                          }
+                        </p>
+                      </div>
+                    </article>
+                  )
+                )}
+              </div>
             </div>
           </div>
 
+          {/* PRINCIPLE */}
+
           <div className="advanced-principle">
-            <p className="eyebrow">NGUYÊN TẮC CHUYỂN HÓA</p>
+            <p className="eyebrow">
+              {
+                designTransformation
+                  .principle.label
+              }
+            </p>
 
             <p>
-              <b>
-                Sản phẩm kế thừa các yếu tố tạo hình và biểu tượng,
-                không phải bản sao nguyên trạng của hiện vật.
-              </b>{" "}
-              Các chi tiết được giản lược và bố cục lại để phù hợp với
-              kích thước, vật liệu và công năng của sản phẩm lưu niệm.
+              {
+                designTransformation
+                  .principle.description
+              }
             </p>
           </div>
         </div>
       </details>
 
       {/* =====================================================
-          03 — BẢO CHỨNG
+          03 — CULTURAL ATTESTATION
       ===================================================== */}
+
       <details className="advanced-accordion">
-        <summary>
-          <span>03</span>
+        <summary
+          aria-label={`${ui.openSection}: ${attestation.title}`}
+        >
+          <span>
+            {attestation.number}
+          </span>
 
-          <strong>Bảo chứng văn hóa</strong>
+          <strong>
+            {attestation.title}
+          </strong>
 
-          <b aria-hidden="true">+</b>
+          <b aria-hidden="true">
+            +
+          </b>
         </summary>
 
         <div className="advanced-content">
+          <p className="eyebrow">
+            {attestation.eyebrow}
+          </p>
+
+          <p
+            style={{
+              maxWidth: "780px",
+              marginTop: "14px",
+              marginBottom: "28px",
+              color: "var(--muted)",
+              fontSize: "12px",
+              lineHeight: 1.8,
+            }}
+          >
+            {attestation.description}
+          </p>
+
+          {/* INFO CARDS */}
+
           <div className="advanced-card-grid">
-            <article>
-              <Landmark />
+            {attestation.cards.map(
+              (item, index) => {
+                const icons = [
+                  Landmark,
+                  CheckCircle2,
+                  ShieldCheck,
+                  FileText,
+                ];
 
-              <small>ĐƠN VỊ BẢO CHỨNG</small>
+                const Icon =
+                  icons[index] ??
+                  ShieldCheck;
 
-              <h3>Bảo tàng Lịch sử Quốc gia</h3>
-            </article>
+                return (
+                  <article
+                    key={item.label}
+                  >
+                    <Icon
+                      aria-hidden="true"
+                    />
 
-            <article>
-              <ShieldCheck />
+                    <small>
+                      {item.label}
+                    </small>
 
-              <small>TRẠNG THÁI</small>
-
-              <h3>Đã bảo chứng</h3>
-            </article>
-
-            <article>
-              <FileText />
-
-              <small>MÃ BẢO CHỨNG</small>
-
-              <h3>01</h3>
-            </article>
-
-            <article>
-              <CheckCircle2 />
-
-              <small>NGÀY BẢO CHỨNG</small>
-
-              <h3>29/08/2026</h3>
-            </article>
+                    <h3>
+                      {item.value}
+                    </h3>
+                  </article>
+                );
+              }
+            )}
           </div>
+
+          {/* DOCUMENT PREVIEW */}
 
           <div className="advanced-document-preview">
             <div>
-              <p className="eyebrow">PHẠM VI HỒ SƠ</p>
+              <p className="eyebrow">
+                {
+                  attestation.document
+                    .eyebrow
+                }
+              </p>
 
               <h3>
-                Bảo chứng các yếu tố văn hóa được khai thác trong phương
-                án thiết kế.
+                {
+                  attestation.document
+                    .title
+                }
               </h3>
 
               <p>
-                Thông tin bảo chứng được liên kết với sản phẩm{" "}
-                {product.code}, phiên bản {product.version}.
+                {
+                  attestation.document
+                    .description
+                }
               </p>
 
-              <Note>
-                Phạm vi bảo chứng cụ thể cần được hiểu theo nội dung ghi
-                trong chứng thư và tài liệu đối chiếu đi kèm.
-              </Note>
+              <p className="data-note">
+                <Info size={14} />
+
+                <span>
+                  {ui.dataNote}
+                </span>
+              </p>
             </div>
 
             <div className="advanced-attestation-art">
               <Image
                 src={`${BASE}/heritage/museum-logo.webp`}
-                alt="Biểu trưng Bảo tàng Lịch sử Quốc gia"
-                width={240}
-                height={240}
+                alt={ui.museumLogoAlt}
+                width={120}
+                height={120}
               />
 
               <span>
-                <small>CHỨNG THƯ BẢO CHỨNG</small>
-                <b>STT-01</b>
-                <em>Mã bảo chứng 01</em>
+                <small>
+                  {
+                    attestation.document
+                      .certificateLabel
+                  }
+                </small>
+
+                <b>
+                  {
+                    attestation.document
+                      .certificateTitle
+                  }
+                </b>
+
+                <em>
+                  {
+                    attestation.document
+                      .certificateMeta
+                  }
+                </em>
               </span>
 
               <Image
                 src={`${BASE}/heritage/museum-red-seal.webp`}
-                alt="Dấu xác nhận trên hồ sơ bảo chứng"
-                width={240}
-                height={240}
+                alt={ui.sealAlt}
+                width={120}
+                height={120}
               />
             </div>
           </div>
@@ -348,158 +485,208 @@ export default function AdvancedInfo() {
       </details>
 
       {/* =====================================================
-          04 — QUYỀN TÁC GIẢ
+          04 — COPYRIGHT
       ===================================================== */}
+
       <details className="advanced-accordion">
-        <summary>
-          <span>04</span>
+        <summary
+          aria-label={`${ui.openSection}: ${copyright.title}`}
+        >
+          <span>
+            {copyright.number}
+          </span>
 
-          <strong>Quyền tác giả</strong>
+          <strong>
+            {copyright.title}
+          </strong>
 
-          <b aria-hidden="true">+</b>
+          <b aria-hidden="true">
+            +
+          </b>
         </summary>
 
         <div className="advanced-content">
           <div className="advanced-two-column">
-            <div>
-              <p className="eyebrow">GIẤY CHỨNG NHẬN</p>
+            {/* TEXT */}
 
-              <h3>Giấy chứng nhận đăng ký quyền tác giả</h3>
+            <div>
+              <p className="eyebrow">
+                {copyright.eyebrow}
+              </p>
+
+              <h3>
+                {copyright.heading}
+              </h3>
+
+              <p>
+                {
+                  copyright.description
+                }
+              </p>
 
               <dl className="advanced-meta-list">
-                <div>
-                  <dt>Tên tác phẩm</dt>
-                  <dd>{product.name}</dd>
-                </div>
+                {copyright.meta.map(
+                  (item) => (
+                    <div key={item.label}>
+                      <dt>
+                        {item.label}
+                      </dt>
 
-                <div>
-                  <dt>Loại hình</dt>
-                  <dd>Mỹ thuật ứng dụng</dd>
-                </div>
-
-                <div>
-                  <dt>Số giấy chứng nhận</dt>
-                  <dd>8854/2026/QTG</dd>
-                </div>
-
-                <div>
-                  <dt>Ngày cấp</dt>
-                  <dd>26/08/2026</dd>
-                </div>
-
-                <div>
-                  <dt>Chủ sở hữu quyền</dt>
-                  <dd>Theo nội dung giấy chứng nhận</dd>
-                </div>
+                      <dd>
+                        {item.value}
+                      </dd>
+                    </div>
+                  )
+                )}
               </dl>
-
-              <Note>
-                Tên tác giả và chủ sở hữu quyền cần được hiển thị chính
-                xác theo bản giấy chứng nhận được liên kết với hệ thống.
-              </Note>
             </div>
+
+            {/* CERTIFICATE */}
 
             <Image
               src={`${BASE}/heritage/copyright-certificate.webp`}
-              alt="Giấy chứng nhận đăng ký quyền tác giả"
-              width={700}
-              height={934}
-              sizes="(max-width: 760px) 90vw, 42vw"
+              alt={ui.certificateAlt}
+              width={1000}
+              height={1400}
             />
           </div>
         </div>
       </details>
 
       {/* =====================================================
-          05 — HÀNH TRÌNH
+          05 — PRODUCT JOURNEY
       ===================================================== */}
+
       <details className="advanced-accordion">
-        <summary>
-          <span>05</span>
+        <summary
+          aria-label={`${ui.openSection}: ${journey.title}`}
+        >
+          <span>
+            {journey.number}
+          </span>
 
-          <strong>Hành trình sản phẩm</strong>
+          <strong>
+            {journey.title}
+          </strong>
 
-          <b aria-hidden="true">+</b>
+          <b aria-hidden="true">
+            +
+          </b>
         </summary>
 
         <div className="advanced-content">
           <div className="advanced-journey">
-            {journey.map((step) => (
-              <article key={step.number}>
-                <span>{step.number}</span>
+            {journey.items.map(
+              (item) => (
+                <article
+                  key={item.number}
+                >
+                  <span>
+                    {item.number}
+                  </span>
 
-                <div>
-                  <h3>{step.title}</h3>
+                  <div>
+                    <h3>
+                      {item.title}
+                    </h3>
 
-                  <p>{step.detail}</p>
-                </div>
-              </article>
-            ))}
+                    <p>
+                      {
+                        item.description
+                      }
+                    </p>
+                  </div>
+                </article>
+              )
+            )}
           </div>
         </div>
       </details>
 
       {/* =====================================================
-          06 — DỮ LIỆU TRUY XUẤT
+          06 — TRACEABILITY DATA
       ===================================================== */}
+
       <details className="advanced-accordion">
-        <summary>
-          <span>06</span>
+        <summary
+          aria-label={`${ui.openSection}: ${traceData.title}`}
+        >
+          <span>
+            {traceData.number}
+          </span>
 
-          <strong>Dữ liệu truy xuất</strong>
+          <strong>
+            {traceData.title}
+          </strong>
 
-          <b aria-hidden="true">+</b>
+          <b aria-hidden="true">
+            +
+          </b>
         </summary>
 
         <div className="advanced-content">
           <div className="advanced-trace-grid">
-            <article>
-              <Fingerprint />
+            {traceData.fields.map(
+              (item, index) => {
+                const icons = [
+                  Fingerprint,
+                  PackageCheck,
+                  QrCode,
+                  Ruler,
+                ];
 
-              <small>MÃ TRUY XUẤT</small>
+                const Icon =
+                  icons[index] ??
+                  Fingerprint;
 
-              <h3>{product.traceCode}</h3>
-            </article>
+                return (
+                  <article
+                    key={item.label}
+                  >
+                    <Icon
+                      aria-hidden="true"
+                    />
 
-            <article>
-              <PackageCheck />
+                    <small>
+                      {item.label}
+                    </small>
 
-              <small>LÔ SẢN XUẤT</small>
+                    <h3>
+                      {item.value}
+                    </h3>
 
-              <h3>{product.lot}</h3>
-
-              <p>Dữ liệu mẫu</p>
-            </article>
-
-            <article>
-              <QrCode />
-
-              <small>SỐ SERI</small>
-
-              <h3>{product.serial}</h3>
-
-              <p>Dữ liệu mẫu</p>
-            </article>
-
-            <article>
-              <Ruler />
-
-              <small>PHIÊN BẢN</small>
-
-              <h3>{product.version}</h3>
-            </article>
+                    {item.status && (
+                      <p>
+                        {item.status}
+                      </p>
+                    )}
+                  </article>
+                );
+              }
+            )}
           </div>
 
+          {/* PRIVACY */}
+
           <div className="privacy-panel">
-            <LockKeyhole />
+            <LockKeyhole
+              size={22}
+              aria-hidden="true"
+            />
 
             <div>
-              <b>Quyền riêng tư khi truy xuất</b>
+              <b>
+                {
+                  traceData.privacy
+                    .title
+                }
+              </b>
 
               <p>
-                Trang công khai không hiển thị địa chỉ IP, tên thiết bị,
-                trình duyệt hoặc thông tin nhận dạng cá nhân của người
-                dùng đã kiểm tra mã trước đó.
+                {
+                  traceData.privacy
+                    .description
+                }
               </p>
             </div>
           </div>

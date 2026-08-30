@@ -12,10 +12,21 @@ const traceNav = [
   ["06", "Nâng cao", "advanced"],
 ] as const;
 
+/* =========================================================
+   TYPE CỦA ID SECTION
+========================================================= */
+
+type SectionId = (typeof traceNav)[number][2];
+
 export default function TraceHeader() {
-  const [active, setActive] = useState("overview");
-  const [progress, setProgress] = useState(0);
-  const [open, setOpen] = useState(false);
+  const [active, setActive] =
+    useState<SectionId>("overview");
+
+  const [progress, setProgress] =
+    useState(0);
+
+  const [open, setOpen] =
+    useState(false);
 
   /* =========================================================
      ACTIVE SECTION + SCROLL PROGRESS
@@ -30,8 +41,9 @@ export default function TraceHeader() {
 
       frame = requestAnimationFrame(() => {
         /* ---------------------------------------------
-           PAGE PROGRESS
+           SCROLL POSITION
         --------------------------------------------- */
+
         const scrollTop =
           window.scrollY ||
           document.documentElement.scrollTop;
@@ -39,6 +51,10 @@ export default function TraceHeader() {
         const scrollable =
           document.documentElement.scrollHeight -
           window.innerHeight;
+
+        /* ---------------------------------------------
+           PAGE PROGRESS
+        --------------------------------------------- */
 
         const progressValue =
           scrollable > 0
@@ -54,8 +70,9 @@ export default function TraceHeader() {
         setProgress(progressValue);
 
         /* ---------------------------------------------
-           FORCE OVERVIEW AT TOP
+           Ở ĐẦU TRANG LUÔN ACTIVE TỔNG QUAN
         --------------------------------------------- */
+
         if (scrollTop < 80) {
           setActive("overview");
           frame = null;
@@ -63,33 +80,31 @@ export default function TraceHeader() {
         }
 
         /* ---------------------------------------------
-           VIRTUAL READING LINE
+           ĐƯỜNG ĐỌC ẢO
 
-           Header: ~78px
-           Reading line: khoảng 30% viewport
+           Chỉ đổi menu khi đầu section đi qua
+           khoảng 30% chiều cao viewport.
         --------------------------------------------- */
-        const marker =
-          Math.min(
-            280,
-            window.innerHeight * 0.3
-          );
 
-        let currentId =
+        const marker = Math.min(
+          280,
+          window.innerHeight * 0.3
+        );
+
+        let currentId: SectionId =
           traceNav[0][2];
 
         for (const [, , id] of traceNav) {
           const section =
             document.getElementById(id);
 
-          if (!section) continue;
+          if (!section) {
+            continue;
+          }
 
           const rect =
             section.getBoundingClientRect();
 
-          /*
-           * Khi đầu section đã đi qua đường marker,
-           * section đó trở thành active.
-           */
           if (rect.top <= marker) {
             currentId = id;
           } else {
@@ -98,8 +113,9 @@ export default function TraceHeader() {
         }
 
         /* ---------------------------------------------
-           FORCE LAST SECTION NEAR PAGE BOTTOM
+           CUỐI TRANG => ACTIVE NÂNG CAO
         --------------------------------------------- */
+
         const nearBottom =
           window.innerHeight +
             window.scrollY >=
@@ -153,7 +169,7 @@ export default function TraceHeader() {
   }, []);
 
   /* =========================================================
-     CLOSE MOBILE MENU ON DESKTOP
+     ĐÓNG MENU KHI CHUYỂN SANG DESKTOP
   ========================================================= */
   useEffect(() => {
     const handleResize = () => {
@@ -176,7 +192,7 @@ export default function TraceHeader() {
   }, []);
 
   /* =========================================================
-     LOCK BODY SCROLL WHEN MENU IS OPEN
+     KHÓA SCROLL KHI MOBILE MENU MỞ
   ========================================================= */
   useEffect(() => {
     document.body.style.overflow =
@@ -194,7 +210,10 @@ export default function TraceHeader() {
   return (
     <>
       <header className="site-header">
-        {/* BRAND */}
+        {/* ===================================================
+            BRAND
+        =================================================== */}
+
         <a
           className="brand"
           href="#overview"
@@ -208,14 +227,20 @@ export default function TraceHeader() {
           </span>
 
           <span className="brand-copy">
-            <b>NỀN TẢNG TRUY XUẤT</b>
+            <b>
+              NỀN TẢNG TRUY XUẤT
+            </b>
+
             <small>
               SẢN PHẨM VĂN HÓA
             </small>
           </span>
         </a>
 
-        {/* DESKTOP NAV */}
+        {/* ===================================================
+            DESKTOP NAVIGATION
+        =================================================== */}
+
         <nav
           className="desktop-nav"
           aria-label="Điều hướng hồ sơ sản phẩm"
@@ -240,15 +265,23 @@ export default function TraceHeader() {
                       : undefined
                   }
                 >
-                  <i>{number}</i>
-                  <span>{title}</span>
+                  <i>
+                    {number}
+                  </i>
+
+                  <span>
+                    {title}
+                  </span>
                 </a>
               );
             }
           )}
         </nav>
 
-        {/* ACTIONS */}
+        {/* ===================================================
+            HEADER ACTIONS
+        =================================================== */}
+
         <div className="header-actions">
           <a
             className="header-cta"
@@ -256,7 +289,10 @@ export default function TraceHeader() {
             aria-label="Truy xuất sản phẩm"
           >
             <QrCode size={17} />
-            <span>Truy xuất</span>
+
+            <span>
+              Truy xuất
+            </span>
           </a>
 
           <button
@@ -283,7 +319,10 @@ export default function TraceHeader() {
           </button>
         </div>
 
-        {/* PROGRESS BAR */}
+        {/* ===================================================
+            SCROLL PROGRESS
+        =================================================== */}
+
         <span
           className="header-progress"
           style={{
@@ -296,6 +335,7 @@ export default function TraceHeader() {
       {/* =====================================================
           MOBILE NAVIGATION
       ===================================================== */}
+
       <nav
         id="mobile-navigation"
         className={`mobile-nav ${
@@ -344,9 +384,13 @@ export default function TraceHeader() {
                     closeMobileMenu
                   }
                 >
-                  <i>{number}</i>
+                  <i>
+                    {number}
+                  </i>
 
-                  <span>{title}</span>
+                  <span>
+                    {title}
+                  </span>
 
                   <b aria-hidden="true">
                     →

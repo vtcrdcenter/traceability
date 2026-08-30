@@ -32,6 +32,58 @@ type AdvancedInfoProps = {
 };
 
 /* =========================================================
+   UI TEXT
+========================================================= */
+
+const uiText = {
+  vi: {
+    sourceImageAlt:
+      "Nguồn tham chiếu mũ Cửu Long Thông Thiên",
+
+    conceptImageAlt:
+      "Bảng phát triển thiết kế Dấu Ấn Thượng Triều Nguyễn",
+
+    certificateAlt:
+      "Giấy chứng nhận đăng ký quyền tác giả",
+
+    museumLogoAlt:
+      "Bảo tàng Lịch sử Quốc gia",
+
+    sealAlt:
+      "Dấu xác nhận bảo chứng",
+
+    openSection:
+      "Mở nội dung",
+
+    dataNote:
+      "Thông tin hiển thị theo hồ sơ truy xuất của sản phẩm.",
+  },
+
+  en: {
+    sourceImageAlt:
+      "Reference image of the Cuu Long Thong Thien imperial court hat",
+
+    conceptImageAlt:
+      "Design development board for Nguyen Imperial Court Imprint",
+
+    certificateAlt:
+      "Copyright registration certificate",
+
+    museumLogoAlt:
+      "Vietnam National Museum of History",
+
+    sealAlt:
+      "Cultural attestation seal",
+
+    openSection:
+      "Open section",
+
+    dataNote:
+      "Information displayed according to the product traceability record.",
+  },
+} as const;
+
+/* =========================================================
    COMPONENT
 ========================================================= */
 
@@ -41,89 +93,38 @@ export default function AdvancedInfo({
   const content =
     getStt01Content(locale);
 
+  const ui =
+    uiText[locale];
+
   const advanced =
     content.advanced;
 
-  const heritageSource =
-    advanced.sections.heritageSource;
-
-  const designTransformation =
-    advanced.sections.designTransformation;
-
-  const attestation =
-    advanced.sections.attestation;
-
-  const copyright =
-    advanced.sections.copyright;
-
-  const journey =
-    advanced.sections.journey;
-
-  const traceData =
-    advanced.sections.traceData;
+  const {
+    heritageSource,
+    designTransformation,
+    attestation,
+    copyright,
+    journey,
+    traceData,
+  } = advanced.sections;
 
   /* =========================================================
-     LOCAL TEXTS
+     ICON MAPPINGS
   ========================================================= */
 
-  const ui =
-    locale === "vi"
-      ? {
-          sourceImageAlt:
-            "Nguồn tham chiếu mũ Cửu Long Thông Thiên",
+  const attestationIcons = [
+    Landmark,
+    CheckCircle2,
+    ShieldCheck,
+    FileText,
+  ];
 
-          conceptImageAlt:
-            "Bảng phát triển thiết kế Dấu Ấn Thượng Triều Nguyễn",
-
-          certificateAlt:
-            "Giấy chứng nhận đăng ký quyền tác giả",
-
-          museumLogoAlt:
-            "Bảo tàng Lịch sử Quốc gia",
-
-          sealAlt:
-            "Dấu xác nhận",
-
-          openSection:
-            "Mở nội dung",
-
-          traceStatus:
-            "Trạng thái truy xuất",
-
-          traceValid:
-            "Hợp lệ",
-
-          dataNote:
-            "Thông tin hiển thị theo hồ sơ truy xuất của sản phẩm.",
-        }
-      : {
-          sourceImageAlt:
-            "Reference image of the Cuu Long Thong Thien imperial court hat",
-
-          conceptImageAlt:
-            "Design development board for Nguyen Imperial Court Imprint",
-
-          certificateAlt:
-            "Copyright registration certificate",
-
-          museumLogoAlt:
-            "Vietnam National Museum of History",
-
-          sealAlt:
-            "Verification seal",
-
-          openSection:
-            "Open section",
-
-          traceStatus:
-            "Traceability status",
-
-          traceValid:
-            "Valid",
-
-          dataNote:
-            "Information displayed according to the product traceability record.",
-        };
+  const traceIcons = [
+    Fingerprint,
+    PackageCheck,
+    QrCode,
+    Ruler,
+  ];
 
   return (
     <section
@@ -177,8 +178,6 @@ export default function AdvancedInfo({
 
         <div className="advanced-content">
           <div className="advanced-two-column">
-            {/* TEXT */}
-
             <div>
               <p className="eyebrow">
                 {heritageSource.eyebrow}
@@ -189,15 +188,15 @@ export default function AdvancedInfo({
               </h3>
 
               <p>
-                {
-                  heritageSource.description
-                }
+                {heritageSource.description}
               </p>
 
               <dl className="advanced-meta-list">
                 {heritageSource.meta.map(
                   (item) => (
-                    <div key={item.label}>
+                    <div
+                      key={item.label}
+                    >
                       <dt>
                         {item.label}
                       </dt>
@@ -211,15 +210,16 @@ export default function AdvancedInfo({
               </dl>
 
               <p className="data-note">
-                <Info size={14} />
+                <Info
+                  size={14}
+                  aria-hidden="true"
+                />
 
                 <span>
                   {ui.dataNote}
                 </span>
               </p>
             </div>
-
-            {/* IMAGE */}
 
             <Image
               src={`${BASE}/heritage/heritage-hat-front.webp`}
@@ -275,7 +275,7 @@ export default function AdvancedInfo({
               </small>
             </div>
 
-            {/* DESIGN MAPPING */}
+            {/* MAPPINGS */}
 
             <div>
               <p className="eyebrow">
@@ -354,37 +354,23 @@ export default function AdvancedInfo({
         </summary>
 
         <div className="advanced-content">
-          <p className="eyebrow">
-            {attestation.eyebrow}
-          </p>
+          <div className="advanced-section-intro">
+            <p className="eyebrow">
+              {attestation.eyebrow}
+            </p>
 
-          <p
-            style={{
-              maxWidth: "780px",
-              marginTop: "14px",
-              marginBottom: "28px",
-              color: "var(--muted)",
-              fontSize: "12px",
-              lineHeight: 1.8,
-            }}
-          >
-            {attestation.description}
-          </p>
+            <p className="advanced-intro-text">
+              {attestation.description}
+            </p>
+          </div>
 
-          {/* INFO CARDS */}
+          {/* ATTESTATION CARDS */}
 
           <div className="advanced-card-grid">
             {attestation.cards.map(
               (item, index) => {
-                const icons = [
-                  Landmark,
-                  CheckCircle2,
-                  ShieldCheck,
-                  FileText,
-                ];
-
                 const Icon =
-                  icons[index] ??
+                  attestationIcons[index] ??
                   ShieldCheck;
 
                 return (
@@ -434,7 +420,10 @@ export default function AdvancedInfo({
               </p>
 
               <p className="data-note">
-                <Info size={14} />
+                <Info
+                  size={14}
+                  aria-hidden="true"
+                />
 
                 <span>
                   {ui.dataNote}
@@ -507,8 +496,6 @@ export default function AdvancedInfo({
 
         <div className="advanced-content">
           <div className="advanced-two-column">
-            {/* TEXT */}
-
             <div>
               <p className="eyebrow">
                 {copyright.eyebrow}
@@ -519,15 +506,15 @@ export default function AdvancedInfo({
               </h3>
 
               <p>
-                {
-                  copyright.description
-                }
+                {copyright.description}
               </p>
 
               <dl className="advanced-meta-list">
                 {copyright.meta.map(
                   (item) => (
-                    <div key={item.label}>
+                    <div
+                      key={item.label}
+                    >
                       <dt>
                         {item.label}
                       </dt>
@@ -540,8 +527,6 @@ export default function AdvancedInfo({
                 )}
               </dl>
             </div>
-
-            {/* CERTIFICATE */}
 
             <Image
               src={`${BASE}/heritage/copyright-certificate.webp`}
@@ -628,15 +613,8 @@ export default function AdvancedInfo({
           <div className="advanced-trace-grid">
             {traceData.fields.map(
               (item, index) => {
-                const icons = [
-                  Fingerprint,
-                  PackageCheck,
-                  QrCode,
-                  Ruler,
-                ];
-
                 const Icon =
-                  icons[index] ??
+                  traceIcons[index] ??
                   Fingerprint;
 
                 return (

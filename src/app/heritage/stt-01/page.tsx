@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import Image from "next/image";
-
 import {
   ArrowDown,
   ArrowUpRight,
@@ -17,386 +16,594 @@ import {
 
 import TraceHeader from "../../components/TraceHeader";
 import AdvancedInfo from "../../components/AdvancedInfo";
+import {
+  getStt01Content,
+} from "../../data/stt-01";
+
+/* =========================================================
+   METADATA
+========================================================= */
 
 export const metadata: Metadata = {
-  title: "Dấu Ấn Thượng Triều Nguyễn · Hồ sơ truy xuất",
+  title: "Dấu Ấn Thượng Triều Nguyễn",
+
   description:
-    "Thông tin truy xuất, nguồn văn hóa, bảo chứng và tài liệu xác thực của sản phẩm Dấu Ấn Thượng Triều Nguyễn, mã STT-01.",
+    "Hồ sơ truy xuất sản phẩm Dấu Ấn Thượng Triều Nguyễn, cung cấp thông tin xác thực, nguồn văn hóa, bảo chứng, quyền tác giả và dữ liệu truy xuất.",
+
+  alternates: {
+    canonical:
+      "/heritage/stt-01",
+  },
+
+  openGraph: {
+    title:
+      "Dấu Ấn Thượng Triều Nguyễn · Nền tảng truy xuất VTC",
+
+    description:
+      "Tra cứu thông tin sản phẩm, xác thực, câu chuyện văn hóa, bảo chứng và quyền tác giả của Dấu Ấn Thượng Triều Nguyễn.",
+
+    url:
+      "https://vtcrdcenter.github.io/traceability/heritage/stt-01/",
+  },
 };
+
+/* =========================================================
+   BASE PATH
+========================================================= */
 
 const BASE = "/traceability";
 
-const product = {
-  name: "Dấu Ấn Thượng Triều Nguyễn",
-  code: "STT-01",
-  traceCode: "STT-01-HERITAGE",
-  type: "Nam châm lưu niệm",
-  size: "70 × 60 × 8 mm",
-};
+/* =========================================================
+   PAGE
+========================================================= */
 
-const verificationItems = [
-  {
-    label: "Mã truy xuất",
-    value: "Hợp lệ",
-    detail: product.traceCode,
-    icon: Fingerprint,
-  },
-  {
-    label: "Bảo chứng văn hóa",
-    value: "Đã bảo chứng",
-    detail: "Bảo tàng Lịch sử Quốc gia",
-    icon: Landmark,
-  },
-  {
-    label: "Quyền tác giả",
-    value: "Đã được cấp chứng nhận",
-    detail: "Số 8854/2026/QTG",
-    icon: FileBadge2,
-  },
-] as const;
+export default function Stt01Page() {
+  const content =
+    getStt01Content("vi");
 
-const heritageHighlights = [
-  {
-    title: "Dáng mũ",
-    text:
-      "Giữ đường nét nhận diện chính và bố cục đối xứng của hiện vật tham chiếu.",
-  },
-  {
-    title: "Rồng và mây",
-    text:
-      "Giản lược thành các lớp chi tiết trang trí phù hợp với kích thước nhỏ.",
-  },
-  {
-    title: "Màu sắc cung đình",
-    text:
-      "Chuyển hóa thành bảng màu đỏ, vàng và các điểm nhấn trang trí.",
-  },
-] as const;
+  const {
+    product,
+    overview,
+    verification,
+    heritage,
+    merch,
+    documents,
+    footer,
+  } = content;
 
-const documents = [
-  {
-    title: "Chứng thư bảo chứng văn hóa",
-    source: "Bảo tàng Lịch sử Quốc gia",
-    meta: "Mã bảo chứng 01 · 29/08/2026",
-  },
-  {
-    title: "Giấy chứng nhận đăng ký quyền tác giả",
-    source: "Hồ sơ quyền tác giả của thiết kế",
-    meta: "Số 8854/2026/QTG · 26/08/2026",
-  },
-] as const;
+  /* =========================================================
+     VERIFICATION ICONS
+  ========================================================= */
 
-function Heading({
-  n,
-  kicker,
-  title,
-  intro,
-  light = false,
-}: {
-  n: string;
-  kicker: string;
-  title: string;
-  intro: string;
-  light?: boolean;
-}) {
-  return (
-    <header className={`section-heading ${light ? "light" : ""}`}>
-      <span className="section-number">{n}</span>
+  const verificationIcons = {
+    trace: Fingerprint,
+    attestation: Landmark,
+    copyright: FileBadge2,
+  };
 
-      <div>
-        <p className="eyebrow">{kicker}</p>
-        <h2>{title}</h2>
-        <p>{intro}</p>
-      </div>
-    </header>
-  );
-}
-
-export default function HeritageProductPage() {
   return (
     <main className="trace-page">
+      {/* =====================================================
+          HEADER
+      ===================================================== */}
+
       <TraceHeader />
 
       {/* =====================================================
-          01 — TỔNG QUAN
+          01 — OVERVIEW / HERO
       ===================================================== */}
+
       <section
         id="overview"
         className="hero section-pad chapter-wine"
       >
+        {/* ===================================================
+            HERO COPY
+        =================================================== */}
+
         <div className="hero-copy">
-          <p className="eyebrow">01 — TỔNG QUAN</p>
+          <p className="eyebrow">
+            {overview.eyebrow}
+          </p>
 
           <h1>
-            Dấu Ấn
+            {overview.titleLine1}
             <br />
-            <em>Thượng Triều Nguyễn</em>
+
+            <em>
+              {overview.titleLine2}
+            </em>
           </h1>
 
           <p className="hero-lead">
-            Sản phẩm lưu niệm lấy cảm hứng từ mỹ thuật cung đình
-            triều Nguyễn, phát triển từ các yếu tố tạo hình của mũ
-            Cửu Long Thông Thiên.
+            {overview.description}
           </p>
+
+          {/* ===============================================
+              PRODUCT META
+          =============================================== */}
 
           <div className="hero-meta">
             <span>
-              <small>MÃ SẢN PHẨM</small>
-              <b>{product.code}</b>
+              <small>
+                {
+                  overview.meta
+                    .codeLabel
+                }
+              </small>
+
+              <b>
+                {product.code}
+              </b>
             </span>
 
             <span>
-              <small>LOẠI SẢN PHẨM</small>
-              <b>{product.type}</b>
+              <small>
+                {
+                  overview.meta
+                    .typeLabel
+                }
+              </small>
+
+              <b>
+                {product.type}
+              </b>
             </span>
 
             <span>
-              <small>MÃ TRUY XUẤT</small>
-              <b>{product.traceCode}</b>
+              <small>
+                {
+                  overview.meta
+                    .traceLabel
+                }
+              </small>
+
+              <b>
+                {product.traceCode}
+              </b>
             </span>
           </div>
+
+          {/* ===============================================
+              HERO ACTIONS
+          =============================================== */}
 
           <div className="hero-actions">
             <a
-              href="#verification"
               className="primary-button"
+              href="#verification"
             >
-              Truy xuất sản phẩm
-              <ArrowDown size={15} />
+              <ShieldCheck
+                size={15}
+              />
+
+              <span>
+                {
+                  overview
+                    .primaryAction
+                }
+              </span>
             </a>
 
             <a href="#heritage-story">
-              Xem câu chuyện văn hóa
-              <ArrowUpRight size={14} />
+              <span>
+                {
+                  overview
+                    .secondaryAction
+                }
+              </span>
+
+              <ArrowDown
+                size={14}
+              />
             </a>
           </div>
         </div>
 
-        <div className="hero-image">
-          <span className="edition">
-            STT
-            <b>01</b>
-          </span>
+        {/* ===================================================
+            HERO IMAGE
+        =================================================== */}
 
+        <div className="hero-image">
           <Image
             src={`${BASE}/heritage/stt-01-product.webp`}
-            alt="Sản phẩm Dấu Ấn Thượng Triều Nguyễn"
-            width={1000}
-            height={1000}
-            sizes="(max-width: 760px) 92vw, 54vw"
+            alt={product.name}
+            width={1200}
+            height={1200}
             priority
           />
 
-          <div className="status-chip">
-            <CheckCircle2 />
-
+          <div
+            className="edition"
+            aria-hidden="true"
+          >
             <span>
-              <small>TRẠNG THÁI</small>
-              <b>Mã truy xuất hợp lệ</b>
+              STT
             </span>
+
+            <b>
+              01
+            </b>
+          </div>
+
+          <div className="status-chip">
+            <CheckCircle2
+              size={22}
+              aria-hidden="true"
+            />
+
+            <div>
+              <small>
+                {
+                  overview.status
+                    .label
+                }
+              </small>
+
+              <b>
+                {
+                  overview.status
+                    .value
+                }
+              </b>
+            </div>
           </div>
         </div>
 
-        <nav
-          className="quick-nav"
-          aria-label="Điều hướng nhanh"
-        >
+        {/* ===================================================
+            QUICK NAVIGATION
+        =================================================== */}
+
+        <div className="quick-nav">
           <p>
-            <span>THÔNG TIN NHANH</span>
-            Những nội dung người dùng thường quan tâm
+            <span>
+              {
+                overview
+                  .quickNavLabel
+              }
+            </span>
+
+            {
+              overview
+                .quickNavDescription
+            }
           </p>
 
           <div>
-            <a href="#verification">
-              <i>02</i>
-              <span>Xác thực</span>
-              <ArrowDown size={13} />
-            </a>
+            {content.nav
+              .filter((item) =>
+                [
+                  "verification",
+                  "heritage-story",
+                  "merch",
+                  "documents",
+                ].includes(item.id)
+              )
+              .map((item) => (
+                <a
+                  key={item.id}
+                  href={`#${item.id}`}
+                >
+                  <i>
+                    {item.number}
+                  </i>
 
-            <a href="#heritage-story">
-              <i>03</i>
-              <span>Câu chuyện</span>
-              <ArrowDown size={13} />
-            </a>
+                  <span>
+                    {item.label}
+                  </span>
 
-            <a href="#merch">
-              <i>04</i>
-              <span>VTC Merch</span>
-              <ArrowDown size={13} />
-            </a>
-
-            <a href="#documents">
-              <i>05</i>
-              <span>Tài liệu</span>
-              <ArrowDown size={13} />
-            </a>
+                  <ArrowDown
+                    size={13}
+                  />
+                </a>
+              ))}
           </div>
-        </nav>
+        </div>
       </section>
 
       {/* =====================================================
-          02 — XÁC THỰC
+          02 — VERIFICATION
       ===================================================== */}
+
       <section
         id="verification"
         className="content-section section-pad chapter-cream"
       >
-        <Heading
-          n="02"
-          kicker="XÁC THỰC SẢN PHẨM"
-          title="Những thông tin quan trọng nhất."
-          intro="Người dùng có thể kiểm tra nhanh trạng thái mã truy xuất, bảo chứng văn hóa và quyền tác giả của sản phẩm."
-        />
+        {/* ===================================================
+            SECTION HEADING
+        =================================================== */}
 
-        <div className="verification-summary">
-          {verificationItems.map((item) => {
-            const Icon = item.icon;
+        <div className="section-heading">
+          <span className="section-number">
+            {verification.number}
+          </span>
 
-            return (
-              <article
-                className="verification-summary-card"
-                key={item.label}
-              >
-                <Icon />
-
-                <small>{item.label}</small>
-
-                <h3>{item.value}</h3>
-
-                <p>{item.detail}</p>
-              </article>
-            );
-          })}
-        </div>
-
-        <div className="verification-basic-grid">
-          <article className="basic-product-info">
+          <div>
             <p className="eyebrow">
-              THÔNG TIN CƠ BẢN
+              {verification.eyebrow}
             </p>
 
+            <h2>
+              {verification.title}
+            </h2>
+
+            <p>
+              {
+                verification.description
+              }
+            </p>
+          </div>
+        </div>
+
+        {/* ===================================================
+            VERIFICATION CARDS
+        =================================================== */}
+
+        <div className="verification-summary">
+          {verification.items.map(
+            (item) => {
+              const Icon =
+                verificationIcons[
+                  item.key
+                ];
+
+              return (
+                <article
+                  key={item.key}
+                  className="verification-summary-card"
+                >
+                  <Icon
+                    aria-hidden="true"
+                  />
+
+                  <small>
+                    {item.eyebrow}
+                  </small>
+
+                  <h3>
+                    {item.title}
+                  </h3>
+
+                  <p>
+                    {item.description}
+                  </p>
+                </article>
+              );
+            }
+          )}
+        </div>
+
+        {/* ===================================================
+            BASIC INFORMATION + TRACE RESULT
+        =================================================== */}
+
+        <div className="verification-basic-grid">
+          {/* ===============================================
+              BASIC PRODUCT INFORMATION
+          =============================================== */}
+
+          <article className="basic-product-info">
+            <p className="eyebrow">
+              {
+                verification
+                  .productInfo
+                  .eyebrow
+              }
+            </p>
+
+            <h3>
+              {
+                verification
+                  .productInfo
+                  .title
+              }
+            </h3>
+
             <dl>
-              <div>
-                <dt>Tên sản phẩm</dt>
-                <dd>{product.name}</dd>
-              </div>
+              {verification.productInfo.fields.map(
+                (item) => (
+                  <div
+                    key={item.label}
+                  >
+                    <dt>
+                      {item.label}
+                    </dt>
 
-              <div>
-                <dt>Loại sản phẩm</dt>
-                <dd>{product.type}</dd>
-              </div>
-
-              <div>
-                <dt>Kích thước</dt>
-                <dd>{product.size}</dd>
-              </div>
-
-              <div>
-                <dt>Mã sản phẩm</dt>
-                <dd>{product.code}</dd>
-              </div>
+                    <dd>
+                      {item.value}
+                    </dd>
+                  </div>
+                )
+              )}
             </dl>
           </article>
 
+          {/* ===============================================
+              TRACE RESULT
+          =============================================== */}
+
           <article className="basic-trace-result">
-            <Fingerprint />
+            <Fingerprint
+              size={30}
+              aria-hidden="true"
+            />
 
             <span className="valid">
-              <Check />
-              MÃ TRUY XUẤT HỢP LỆ
+              <Check
+                size={13}
+                aria-hidden="true"
+              />
+
+              {
+                verification
+                  .traceResult
+                  .validLabel
+              }
             </span>
 
-            <h3>{product.traceCode}</h3>
+            <p className="eyebrow">
+              {
+                verification
+                  .traceResult
+                  .eyebrow
+              }
+            </p>
+
+            <h3>
+              {
+                verification
+                  .traceResult
+                  .codeLabel
+              }
+            </h3>
 
             <p>
-              Mã đang tồn tại trên hệ thống và được liên kết với
-              hồ sơ sản phẩm {product.code}.
+              {
+                verification
+                  .traceResult
+                  .description
+              }
             </p>
 
             <a
-              href="#advanced"
               className="advanced-link"
+              href="#advanced"
             >
-              Xem thông tin nâng cao
-              <ArrowDown size={15} />
+              <span>
+                {
+                  verification
+                    .traceResult
+                    .advancedLink
+                }
+              </span>
+
+              <ArrowDown
+                size={14}
+              />
             </a>
           </article>
         </div>
       </section>
 
       {/* =====================================================
-          03 — CÂU CHUYỆN VĂN HÓA
+          03 — HERITAGE STORY
       ===================================================== */}
+
       <section
         id="heritage-story"
         className="content-section section-pad chapter-wine"
       >
-        <Heading
-          light
-          n="03"
-          kicker="CÂU CHUYỆN VĂN HÓA"
-          title="Từ mũ Cửu Long Thông Thiên đến sản phẩm lưu niệm."
-          intro="Một cái nhìn ngắn gọn về nguồn cảm hứng và những yếu tố văn hóa được sử dụng trong thiết kế."
-        />
+        {/* ===================================================
+            SECTION HEADING
+        =================================================== */}
+
+        <div className="section-heading">
+          <span className="section-number">
+            {heritage.number}
+          </span>
+
+          <div>
+            <p className="eyebrow">
+              {heritage.eyebrow}
+            </p>
+
+            <h2>
+              {heritage.title}
+            </h2>
+
+            <p>
+              {
+                heritage.description
+              }
+            </p>
+          </div>
+        </div>
+
+        {/* ===================================================
+            HERITAGE STORY
+        =================================================== */}
 
         <div className="heritage-grid">
           <figure>
             <Image
               src={`${BASE}/heritage/heritage-hat-front.webp`}
-              alt="Mũ Cửu Long Thông Thiên triều Nguyễn"
-              width={820}
-              height={810}
-              sizes="(max-width: 760px) 100vw, 50vw"
+              alt="Mũ Cửu Long Thông Thiên"
+              width={1100}
+              height={1100}
             />
 
             <figcaption>
-              TƯ LIỆU THAM CHIẾU · MŨ CỬU LONG THÔNG THIÊN
-              TRIỀU NGUYỄN
+              {
+                heritage
+                  .sourceCaption
+              }
             </figcaption>
           </figure>
 
           <div className="heritage-story">
             <p className="eyebrow">
-              NGUỒN CẢM HỨNG
+              {
+                heritage
+                  .storyEyebrow
+              }
             </p>
 
             <blockquote>
-              Thiết kế tập trung vào dáng mũ, bố cục đối xứng và
-              các yếu tố trang trí đặc trưng của mỹ thuật cung
-              đình triều Nguyễn.
+              {
+                heritage
+                  .storyTitle
+              }
             </blockquote>
 
             <p>
-              Các yếu tố như dáng mũ vươn cao, hình tượng rồng,
-              mây và hệ chi tiết trang trí được giản lược và tổ
-              chức lại để phù hợp với kích thước và công năng của
-              một sản phẩm lưu niệm.
+              {
+                heritage
+                  .storyDescription
+              }
             </p>
 
             <a
-              href="#advanced"
               className="story-more-link"
+              href="#advanced"
             >
-              Khám phá chi tiết nguồn văn hóa
-              <ArrowUpRight size={14} />
+              <span>
+                {
+                  heritage
+                    .advancedLink
+                }
+              </span>
+
+              <ArrowDown
+                size={14}
+              />
             </a>
           </div>
         </div>
 
+        {/* ===================================================
+            HERITAGE HIGHLIGHTS
+        =================================================== */}
+
         <div className="heritage-depth">
-          {heritageHighlights.map(
-            (item, index) => (
-              <article key={item.title}>
+          {heritage.highlights.map(
+            (item) => (
+              <article
+                key={item.number}
+              >
                 <span>
-                  {String(index + 1).padStart(
-                    2,
-                    "0"
-                  )}
+                  {item.number}
                 </span>
 
                 <div>
-                  <h3>{item.title}</h3>
-                  <p>{item.text}</p>
+                  <h3>
+                    {item.title}
+                  </h3>
+
+                  <p>
+                    {
+                      item.description
+                    }
+                  </p>
                 </div>
               </article>
             )
@@ -407,236 +614,353 @@ export default function HeritageProductPage() {
       {/* =====================================================
           04 — VTC MERCH
       ===================================================== */}
+
       <section
         id="merch"
         className="content-section section-pad chapter-cream"
       >
-        <Heading
-          n="04"
-          kicker="VTC MERCH"
-          title="Tiếp tục khám phá hệ sinh thái sản phẩm văn hóa."
-          intro="Trang truy xuất đồng thời là điểm kết nối người dùng với các sản phẩm, câu chuyện và dịch vụ trong hệ sinh thái Merch."
-        />
+        {/* ===================================================
+            SECTION HEADING
+        =================================================== */}
+
+        <div className="section-heading">
+          <span className="section-number">
+            {merch.number}
+          </span>
+
+          <div>
+            <p className="eyebrow">
+              {merch.eyebrow}
+            </p>
+
+            <h2>
+              {merch.title}
+            </h2>
+
+            <p>
+              {
+                merch.description
+              }
+            </p>
+          </div>
+        </div>
+
+        {/* ===================================================
+            FEATURE
+        =================================================== */}
 
         <div className="merch-feature">
           <div className="merch-feature-copy">
             <p className="eyebrow">
-              HỆ SINH THÁI VTC MERCH
+              {
+                merch.feature
+                  .eyebrow
+              }
             </p>
 
             <h3>
-              Sản phẩm văn hóa được phát triển từ nguồn
-              cảm hứng Việt Nam.
+              {
+                merch.feature
+                  .title
+              }
             </h3>
 
             <p>
-              Khám phá các bộ sưu tập, sản phẩm mới,
-              câu chuyện văn hóa và chương trình hợp tác
-              dành cho bảo tàng, đơn vị văn hóa và nhà
-              thiết kế.
+              {
+                merch.feature
+                  .description
+              }
             </p>
 
             <a
-              href="#"
               className="primary-button"
+              href="#"
             >
-              Khám phá VTC Merch
-              <ArrowUpRight size={15} />
+              <span>
+                {
+                  merch.feature
+                    .cta
+                }
+              </span>
+
+              <ArrowUpRight
+                size={15}
+              />
             </a>
           </div>
 
           <div className="merch-feature-visual">
             <Image
               src={`${BASE}/heritage/product-lifestyle.webp`}
-              alt="Không gian giới thiệu sản phẩm VTC Merch"
-              width={1200}
-              height={900}
-              sizes="(max-width: 760px) 100vw, 50vw"
+              alt="VTC Merch"
+              width={1400}
+              height={1000}
             />
           </div>
         </div>
 
+        {/* ===================================================
+            MERCH CARDS
+        =================================================== */}
+
         <div className="merch-cards">
-          <article>
-            <Sparkles />
+          {merch.cards.map(
+            (item, index) => {
+              const icons = [
+                PackageCheck,
+                Sparkles,
+                Landmark,
+              ];
 
-            <small>SẢN PHẨM MỚI</small>
+              const Icon =
+                icons[index] ??
+                Sparkles;
 
-            <h3>Bộ sưu tập mới</h3>
+              return (
+                <article
+                  key={item.eyebrow}
+                >
+                  <Icon
+                    aria-hidden="true"
+                  />
 
-            <p>
-              Tiếp tục khám phá các sản phẩm phát triển
-              từ nguồn cảm hứng văn hóa Việt Nam.
-            </p>
-          </article>
+                  <small>
+                    {item.eyebrow}
+                  </small>
 
-          <article>
-            <Landmark />
+                  <h3>
+                    {item.title}
+                  </h3>
 
-            <small>CÂU CHUYỆN VĂN HÓA</small>
-
-            <h3>Tìm hiểu nguồn cảm hứng</h3>
-
-            <p>
-              Mỗi sản phẩm được liên kết với câu chuyện
-              và nguồn văn hóa cụ thể.
-            </p>
-          </article>
-
-          <article>
-            <PackageCheck />
-
-            <small>HỢP TÁC</small>
-
-            <h3>Phát triển sản phẩm</h3>
-
-            <p>
-              Kết nối bảo tàng, đơn vị văn hóa, nhà
-              thiết kế và đối tác sản xuất.
-            </p>
-          </article>
+                  <p>
+                    {
+                      item.description
+                    }
+                  </p>
+                </article>
+              );
+            }
+          )}
         </div>
       </section>
 
       {/* =====================================================
-          05 — TÀI LIỆU
+          05 — DOCUMENTS
       ===================================================== */}
+
       <section
         id="documents"
         className="records section-pad chapter-wine"
       >
+        {/* ===================================================
+            LEFT
+        =================================================== */}
+
         <div>
           <span className="section-number">
-            05
+            {documents.number}
           </span>
 
           <p className="eyebrow">
-            TÀI LIỆU XÁC THỰC
+            {documents.eyebrow}
           </p>
 
           <h2>
-            Tài liệu chính để kiểm tra thông tin.
+            {documents.title}
           </h2>
 
           <p>
-            Người dùng phổ thông có thể tiếp cận nhanh
-            những tài liệu quan trọng nhất. Các hồ sơ
-            chuyên sâu được đặt trong mục Nâng cao.
+            {
+              documents.description
+            }
           </p>
         </div>
 
+        {/* ===================================================
+            RIGHT
+        =================================================== */}
+
         <div>
-          {documents.map((document) => (
-            <div
-              className="record-row"
-              key={document.title}
-            >
-              <FileText />
+          {documents.items.map(
+            (item, index) => {
+              const icons = [
+                ShieldCheck,
+                FileText,
+              ];
 
-              <span>
-                <b>{document.title}</b>
-                <small>{document.source}</small>
-                <small>{document.meta}</small>
-              </span>
+              const Icon =
+                icons[index] ??
+                FileText;
 
-              <ShieldCheck />
-            </div>
-          ))}
+              return (
+                <div
+                  key={item.title}
+                  className="record-row"
+                >
+                  <Icon
+                    size={20}
+                    aria-hidden="true"
+                  />
+
+                  <div>
+                    <b>
+                      {item.title}
+                    </b>
+
+                    <small>
+                      {item.subtitle}
+                    </small>
+
+                    <small>
+                      {item.meta}
+                    </small>
+                  </div>
+
+                  <CheckCircle2
+                    size={18}
+                    aria-hidden="true"
+                  />
+                </div>
+              );
+            }
+          )}
 
           <a
-            href="#advanced"
             className="records-advanced-link"
+            href="#advanced"
           >
-            Xem toàn bộ hồ sơ nâng cao
-            <ArrowDown size={15} />
+            <span>
+              {
+                documents
+                  .advancedLink
+              }
+            </span>
+
+            <ArrowDown
+              size={14}
+            />
           </a>
         </div>
       </section>
 
       {/* =====================================================
-          06 — THÔNG TIN NÂNG CAO
-          Component riêng
+          06 — ADVANCED INFORMATION
       ===================================================== */}
-      <AdvancedInfo />
+
+      <AdvancedInfo locale="vi" />
 
       {/* =====================================================
           FOOTER
       ===================================================== */}
+
       <footer className="site-footer">
+        {/* ===================================================
+            PLATFORM
+        =================================================== */}
+
         <div className="footer-brand">
-          <span className="brand-seal">
+          <span
+            className="brand-seal"
+            aria-hidden="true"
+          >
             ẤN
           </span>
 
-          <span>
-            <b>NỀN TẢNG TRUY XUẤT</b>
-            <small>SẢN PHẨM VĂN HÓA</small>
-          </span>
+          <div>
+            <b>
+              {
+                footer
+                  .platformTitle
+              }
+            </b>
+
+            <small>
+              {
+                footer
+                  .platformSubtitle
+              }
+            </small>
+          </div>
         </div>
+
+        {/* ===================================================
+            NAVIGATION
+        =================================================== */}
 
         <div className="footer-info">
           <p>
-            <b>Thông tin nền tảng</b>
+            {footer.navTitle}
           </p>
 
-          <a href="#overview">
-            Tổng quan
-          </a>
-
-          <a href="#verification">
-            Xác thực
-          </a>
-
-          <a href="#heritage-story">
-            Câu chuyện văn hóa
-          </a>
-
-          <a href="#merch">
-            VTC Merch
-          </a>
-
-          <a href="#documents">
-            Tài liệu
-          </a>
-
-          <a href="#advanced">
-            Nâng cao
-          </a>
+          {content.nav.map(
+            (item) => (
+              <a
+                key={item.id}
+                href={`#${item.id}`}
+              >
+                {item.label}
+              </a>
+            )
+          )}
         </div>
+
+        {/* ===================================================
+            OPERATOR
+        =================================================== */}
 
         <div className="footer-operator">
           <Image
             src={`${BASE}/heritage/vtc-logo.webp`}
             alt="VTC"
-            width={500}
-            height={270}
-            sizes="105px"
+            width={180}
+            height={90}
           />
 
-          <span>
+          <div>
             <small>
-              NỀN TẢNG ĐƯỢC VẬN HÀNH BỞI
+              {
+                footer
+                  .operatorLabel
+              }
             </small>
 
-            <b>VTC</b>
+            <b>
+              {
+                footer
+                  .operatorName
+              }
+            </b>
 
             <em>
-              Tổng công ty Truyền thông Đa phương tiện
+              {
+                footer
+                  .operatorDescription
+              }
             </em>
-          </span>
+          </div>
         </div>
+
+        {/* ===================================================
+            BACK TO TOP
+        =================================================== */}
 
         <a
           className="back-top"
           href="#overview"
         >
-          Về đầu trang
-          <ArrowUpRight size={14} />
+          <span>
+            {
+              footer.backToTop
+            }
+          </span>
+
+          <ArrowUpRight
+            size={14}
+          />
         </a>
 
         <p className="footer-bottom">
-          © 2026 Tổng công ty Truyền thông Đa phương tiện
-          (VTC) · Hồ sơ truy xuất sản phẩm {product.code}.
+          {footer.copyright}
         </p>
       </footer>
     </main>

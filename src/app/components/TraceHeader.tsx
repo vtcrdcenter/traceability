@@ -78,14 +78,6 @@ function getLocalizedPath(
   pathname: string,
   locale: Locale
 ) {
-  /*
-    VI:
-    /heritage/stt-01
-
-    EN:
-    /en/heritage/stt-01
-  */
-
   const pathWithoutEnglishPrefix =
     pathname.replace(/^\/en(?=\/|$)/, "");
 
@@ -148,6 +140,69 @@ export default function TraceHeader() {
     ) ?? languageOptions[0];
 
   /* =========================================================
+     HEADER TEXT
+  ========================================================= */
+
+  const headerText =
+    locale === "vi"
+      ? {
+          productRecord:
+            "HỒ SƠ SẢN PHẨM",
+
+          description:
+            "Thông tin truy xuất, câu chuyện văn hóa và hồ sơ xác thực của sản phẩm.",
+
+          chooseLanguage:
+            "Chọn ngôn ngữ",
+
+          language:
+            "NGÔN NGỮ",
+
+          openMenu:
+            "Mở menu",
+
+          closeMenu:
+            "Đóng menu",
+
+          homeLabel:
+            "Nền tảng truy xuất — về đầu trang",
+
+          navLabel:
+            "Điều hướng hồ sơ sản phẩm",
+
+          mobileNavLabel:
+            "Điều hướng hồ sơ sản phẩm trên thiết bị di động",
+        }
+      : {
+          productRecord:
+            "PRODUCT RECORD",
+
+          description:
+            "Traceability information, cultural story and verification records for this product.",
+
+          chooseLanguage:
+            "Choose language",
+
+          language:
+            "LANGUAGE",
+
+          openMenu:
+            "Open menu",
+
+          closeMenu:
+            "Close menu",
+
+          homeLabel:
+            "Traceability Platform — back to top",
+
+          navLabel:
+            "Product record navigation",
+
+          mobileNavLabel:
+            "Product record navigation on mobile devices",
+        };
+
+  /* =========================================================
      ACTIVE SECTION + SCROLL PROGRESS
   ========================================================= */
 
@@ -169,7 +224,7 @@ export default function TraceHeader() {
           window.innerHeight;
 
         /* ---------------------------------------------
-           SCROLL PROGRESS
+           PAGE PROGRESS
         --------------------------------------------- */
 
         const progressValue =
@@ -186,7 +241,7 @@ export default function TraceHeader() {
         setProgress(progressValue);
 
         /* ---------------------------------------------
-           ĐẦU TRANG = OVERVIEW
+           TOP OF PAGE
         --------------------------------------------- */
 
         if (scrollTop < 80) {
@@ -230,7 +285,7 @@ export default function TraceHeader() {
         }
 
         /* ---------------------------------------------
-           GẦN CUỐI TRANG = ADVANCED
+           BOTTOM OF PAGE
         --------------------------------------------- */
 
         const nearBottom =
@@ -379,15 +434,6 @@ export default function TraceHeader() {
   }, []);
 
   /* =========================================================
-     ROUTE CHANGE
-  ========================================================= */
-
-  useEffect(() => {
-    setMenuOpen(false);
-    setLanguageOpen(false);
-  }, [pathname]);
-
-  /* =========================================================
      LANGUAGE CHANGE
   ========================================================= */
 
@@ -419,70 +465,12 @@ export default function TraceHeader() {
   ) => {
     setActive(id);
     setMenuOpen(false);
+    setLanguageOpen(false);
   };
 
   /* =========================================================
-     TEXTS ONLY USED BY HEADER
+     RETURN
   ========================================================= */
-
-  const headerText =
-    locale === "vi"
-      ? {
-          productRecord:
-            "HỒ SƠ SẢN PHẨM",
-
-          description:
-            "Thông tin truy xuất, câu chuyện văn hóa và hồ sơ xác thực của sản phẩm.",
-
-          chooseLanguage:
-            "Chọn ngôn ngữ",
-
-          language:
-            "NGÔN NGỮ",
-
-          openMenu:
-            "Mở menu",
-
-          closeMenu:
-            "Đóng menu",
-
-          homeLabel:
-            "Nền tảng truy xuất — về đầu trang",
-
-          navLabel:
-            "Điều hướng hồ sơ sản phẩm",
-
-          mobileNavLabel:
-            "Điều hướng hồ sơ sản phẩm trên thiết bị di động",
-        }
-      : {
-          productRecord:
-            "PRODUCT RECORD",
-
-          description:
-            "Traceability information, cultural story and verification records for this product.",
-
-          chooseLanguage:
-            "Choose language",
-
-          language:
-            "LANGUAGE",
-
-          openMenu:
-            "Open menu",
-
-          closeMenu:
-            "Close menu",
-
-          homeLabel:
-            "Traceability Platform — back to top",
-
-          navLabel:
-            "Product record navigation",
-
-          mobileNavLabel:
-            "Product record navigation on mobile devices",
-        };
 
   return (
     <>
@@ -696,12 +684,14 @@ export default function TraceHeader() {
                 ? headerText.closeMenu
                 : headerText.openMenu
             }
-            onClick={() =>
+            onClick={() => {
+              setLanguageOpen(false);
+
               setMenuOpen(
                 (current) =>
                   !current
-              )
-            }
+              );
+            }}
           >
             {menuOpen ? (
               <X size={23} />

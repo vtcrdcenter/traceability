@@ -1,7 +1,16 @@
 "use client";
 
-import { Menu, QrCode, X } from "lucide-react";
-import { useEffect, useState } from "react";
+import {
+  Check,
+  ChevronDown,
+  Menu,
+  X,
+} from "lucide-react";
+import {
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 
 const traceNav = [
   ["01", "Tổng quan", "overview"],
@@ -12,11 +21,22 @@ const traceNav = [
   ["06", "Nâng cao", "advanced"],
 ] as const;
 
-/* =========================================================
-   TYPE CỦA ID SECTION
-========================================================= */
-
 type SectionId = (typeof traceNav)[number][2];
+
+type LanguageCode = "vi" | "en";
+
+const languages = [
+  {
+    code: "vi",
+    short: "VI",
+    label: "Tiếng Việt",
+  },
+  {
+    code: "en",
+    short: "EN",
+    label: "English",
+  },
+] as const;
 
 export default function TraceHeader() {
   const [active, setActive] =
@@ -25,12 +45,22 @@ export default function TraceHeader() {
   const [progress, setProgress] =
     useState(0);
 
-  const [open, setOpen] =
+  const [menuOpen, setMenuOpen] =
     useState(false);
+
+  const [languageOpen, setLanguageOpen] =
+    useState(false);
+
+  const [language, setLanguage] =
+    useState<LanguageCode>("vi");
+
+  const languageRef =
+    useRef<HTMLDivElement>(null);
 
   /* =========================================================
      ACTIVE SECTION + SCROLL PROGRESS
   ========================================================= */
+
   useEffect(() => {
     let frame: number | null = null;
 
@@ -40,10 +70,6 @@ export default function TraceHeader() {
       }
 
       frame = requestAnimationFrame(() => {
-        /* ---------------------------------------------
-           SCROLL POSITION
-        --------------------------------------------- */
-
         const scrollTop =
           window.scrollY ||
           document.documentElement.scrollTop;
@@ -52,9 +78,7 @@ export default function TraceHeader() {
           document.documentElement.scrollHeight -
           window.innerHeight;
 
-        /* ---------------------------------------------
-           PAGE PROGRESS
-        --------------------------------------------- */
+        /* PAGE PROGRESS */
 
         const progressValue =
           scrollable > 0
@@ -69,22 +93,16 @@ export default function TraceHeader() {
 
         setProgress(progressValue);
 
-        /* ---------------------------------------------
-           Ở ĐẦU TRANG LUÔN ACTIVE TỔNG QUAN
-        --------------------------------------------- */
+        /* ĐẦU TRANG */
 
         if (scrollTop < 80) {
           setActive("overview");
+
           frame = null;
           return;
         }
 
-        /* ---------------------------------------------
-           ĐƯỜNG ĐỌC ẢO
-
-           Chỉ đổi menu khi đầu section đi qua
-           khoảng 30% chiều cao viewport.
-        --------------------------------------------- */
+        /* ĐƯỜNG ĐỌC ẢO */
 
         const marker = Math.min(
           280,
@@ -112,9 +130,7 @@ export default function TraceHeader() {
           }
         }
 
-        /* ---------------------------------------------
-           CUỐI TRANG => ACTIVE NÂNG CAO
-        --------------------------------------------- */
+        /* CUỐI TRANG */
 
         const nearBottom =
           window.innerHeight +
@@ -169,12 +185,13 @@ export default function TraceHeader() {
   }, []);
 
   /* =========================================================
-     ĐÓNG MENU KHI CHUYỂN SANG DESKTOP
+     ĐÓNG MOBILE MENU KHI LÊN DESKTOP
   ========================================================= */
+
   useEffect(() => {
     const handleResize = () => {
       if (window.innerWidth >= 1180) {
-        setOpen(false);
+        setMenuOpen(false);
       }
     };
 
@@ -194,18 +211,98 @@ export default function TraceHeader() {
   /* =========================================================
      KHÓA SCROLL KHI MOBILE MENU MỞ
   ========================================================= */
+
   useEffect(() => {
     document.body.style.overflow =
-      open ? "hidden" : "";
+      menuOpen ? "hidden" : "";
 
     return () => {
       document.body.style.overflow = "";
     };
-  }, [open]);
+  }, [menuOpen]);
+
+  /* =========================================================
+     ĐÓNG LANGUAGE DROPDOWN KHI CLICK RA NGOÀI
+  ========================================================= */
+
+  useEffect(() => {
+    const handleOutsideClick = (
+      event: MouseEvent
+    ) => {
+      if (
+        languageRef.current &&
+        !languageRef.current.contains(
+          event.target as Node
+        )
+      ) {
+        setLanguageOpen(false);
+      }
+    };
+
+    document.addEventListener(
+      "mousedown",
+      handleOutsideClick
+    );
+
+    return () => {
+      document.removeEventListener(
+        "mousedown",
+        handleOutsideClick
+      );
+    };
+  }, []);
+
+  /* =========================================================
+     ĐÓNG DROPDOWN BẰNG ESC
+  ========================================================= */
+
+  useEffect(() => {
+    const handleKeyDown = (
+      event: KeyboardEvent
+    ) => {
+      if (event.key === "Escape") {
+        setLanguageOpen(false);
+        setMenuOpen(false);
+      }
+    };
+
+    document.addEventListener(
+      "keydown",
+      handleKeyDown
+    );
+
+    return () => {
+      document.removeEventListener(
+        "keydown",
+        handleKeyDown
+      );
+    };
+  }, []);
 
   const closeMobileMenu = () => {
-    setOpen(false);
+    setMenuOpen(false);
   };
+
+  const selectLanguage = (
+    code: LanguageCode
+  ) => {
+    setLanguage(code);
+
+    setLanguageOpen(false);
+
+    /*
+      Hiện tại chỉ thay đổi trạng thái hiển thị.
+
+      Sau này khi có bản tiếng Anh, có thể đổi thành:
+      router.push("/en/...")
+      hoặc dùng hệ thống i18n.
+    */
+  };
+
+  const selectedLanguage =
+    languages.find(
+      (item) => item.code === language
+    ) ?? languages[0];
 
   return (
     <>
@@ -265,13 +362,9 @@ export default function TraceHeader() {
                       : undefined
                   }
                 >
-                  <i>
-                    {number}
-                  </i>
+                  <i>{number}</i>
 
-                  <span>
-                    {title}
-                  </span>
+                  <span>{title}</span>
                 </a>
               );
             }
@@ -283,35 +376,120 @@ export default function TraceHeader() {
         =================================================== */}
 
         <div className="header-actions">
-          <a
-            className="header-cta"
-            href="#verification"
-            aria-label="Truy xuất sản phẩm"
-          >
-            <QrCode size={17} />
+          {/* LANGUAGE */}
 
-            <span>
-              Truy xuất
-            </span>
-          </a>
+          <div
+            className="language-menu"
+            ref={languageRef}
+          >
+            <button
+              className={`language-trigger ${
+                languageOpen
+                  ? "open"
+                  : ""
+              }`}
+              type="button"
+              aria-haspopup="menu"
+              aria-expanded={
+                languageOpen
+              }
+              aria-controls="language-options"
+              onClick={() =>
+                setLanguageOpen(
+                  (current) =>
+                    !current
+                )
+              }
+            >
+              <span>
+                {
+                  selectedLanguage.short
+                }
+              </span>
+
+              <ChevronDown
+                size={15}
+                aria-hidden="true"
+              />
+            </button>
+
+            <div
+              id="language-options"
+              className={`language-dropdown ${
+                languageOpen
+                  ? "open"
+                  : ""
+              }`}
+              role="menu"
+              aria-label="Chọn ngôn ngữ"
+            >
+              {languages.map(
+                (item) => {
+                  const isSelected =
+                    item.code ===
+                    language;
+
+                  return (
+                    <button
+                      key={item.code}
+                      type="button"
+                      role="menuitem"
+                      className={
+                        isSelected
+                          ? "active"
+                          : ""
+                      }
+                      onClick={() =>
+                        selectLanguage(
+                          item.code
+                        )
+                      }
+                    >
+                      <span className="language-code">
+                        {
+                          item.short
+                        }
+                      </span>
+
+                      <span className="language-name">
+                        {
+                          item.label
+                        }
+                      </span>
+
+                      {isSelected && (
+                        <Check
+                          size={15}
+                          aria-hidden="true"
+                        />
+                      )}
+                    </button>
+                  );
+                }
+              )}
+            </div>
+          </div>
+
+          {/* MOBILE MENU BUTTON */}
 
           <button
             className="menu-toggle"
             type="button"
-            aria-expanded={open}
+            aria-expanded={menuOpen}
             aria-controls="mobile-navigation"
             aria-label={
-              open
+              menuOpen
                 ? "Đóng menu"
                 : "Mở menu"
             }
             onClick={() =>
-              setOpen(
-                (current) => !current
+              setMenuOpen(
+                (current) =>
+                  !current
               )
             }
           >
-            {open ? (
+            {menuOpen ? (
               <X size={23} />
             ) : (
               <Menu size={23} />
@@ -333,16 +511,16 @@ export default function TraceHeader() {
       </header>
 
       {/* =====================================================
-          MOBILE NAVIGATION
+          MOBILE / TABLET NAVIGATION
       ===================================================== */}
 
       <nav
         id="mobile-navigation"
         className={`mobile-nav ${
-          open ? "open" : ""
+          menuOpen ? "open" : ""
         }`}
         aria-label="Điều hướng hồ sơ sản phẩm trên thiết bị di động"
-        aria-hidden={!open}
+        aria-hidden={!menuOpen}
       >
         <div className="mobile-nav-heading">
           <small>
@@ -384,13 +562,9 @@ export default function TraceHeader() {
                     closeMobileMenu
                   }
                 >
-                  <i>
-                    {number}
-                  </i>
+                  <i>{number}</i>
 
-                  <span>
-                    {title}
-                  </span>
+                  <span>{title}</span>
 
                   <b aria-hidden="true">
                     →
@@ -401,19 +575,37 @@ export default function TraceHeader() {
           )}
         </div>
 
-        <a
-          className="mobile-cta"
-          href="#verification"
-          onClick={
-            closeMobileMenu
-          }
-        >
-          <QrCode size={18} />
+        {/* LANGUAGE TRÊN MOBILE */}
 
-          <span>
-            Truy xuất sản phẩm
-          </span>
-        </a>
+        <div className="mobile-language">
+          <small>NGÔN NGỮ</small>
+
+          <div>
+            {languages.map(
+              (item) => (
+                <button
+                  key={item.code}
+                  type="button"
+                  className={
+                    language ===
+                    item.code
+                      ? "active"
+                      : ""
+                  }
+                  onClick={() => {
+                    selectLanguage(
+                      item.code
+                    );
+
+                    closeMobileMenu();
+                  }}
+                >
+                  {item.label}
+                </button>
+              )
+            )}
+          </div>
+        </div>
       </nav>
     </>
   );

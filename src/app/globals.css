@@ -13,6 +13,7 @@
   --wine: #671d22;
   --wine-light: #7a292e;
   --wine2: #4a1418;
+
   --deep: #260d0f;
   --deep-soft: #321114;
 
@@ -32,7 +33,7 @@
 }
 
 /* =========================================================
-   RESET / BASE
+   RESET
 ========================================================= */
 
 * {
@@ -46,6 +47,7 @@ html {
 
 body {
   margin: 0;
+
   background: var(--cream);
   color: var(--ink);
 
@@ -84,7 +86,7 @@ img {
 }
 
 /* =========================================================
-   GLOBAL SECTION
+   GLOBAL
 ========================================================= */
 
 .trace-page {
@@ -195,7 +197,6 @@ img {
   font-family: var(--serif);
   font-size: 11px;
   font-weight: 600;
-
   line-height: 1;
 }
 
@@ -240,10 +241,11 @@ img {
   align-self: stretch;
 
   display: flex;
-  justify-content: center;
   align-items: stretch;
+  justify-content: center;
 
   flex: 1;
+
   min-width: 0;
 
   gap: 2px;
@@ -258,6 +260,7 @@ img {
   display: flex;
   flex: 1 1 0;
   flex-direction: column;
+
   align-items: center;
   justify-content: center;
 
@@ -391,7 +394,7 @@ img {
 }
 
 /* =========================================================
-   LANGUAGE SWITCHER
+   LANGUAGE
 ========================================================= */
 
 .language-menu {
@@ -470,9 +473,7 @@ img {
 
   background: var(--paper);
 
-  box-shadow:
-    0 15px 35px
-    rgba(45, 24, 17, 0.16);
+  box-shadow: 0 15px 35px rgba(45, 24, 17, 0.16);
 
   opacity: 0;
   visibility: hidden;
@@ -603,7 +604,7 @@ img {
 }
 
 /* =========================================================
-   HERO — 01
+   HERO
 ========================================================= */
 
 .hero {
@@ -615,7 +616,8 @@ img {
     minmax(0, 0.86fr)
     minmax(0, 1.14fr);
 
-  grid-template-rows: 1fr auto;
+  grid-template-rows:
+    1fr auto;
 
   gap: 0;
 
@@ -651,6 +653,7 @@ img {
   margin: 20px 0 28px;
 
   font-size: clamp(52px, 5.6vw, 88px);
+
   line-height: 0.95;
 
   letter-spacing: -0.045em;
@@ -671,6 +674,7 @@ img {
 
   font-family: var(--serif);
   font-size: clamp(17px, 1.35vw, 20px);
+
   line-height: 1.65;
 }
 
@@ -691,6 +695,7 @@ img {
   position: relative;
 
   padding: 17px 25px 17px 0;
+
   margin-right: 25px;
 }
 
@@ -986,7 +991,7 @@ img {
 }
 
 /* =========================================================
-   SECTION HEADING
+   CONTENT SECTION
 ========================================================= */
 
 .content-section {
@@ -1036,6 +1041,7 @@ img {
   margin: 9px 0 17px;
 
   font-size: clamp(38px, 4.3vw, 64px);
+
   line-height: 1.06;
 
   letter-spacing: -0.035em;
@@ -1050,6 +1056,7 @@ img {
 
   font-family: var(--serif);
   font-size: 17px;
+
   line-height: 1.65;
 }
 
@@ -1058,7 +1065,7 @@ img {
 }
 
 /* =========================================================
-   NOTES
+   DATA NOTE
 ========================================================= */
 
 .data-note {
@@ -1084,7 +1091,7 @@ img {
 }
 
 /* =========================================================
-   02 — VERIFICATION SUMMARY
+   VERIFICATION
 ========================================================= */
 
 .verification-summary {
@@ -1120,9 +1127,7 @@ img {
 .verification-summary-card:hover {
   transform: translateY(-3px);
 
-  box-shadow:
-    0 12px 28px
-    rgba(61, 35, 24, 0.08);
+  box-shadow: 0 12px 28px rgba(61, 35, 24, 0.08);
 }
 
 .verification-summary-card svg {
@@ -1185,6 +1190,16 @@ img {
   background: var(--paper);
 }
 
+.basic-product-info h3 {
+  margin: 11px 0 0;
+
+  color: var(--wine);
+
+  font-family: var(--serif);
+  font-size: 28px;
+  font-weight: 500;
+}
+
 .basic-product-info dl {
   margin-top: 20px;
 }
@@ -1195,16 +1210,27 @@ img {
   color: white;
 }
 
-.basic-trace-result > svg {
+.basic-trace-result > div:first-child {
+  display: flex;
+  align-items: center;
+
+  gap: 15px;
+}
+
+.basic-trace-result > div:first-child > svg {
   color: var(--gold);
 }
 
 .basic-trace-result .valid {
-  margin-left: 17px;
+  margin-left: 0;
+}
+
+.basic-trace-result > .eyebrow {
+  margin-top: 30px;
 }
 
 .basic-trace-result h3 {
-  margin: 30px 0 10px;
+  margin: 9px 0 10px;
 
   color: #fff4de;
 
@@ -1215,8 +1241,10 @@ img {
   overflow-wrap: anywhere;
 }
 
-.basic-trace-result > p {
+.basic-trace-result > p:not(.eyebrow) {
   max-width: 600px;
+
+  margin: 0;
 
   color: #d8c8bd;
 
@@ -1271,7 +1299,7 @@ img {
 }
 
 /* =========================================================
-   03 — HERITAGE STORY
+   HERITAGE STORY
 ========================================================= */
 
 .heritage-grid {
@@ -1420,7 +1448,7 @@ img {
 }
 
 /* =========================================================
-   04 — VTC MERCH
+   VTC MERCH
 ========================================================= */
 
 .merch-feature {
@@ -1546,7 +1574,7 @@ img {
 }
 
 /* =========================================================
-   05 — DOCUMENTS
+   DOCUMENTS
 ========================================================= */
 
 .records {
@@ -1580,6 +1608,7 @@ img {
   margin: 12px 0 18px;
 
   font-size: clamp(38px, 4vw, 52px);
+
   line-height: 1.1;
 }
 
@@ -1649,7 +1678,7 @@ img {
 }
 
 /* =========================================================
-   06 — ADVANCED INFORMATION
+   ADVANCED SECTION
 ========================================================= */
 
 .advanced-section {
@@ -1665,6 +1694,27 @@ img {
 .advanced-section > .section-heading {
   margin-bottom: 45px;
 }
+
+.advanced-section-intro {
+  max-width: 850px;
+
+  margin-bottom: 28px;
+}
+
+.advanced-intro-text {
+  max-width: 780px;
+
+  margin: 13px 0 0;
+
+  color: var(--muted);
+
+  font-size: 12px;
+  line-height: 1.8;
+}
+
+/* =========================================================
+   ADVANCED ACCORDION
+========================================================= */
 
 .advanced-accordion {
   width: 100%;
@@ -1805,7 +1855,7 @@ img {
   line-height: 1.25;
 }
 
-.advanced-two-column > div > p:not(.eyebrow) {
+.advanced-two-column > div > p:not(.eyebrow):not(.data-note) {
   color: var(--muted);
 
   font-size: 12px;
@@ -2029,7 +2079,7 @@ img {
 }
 
 /* =========================================================
-   ADVANCED DOCUMENT PREVIEW
+   ADVANCED DOCUMENT
 ========================================================= */
 
 .advanced-document-preview {
@@ -2058,7 +2108,9 @@ img {
   line-height: 1.25;
 }
 
-.advanced-document-preview > div:first-child > p:not(.eyebrow) {
+.advanced-document-preview
+  > div:first-child
+  > p:not(.eyebrow):not(.data-note) {
   color: var(--muted);
 
   font-size: 12px;
@@ -2134,7 +2186,7 @@ img {
 }
 
 /* =========================================================
-   ADVANCED JOURNEY
+   JOURNEY
 ========================================================= */
 
 .advanced-journey {
@@ -2200,7 +2252,7 @@ img {
 }
 
 /* =========================================================
-   ADVANCED TRACE
+   TRACE DATA
 ========================================================= */
 
 .advanced-trace-grid {
@@ -2308,7 +2360,7 @@ img {
 }
 
 /* =========================================================
-   GLOBAL DL
+   DL
 ========================================================= */
 
 dl {
@@ -2490,12 +2542,12 @@ dd {
 
 /* =========================================================
    MEDIUM DESKTOP
-   Cho EN có label dài hơn
 ========================================================= */
 
 @media (max-width: 1360px) {
   .site-header {
     gap: 10px;
+
     padding-left: 20px;
     padding-right: 20px;
   }
@@ -2506,6 +2558,7 @@ dd {
 
   .desktop-nav a {
     min-width: 80px;
+
     padding-left: 6px;
     padding-right: 6px;
   }
@@ -2517,6 +2570,7 @@ dd {
 
   .language-trigger {
     min-width: 64px;
+
     padding-left: 10px;
     padding-right: 10px;
   }
@@ -2711,7 +2765,8 @@ dd {
     display: grid;
 
     grid-template-columns:
-      1fr 1fr;
+      1fr
+      1fr;
 
     border-top: 1px solid var(--line);
     border-left: 1px solid var(--line);
@@ -2744,7 +2799,8 @@ dd {
 
   .verification-summary {
     grid-template-columns:
-      1fr 1fr;
+      1fr
+      1fr;
   }
 
   .verification-summary-card:last-child {
@@ -2754,12 +2810,14 @@ dd {
   .advanced-card-grid,
   .advanced-trace-grid {
     grid-template-columns:
-      1fr 1fr;
+      1fr
+      1fr;
   }
 
   .advanced-journey {
     grid-template-columns:
-      1fr 1fr;
+      1fr
+      1fr;
   }
 }
 
@@ -2808,11 +2866,13 @@ dd {
 
   .brand-copy b {
     font-size: 9px;
+
     letter-spacing: 0.065em;
   }
 
   .brand-copy small {
     font-size: 6px;
+
     letter-spacing: 0.09em;
   }
 
@@ -2876,7 +2936,8 @@ dd {
     display: grid;
 
     grid-template-columns:
-      1fr 1fr;
+      1fr
+      1fr;
   }
 
   .hero-meta span {
@@ -2961,7 +3022,8 @@ dd {
 
   .quick-nav > div {
     grid-template-columns:
-      1fr 1fr;
+      1fr
+      1fr;
   }
 
   .quick-nav a {
@@ -3035,8 +3097,8 @@ dd {
     padding: 26px 22px;
   }
 
-  .basic-trace-result .valid {
-    margin-left: 8px;
+  .basic-trace-result > div:first-child {
+    flex-wrap: wrap;
   }
 
   .heritage-grid {
@@ -3293,7 +3355,7 @@ dd {
 }
 
 /* =========================================================
-   ACCESSIBILITY
+   REDUCED MOTION
 ========================================================= */
 
 @media (prefers-reduced-motion: reduce) {
@@ -3305,7 +3367,9 @@ dd {
   *::before,
   *::after {
     scroll-behavior: auto !important;
+
     transition-duration: 0.01ms !important;
+
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
   }

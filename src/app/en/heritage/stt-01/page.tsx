@@ -42,11 +42,14 @@ export const metadata: Metadata = {
   },
 
   openGraph: {
+    type: "website",
+    locale: "en_US",
+
     title:
       "Nguyen Imperial Court Imprint · VTC Traceability Platform",
 
     description:
-      "Verify product information, explore its cultural story, attestation records and copyright documentation.",
+      "Verify product information, explore the cultural story, attestation records, copyright information and traceability data of Nguyen Imperial Court Imprint.",
 
     url:
       "https://vtcrdcenter.github.io/traceability/en/heritage/stt-01/",
@@ -96,7 +99,7 @@ export default function Stt01EnglishPage() {
       <TraceHeader />
 
       {/* =====================================================
-          01 — OVERVIEW / HERO
+          01 — OVERVIEW
       ===================================================== */}
 
       <section
@@ -132,10 +135,7 @@ export default function Stt01EnglishPage() {
           <div className="hero-meta">
             <span>
               <small>
-                {
-                  overview.meta
-                    .codeLabel
-                }
+                {overview.meta.codeLabel}
               </small>
 
               <b>
@@ -145,10 +145,7 @@ export default function Stt01EnglishPage() {
 
             <span>
               <small>
-                {
-                  overview.meta
-                    .typeLabel
-                }
+                {overview.meta.typeLabel}
               </small>
 
               <b>
@@ -158,10 +155,7 @@ export default function Stt01EnglishPage() {
 
             <span>
               <small>
-                {
-                  overview.meta
-                    .traceLabel
-                }
+                {overview.meta.traceLabel}
               </small>
 
               <b>
@@ -181,33 +175,29 @@ export default function Stt01EnglishPage() {
             >
               <ShieldCheck
                 size={15}
+                aria-hidden="true"
               />
 
               <span>
-                {
-                  overview
-                    .primaryAction
-                }
+                {overview.primaryAction}
               </span>
             </a>
 
             <a href="#heritage-story">
               <span>
-                {
-                  overview
-                    .secondaryAction
-                }
+                {overview.secondaryAction}
               </span>
 
               <ArrowDown
                 size={14}
+                aria-hidden="true"
               />
             </a>
           </div>
         </div>
 
         {/* ===================================================
-            HERO IMAGE
+            HERO VISUAL
         =================================================== */}
 
         <div className="hero-image">
@@ -240,17 +230,11 @@ export default function Stt01EnglishPage() {
 
             <div>
               <small>
-                {
-                  overview.status
-                    .label
-                }
+                {overview.status.label}
               </small>
 
               <b>
-                {
-                  overview.status
-                    .value
-                }
+                {overview.status.value}
               </b>
             </div>
           </div>
@@ -263,16 +247,10 @@ export default function Stt01EnglishPage() {
         <div className="quick-nav">
           <p>
             <span>
-              {
-                overview
-                  .quickNavLabel
-              }
+              {overview.quickNavLabel}
             </span>
 
-            {
-              overview
-                .quickNavDescription
-            }
+            {overview.quickNavDescription}
           </p>
 
           <div>
@@ -300,6 +278,7 @@ export default function Stt01EnglishPage() {
 
                   <ArrowDown
                     size={13}
+                    aria-hidden="true"
                   />
                 </a>
               ))}
@@ -316,7 +295,7 @@ export default function Stt01EnglishPage() {
         className="content-section section-pad chapter-cream"
       >
         {/* ===================================================
-            SECTION HEADING
+            HEADING
         =================================================== */}
 
         <div className="section-heading">
@@ -334,15 +313,13 @@ export default function Stt01EnglishPage() {
             </h2>
 
             <p>
-              {
-                verification.description
-              }
+              {verification.description}
             </p>
           </div>
         </div>
 
         {/* ===================================================
-            VERIFICATION CARDS
+            SUMMARY CARDS
         =================================================== */}
 
         <div className="verification-summary">
@@ -380,13 +357,11 @@ export default function Stt01EnglishPage() {
         </div>
 
         {/* ===================================================
-            BASIC INFORMATION + TRACE RESULT
+            BASIC + TRACE RESULT
         =================================================== */}
 
         <div className="verification-basic-grid">
-          {/* ===============================================
-              BASIC PRODUCT INFORMATION
-          =============================================== */}
+          {/* BASIC INFORMATION */}
 
           <article className="basic-product-info">
             <p className="eyebrow">
@@ -408,9 +383,7 @@ export default function Stt01EnglishPage() {
             <dl>
               {verification.productInfo.fields.map(
                 (item) => (
-                  <div
-                    key={item.label}
-                  >
+                  <div key={item.label}>
                     <dt>
                       {item.label}
                     </dt>
@@ -424,28 +397,28 @@ export default function Stt01EnglishPage() {
             </dl>
           </article>
 
-          {/* ===============================================
-              TRACE RESULT
-          =============================================== */}
+          {/* TRACE RESULT */}
 
           <article className="basic-trace-result">
-            <Fingerprint
-              size={30}
-              aria-hidden="true"
-            />
-
-            <span className="valid">
-              <Check
-                size={13}
+            <div>
+              <Fingerprint
+                size={30}
                 aria-hidden="true"
               />
 
-              {
-                verification
-                  .traceResult
-                  .validLabel
-              }
-            </span>
+              <span className="valid">
+                <Check
+                  size={13}
+                  aria-hidden="true"
+                />
+
+                {
+                  verification
+                    .traceResult
+                    .validLabel
+                }
+              </span>
+            </div>
 
             <p className="eyebrow">
               {
@@ -485,6 +458,7 @@ export default function Stt01EnglishPage() {
 
               <ArrowDown
                 size={14}
+                aria-hidden="true"
               />
             </a>
           </article>
@@ -500,7 +474,7 @@ export default function Stt01EnglishPage() {
         className="content-section section-pad chapter-wine"
       >
         {/* ===================================================
-            SECTION HEADING
+            HEADING
         =================================================== */}
 
         <div className="section-heading">
@@ -518,9 +492,7 @@ export default function Stt01EnglishPage() {
             </h2>
 
             <p>
-              {
-                heritage.description
-              }
+              {heritage.description}
             </p>
           </div>
         </div>
@@ -539,33 +511,21 @@ export default function Stt01EnglishPage() {
             />
 
             <figcaption>
-              {
-                heritage
-                  .sourceCaption
-              }
+              {heritage.sourceCaption}
             </figcaption>
           </figure>
 
           <div className="heritage-story">
             <p className="eyebrow">
-              {
-                heritage
-                  .storyEyebrow
-              }
+              {heritage.storyEyebrow}
             </p>
 
             <blockquote>
-              {
-                heritage
-                  .storyTitle
-              }
+              {heritage.storyTitle}
             </blockquote>
 
             <p>
-              {
-                heritage
-                  .storyDescription
-              }
+              {heritage.storyDescription}
             </p>
 
             <a
@@ -573,21 +533,19 @@ export default function Stt01EnglishPage() {
               href="#advanced"
             >
               <span>
-                {
-                  heritage
-                    .advancedLink
-                }
+                {heritage.advancedLink}
               </span>
 
               <ArrowDown
                 size={14}
+                aria-hidden="true"
               />
             </a>
           </div>
         </div>
 
         {/* ===================================================
-            HERITAGE HIGHLIGHTS
+            HIGHLIGHTS
         =================================================== */}
 
         <div className="heritage-depth">
@@ -606,9 +564,7 @@ export default function Stt01EnglishPage() {
                   </h3>
 
                   <p>
-                    {
-                      item.description
-                    }
+                    {item.description}
                   </p>
                 </div>
               </article>
@@ -626,7 +582,7 @@ export default function Stt01EnglishPage() {
         className="content-section section-pad chapter-cream"
       >
         {/* ===================================================
-            SECTION HEADING
+            HEADING
         =================================================== */}
 
         <div className="section-heading">
@@ -644,9 +600,7 @@ export default function Stt01EnglishPage() {
             </h2>
 
             <p>
-              {
-                merch.description
-              }
+              {merch.description}
             </p>
           </div>
         </div>
@@ -658,39 +612,31 @@ export default function Stt01EnglishPage() {
         <div className="merch-feature">
           <div className="merch-feature-copy">
             <p className="eyebrow">
-              {
-                merch.feature
-                  .eyebrow
-              }
+              {merch.feature.eyebrow}
             </p>
 
             <h3>
-              {
-                merch.feature
-                  .title
-              }
+              {merch.feature.title}
             </h3>
 
             <p>
-              {
-                merch.feature
-                  .description
-              }
+              {merch.feature.description}
             </p>
 
             <a
               className="primary-button"
               href="#"
+              aria-label={
+                merch.feature.cta
+              }
             >
               <span>
-                {
-                  merch.feature
-                    .cta
-                }
+                {merch.feature.cta}
               </span>
 
               <ArrowUpRight
                 size={15}
+                aria-hidden="true"
               />
             </a>
           </div>
@@ -724,7 +670,7 @@ export default function Stt01EnglishPage() {
 
               return (
                 <article
-                  key={item.eyebrow}
+                  key={`${item.eyebrow}-${item.title}`}
                 >
                   <Icon
                     aria-hidden="true"
@@ -739,9 +685,7 @@ export default function Stt01EnglishPage() {
                   </h3>
 
                   <p>
-                    {
-                      item.description
-                    }
+                    {item.description}
                   </p>
                 </article>
               );
@@ -776,9 +720,7 @@ export default function Stt01EnglishPage() {
           </h2>
 
           <p>
-            {
-              documents.description
-            }
+            {documents.description}
           </p>
         </div>
 
@@ -836,21 +778,19 @@ export default function Stt01EnglishPage() {
             href="#advanced"
           >
             <span>
-              {
-                documents
-                  .advancedLink
-              }
+              {documents.advancedLink}
             </span>
 
             <ArrowDown
               size={14}
+              aria-hidden="true"
             />
           </a>
         </div>
       </section>
 
       {/* =====================================================
-          06 — ADVANCED INFORMATION
+          06 — ADVANCED
       ===================================================== */}
 
       <AdvancedInfo locale="en" />
@@ -874,23 +814,17 @@ export default function Stt01EnglishPage() {
 
           <div>
             <b>
-              {
-                footer
-                  .platformTitle
-              }
+              {footer.platformTitle}
             </b>
 
             <small>
-              {
-                footer
-                  .platformSubtitle
-              }
+              {footer.platformSubtitle}
             </small>
           </div>
         </div>
 
         {/* ===================================================
-            NAVIGATION
+            FOOTER NAV
         =================================================== */}
 
         <div className="footer-info">
@@ -924,24 +858,15 @@ export default function Stt01EnglishPage() {
 
           <div>
             <small>
-              {
-                footer
-                  .operatorLabel
-              }
+              {footer.operatorLabel}
             </small>
 
             <b>
-              {
-                footer
-                  .operatorName
-              }
+              {footer.operatorName}
             </b>
 
             <em>
-              {
-                footer
-                  .operatorDescription
-              }
+              {footer.operatorDescription}
             </em>
           </div>
         </div>
@@ -955,13 +880,12 @@ export default function Stt01EnglishPage() {
           href="#overview"
         >
           <span>
-            {
-              footer.backToTop
-            }
+            {footer.backToTop}
           </span>
 
           <ArrowUpRight
             size={14}
+            aria-hidden="true"
           />
         </a>
 

@@ -6,9 +6,7 @@ import {
   Menu,
   X,
 } from "lucide-react";
-import {
-  usePathname,
-} from "next/navigation";
+import { usePathname } from "next/navigation";
 import {
   useEffect,
   useMemo,
@@ -66,17 +64,6 @@ const languageOptions: LanguageOption[] = [
    PATH HELPERS
 ========================================================= */
 
-/**
- * Next.js có thể trả pathname:
- *
- * /heritage/stt-01
- *
- * hoặc trong một số trường hợp:
- *
- * /traceability/heritage/stt-01
- *
- * Hàm này chuẩn hóa để logic locale luôn hoạt động đúng.
- */
 function normalizePathname(
   pathname: string
 ) {
@@ -104,7 +91,7 @@ function normalizePathname(
 }
 
 /* =========================================================
-   LOCALE FROM PATH
+   LOCALE
 ========================================================= */
 
 function getLocaleFromPathname(
@@ -125,7 +112,7 @@ function getLocaleFromPathname(
 }
 
 /* =========================================================
-   BUILD LOCALIZED URL
+   LOCALIZED PATH
 ========================================================= */
 
 function getLocalizedPath(
@@ -135,13 +122,6 @@ function getLocalizedPath(
   const normalized =
     normalizePathname(pathname);
 
-  /*
-   * Xóa prefix /en nếu đang ở trang EN.
-   *
-   * /en/heritage/stt-01
-   * =>
-   * /heritage/stt-01
-   */
   let contentPath =
     normalized.replace(
       /^\/en(?=\/|$)/,
@@ -152,15 +132,15 @@ function getLocalizedPath(
     contentPath = "/";
   }
 
-  /*
-   * Chuẩn hóa trailing slash.
-   */
   if (
     contentPath !== "/" &&
     contentPath.endsWith("/")
   ) {
     contentPath =
-      contentPath.slice(0, -1);
+      contentPath.slice(
+        0,
+        -1
+      );
   }
 
   /* ---------------------------------------------------------
@@ -222,7 +202,7 @@ export default function TraceHeader() {
     content.nav;
 
   /* =========================================================
-     STATE
+     STATES
   ========================================================= */
 
   const [
@@ -248,7 +228,7 @@ export default function TraceHeader() {
   ] = useState(false);
 
   /* =========================================================
-     REFS
+     REF
   ========================================================= */
 
   const languageRef =
@@ -331,7 +311,7 @@ export default function TraceHeader() {
         };
 
   /* =========================================================
-     ACTIVE SECTION + SCROLL PROGRESS
+     SCROLL STATE
   ========================================================= */
 
   useEffect(() => {
@@ -386,7 +366,7 @@ export default function TraceHeader() {
               );
 
               /* ---------------------------------------------
-                 TOP OF PAGE
+                 TOP
               --------------------------------------------- */
 
               if (
@@ -402,7 +382,7 @@ export default function TraceHeader() {
               }
 
               /* ---------------------------------------------
-                 READING MARKER
+                 SECTION MARKER
               --------------------------------------------- */
 
               const marker =
@@ -447,7 +427,7 @@ export default function TraceHeader() {
               }
 
               /* ---------------------------------------------
-                 BOTTOM OF PAGE
+                 PAGE BOTTOM
               --------------------------------------------- */
 
               const nearBottom =
@@ -509,7 +489,7 @@ export default function TraceHeader() {
   }, [traceNav]);
 
   /* =========================================================
-     CLOSE MOBILE MENU WHEN DESKTOP
+     CLOSE MOBILE MENU ON DESKTOP
   ========================================================= */
 
   useEffect(() => {
@@ -592,7 +572,7 @@ export default function TraceHeader() {
   }, []);
 
   /* =========================================================
-     ESCAPE KEY
+     ESC
   ========================================================= */
 
   useEffect(() => {
@@ -656,20 +636,22 @@ export default function TraceHeader() {
         );
 
       /*
-       * GitHub Pages + Next static export:
+       * Không dùng:
        *
-       * Dùng navigation trực tiếp để đảm bảo URL luôn chứa:
+       * window.location.href = targetPath
        *
-       * /traceability/
+       * vì ESLint React 19 coi đó là mutation.
        *
-       * Thay vì phụ thuộc client router.
+       * assign() thực hiện navigation mà không
+       * gán trực tiếp vào object global.
        */
-      window.location.href =
-        targetPath;
+      window.location.assign(
+        targetPath
+      );
     };
 
   /* =========================================================
-     NAVIGATION CLICK
+     NAV CLICK
   ========================================================= */
 
   const handleNavClick =
@@ -794,12 +776,12 @@ export default function TraceHeader() {
         </nav>
 
         {/* ===================================================
-            HEADER ACTIONS
+            ACTIONS
         =================================================== */}
 
         <div className="header-actions">
           {/* ===============================================
-              LANGUAGE SWITCHER
+              LANGUAGE
           =============================================== */}
 
           <div
@@ -843,7 +825,7 @@ export default function TraceHeader() {
             </button>
 
             {/* =============================================
-                LANGUAGE DROPDOWN
+                LANGUAGE MENU
             ============================================= */}
 
             <div
@@ -910,7 +892,7 @@ export default function TraceHeader() {
           </div>
 
           {/* ===============================================
-              MOBILE MENU BUTTON
+              MOBILE BUTTON
           =============================================== */}
 
           <button
@@ -953,7 +935,7 @@ export default function TraceHeader() {
         </div>
 
         {/* ===================================================
-            SCROLL PROGRESS
+            PROGRESS
         =================================================== */}
 
         <span
@@ -967,7 +949,7 @@ export default function TraceHeader() {
       </header>
 
       {/* =====================================================
-          MOBILE NAVIGATION
+          MOBILE NAV
       ===================================================== */}
 
       <nav
@@ -985,7 +967,7 @@ export default function TraceHeader() {
         }
       >
         {/* ===================================================
-            PRODUCT INFO
+            PRODUCT
         =================================================== */}
 
         <div className="mobile-nav-heading">
@@ -1010,7 +992,7 @@ export default function TraceHeader() {
         </div>
 
         {/* ===================================================
-            MOBILE NAV LINKS
+            MOBILE LINKS
         =================================================== */}
 
         <div className="mobile-nav-list">

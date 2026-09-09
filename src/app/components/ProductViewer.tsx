@@ -122,8 +122,8 @@ export default function ProductViewer() {
   }, []);
 
   return <div className="product-viewer">
-    {!ready && <Image className="product-viewer-fallback" src="/traceability/heritage/stt-01-product.webp" alt="Dấu Ấn Thượng Triều Nguyễn" fill sizes="(max-width: 768px) 100vw, 50vw" />}
-    <div ref={host} className="product-viewer-canvas" role="img" aria-label="Mô hình 3D Dấu Ấn Thượng Triều Nguyễn. Kéo để xoay, cuộn hoặc chụm hai ngón để thu phóng." />
+    {!ready && <Image className="product-viewer-fallback" src="/traceability/figma/product-front.png" alt="Long Vân Lưu Tín" fill sizes="(max-width: 768px) 100vw, 50vw" />}
+    <div ref={host} className="product-viewer-canvas" role="img" aria-label="Mô hình 3D Long Vân Lưu Tín. Kéo để xoay, cuộn hoặc chụm hai ngón để thu phóng." />
     <p className="product-viewer-label" role="status">{status}</p>
   </div>;
 }

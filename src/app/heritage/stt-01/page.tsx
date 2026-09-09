@@ -1,893 +1,101 @@
 import type { Metadata } from "next";
 import Image from "next/image";
-import {
-  ArrowDown,
-  ArrowUpRight,
-  Check,
-  CheckCircle2,
-  FileBadge2,
-  FileText,
-  Fingerprint,
-  Landmark,
-  PackageCheck,
-  ShieldCheck,
-  Sparkles,
-} from "lucide-react";
-
 import ProductViewer from "../../components/ProductViewer";
-import TraceHeader from "../../components/TraceHeader";
-import AdvancedInfo from "../../components/AdvancedInfo";
-import {
-  getStt01Content,
-} from "../../data/stt-01";
-
-/* =========================================================
-   METADATA
-========================================================= */
-
-export const metadata: Metadata = {
-  title: "Dấu Ấn Thượng Triều Nguyễn",
-
-  description:
-    "Hồ sơ truy xuất sản phẩm Dấu Ấn Thượng Triều Nguyễn, cung cấp thông tin xác thực, câu chuyện văn hóa, bảo chứng, quyền tác giả và dữ liệu truy xuất.",
-
-  alternates: {
-    canonical:
-      "/heritage/stt-01",
-    languages: {
-      "vi-VN":
-        "/heritage/stt-01",
-      "en-US":
-        "/en/heritage/stt-01",
-    },
-  },
-
-  openGraph: {
-    type: "website",
-    locale: "vi_VN",
-
-    title:
-      "Dấu Ấn Thượng Triều Nguyễn · Nền tảng truy xuất VTC",
-
-    description:
-      "Tra cứu thông tin sản phẩm, xác thực, câu chuyện văn hóa, bảo chứng và quyền tác giả của Dấu Ấn Thượng Triều Nguyễn.",
-
-    url:
-      "https://vtcrdcenter.github.io/traceability/heritage/stt-01/",
-  },
-};
-
-/* =========================================================
-   BASE PATH
-========================================================= */
 
 const BASE = "/traceability";
+const A = `${BASE}/figma`;
 
-/* =========================================================
-   PAGE
-========================================================= */
+export const metadata: Metadata = {
+  title: "Long Vân Lưu Tín",
+  description: "Hồ sơ truy xuất sản phẩm văn hóa Long Vân Lưu Tín của VTC Merch.",
+};
+
+const facts = [
+  ["Tên sản phẩm", "Long Vân Lưu Tín"],
+  ["Mã sản phẩm", "893-110006-001-1"],
+  ["Loại sản phẩm", "Miếng dán tủ lạnh"],
+  ["Kích thước", "6.8 × 5.4 cm, dày 0.3 cm"],
+  ["Chất liệu", "Hợp kim, mạ viền vàng, ngọc trai"],
+  ["Xuất xứ", "Việt Nam"],
+  ["Thời gian sản xuất", "09/2026"],
+  ["Đơn vị sản xuất", "Công ty Quà tặng ENSA"],
+  ["Thương hiệu", "VTC Merchandise"],
+];
+
+const certificates = [
+  { number: "01", logo: "museum.png", eyebrow: "ĐƠN VỊ BẢO CHỨNG", title: "Bảo tàng Lịch sử Quốc gia", copy: "Đơn vị xác nhận nguồn tham chiếu văn hóa của sản phẩm, bảo chứng nội dung khai thác giá trị văn hóa từ hình tượng mũ thượng triều thời Nguyễn, hồ sơ thiết kế và nghệ thuật trang sức cung đình Việt Nam.", link: "Tìm hiểu về BTLSQG →" },
+  { number: "02", logo: "copyright.png", eyebrow: "CHỨNG NHẬN QUYỀN TÁC GIẢ", title: "Cục Bản quyền tác giả", copy: "Thiết kế của sản phẩm “Dấu Ấn Thượng triều Nguyễn” đã được cấp Giấy chứng nhận đăng ký quyền tác giả.", link: "Xem giấy chứng nhận →" },
+  { number: "03", logo: "vtc.png", eyebrow: "ĐƠN VỊ VẬN HÀNH NỀN TẢNG", title: "Tổng công ty VTC", copy: "Tổng công ty truyền thông Đa phương tiện VTC là đơn vị vận hành nền tảng lưu trữ và hỗ trợ tra cứu hồ sơ số của sản phẩm.", link: "Tìm hiểu về VTC →" },
+];
 
 export default function Stt01Page() {
-  const content =
-    getStt01Content("vi");
+  return <main className="figma-landing">
+    <header className="figma-header">
+      <Image src={`${A}/raw-01.png`} alt="VTC Merch" width={118} height={30} priority />
+      <nav aria-label="Ngôn ngữ"><b>VI</b><span>|</span><a href={`${BASE}/en/heritage/stt-01/`}>EN</a></nav>
+    </header>
 
-  const {
-    product,
-    overview,
-    verification,
-    heritage,
-    merch,
-    documents,
-    footer,
-  } = content;
-
-  /* =========================================================
-     VERIFICATION ICONS
-  ========================================================= */
-
-  const verificationIcons = {
-    trace: Fingerprint,
-    attestation: Landmark,
-    copyright: FileBadge2,
-  };
-
-  return (
-    <main className="trace-page">
-      {/* =====================================================
-          HEADER
-      ===================================================== */}
-
-      <TraceHeader />
-
-      {/* =====================================================
-          01 — OVERVIEW
-      ===================================================== */}
-
-      <section
-        id="overview"
-        className="hero section-pad chapter-wine"
-      >
-        {/* ===================================================
-            HERO COPY
-        =================================================== */}
-
-        <div className="hero-copy">
-          <p className="eyebrow">
-            {overview.eyebrow}
-          </p>
-
-          <h1>
-            {overview.titleLine1}
-            <br />
-
-            <em>
-              {overview.titleLine2}
-            </em>
-          </h1>
-
-          <p className="hero-lead">
-            {overview.description}
-          </p>
-
-          {/* ===============================================
-              PRODUCT META
-          =============================================== */}
-
-          <div className="hero-meta">
-            <span>
-              <small>
-                {overview.meta.codeLabel}
-              </small>
-
-              <b>
-                {product.code}
-              </b>
-            </span>
-
-            <span>
-              <small>
-                {overview.meta.typeLabel}
-              </small>
-
-              <b>
-                {product.type}
-              </b>
-            </span>
-
-            <span>
-              <small>
-                {overview.meta.traceLabel}
-              </small>
-
-              <b>
-                {product.traceCode}
-              </b>
-            </span>
-          </div>
-
-          {/* ===============================================
-              HERO ACTIONS
-          =============================================== */}
-
-          <div className="hero-actions">
-            <a
-              className="primary-button"
-              href="#verification"
-            >
-              <ShieldCheck
-                size={15}
-                aria-hidden="true"
-              />
-
-              <span>
-                {overview.primaryAction}
-              </span>
-            </a>
-
-            <a href="#heritage-story">
-              <span>
-                {overview.secondaryAction}
-              </span>
-
-              <ArrowDown
-                size={14}
-                aria-hidden="true"
-              />
-            </a>
+    <section className="figma-hero">
+      <div className="figma-shell figma-hero-grid">
+        <div className="figma-hero-copy">
+          <span className="figma-kicker">SẢN PHẨM VĂN HÓA</span>
+          <h1><span>Long Vân</span>Lưu Tín</h1>
+          <p>Món quà này là một lời nhắc nhớ tinh tế: Những di sản vĩ đại nhất đôi khi không nằm ở đâu xa xôi, mà hiện diện ngay trong nếp nhà, lấp lánh tỏa sáng mỗi khi bạn chạm tay vào, gìn giữ cho bạn những kết nối trân quý nhất của hiện tại.</p>
+          <div className="figma-attestation">
+            <Image src={`${A}/museum.png`} alt="" width={48} height={48} />
+            <div><small>ĐƯỢC BẢO CHỨNG NGÀY 29/08/2026 BỞI</small><strong>Bảo tàng Lịch sử Quốc gia</strong></div>
           </div>
         </div>
+        <div className="figma-hero-image"><Image src={`${A}/hero.png`} alt="Long Vân Lưu Tín trong không gian sống" fill priority sizes="(max-width: 760px) 100vw, 58vw" /></div>
+      </div>
+    </section>
 
-        {/* ===================================================
-            HERO VISUAL
-        =================================================== */}
-
-        <div className="hero-image">
-          <ProductViewer />
-
-          <div
-            className="edition"
-            aria-hidden="true"
-          >
-            <span>
-              STT
-            </span>
-
-            <b>
-              01
-            </b>
-          </div>
-
-          <div className="status-chip">
-            <CheckCircle2
-              size={22}
-              aria-hidden="true"
-            />
-
-            <div>
-              <small>
-                {overview.status.label}
-              </small>
-
-              <b>
-                {overview.status.value}
-              </b>
+    <section className="figma-section figma-product" id="product-info">
+      <div className="figma-shell">
+        <h2>Thông tin sản phẩm</h2>
+        <div className="figma-product-grid">
+          <div className="figma-gallery">
+            <div className="figma-gallery-main"><Image src={`${A}/product-front.png`} alt="Mặt trước Long Vân Lưu Tín" fill sizes="(max-width: 760px) 100vw, 48vw" /></div>
+            <div className="figma-thumbs">
+              {["product-front.png", "product-back.png", "product-life.png", "product-box.png"].map((src, i) => <div key={src} className={i === 0 ? "active" : ""}><Image src={`${A}/${src}`} alt="" fill sizes="120px" /></div>)}
             </div>
           </div>
+          <dl className="figma-facts">{facts.map(([dt, dd]) => <div key={dt}><dt>{dt}</dt><dd>{dd}</dd></div>)}</dl>
         </div>
+      </div>
+    </section>
 
-        {/* ===================================================
-            QUICK NAV
-        =================================================== */}
+    <section className="figma-section figma-certificates" id="certificates">
+      <div className="figma-shell">
+        <h2>Chứng nhận giá trị văn hóa</h2>
+        <div className="figma-card-grid">{certificates.map(card => <article className="figma-card" key={card.number}>
+          <span className="figma-card-number">{card.number}</span>
+          <div className="figma-card-logo"><Image src={`${A}/${card.logo}`} alt="" fill sizes="164px" /></div>
+          <small>{card.eyebrow}</small><h3>{card.title}</h3><p>{card.copy}</p><a href="#product-info">{card.link}</a>
+        </article>)}</div>
+      </div>
+    </section>
 
-        <div className="quick-nav">
-          <p>
-            <span>
-              {overview.quickNavLabel}
-            </span>
+    <section className="figma-3d" id="experience">
+      <div className="figma-shell">
+        <h2>Trải nghiệm sản phẩm ở mọi góc nhìn</h2>
+        <p>Xoay, phóng to, thu nhỏ và khám phá các chi tiết họa tiết, cấu trúc của sản phẩm với mô hình 3D tương tác.</p>
+        <div className="figma-viewer-stage"><ProductViewer /></div>
+      </div>
+    </section>
 
-            {overview.quickNavDescription}
-          </p>
-
-          <div>
-            {content.nav
-              .filter((item) =>
-                [
-                  "verification",
-                  "heritage-story",
-                  "merch",
-                  "documents",
-                ].includes(item.id)
-              )
-              .map((item) => (
-                <a
-                  key={item.id}
-                  href={`#${item.id}`}
-                >
-                  <i>
-                    {item.number}
-                  </i>
-
-                  <span>
-                    {item.label}
-                  </span>
-
-                  <ArrowDown
-                    size={13}
-                    aria-hidden="true"
-                  />
-                </a>
-              ))}
-          </div>
+    <section className="figma-section figma-story" id="story">
+      <div className="figma-shell">
+        <h2>Bầu trời di sản trong tổ ấm hiện đại</h2>
+        <div className="figma-source"><b>NGUỒN CẢM HỨNG CHÍNH</b><p>Mũ thượng triều được nhà vua sử dụng mỗi khi thiết triều, giải quyết các vấn đề lớn của quốc gia, thực hiện các nghi lễ khánh tiết của Nhà nước, hoặc yết kiến sứ giả các nước bang giao. Đây là bảo vật hoàng cung quý hiếm có niên đại thế kỷ XIX–XX, được chế tác tinh xảo từ vàng, đá quý, san hô và kim sa.</p></div>
+        <div className="figma-story-grid">
+          <div><b>CÂU CHUYỆN SẢN PHẨM</b><p>Hơn một thế kỷ trước, dưới bầu trời bát ngát và những áng mây cuộn dâng của chốn kinh thành, những nghệ nhân kim hoàn bậc thầy đã thả hồn mình vào từng lá vàng, hạt ngọc để kiến tạo nên chiếc Mũ Thượng triều uy nghi nhất.</p><p><strong>Đồ án “Long Vân”</strong> không chỉ biểu trưng cho vương quyền, mà còn gói trọn khát vọng về một vũ trụ khoáng đạt, thái hòa. Ngày nay, <strong>“Long Vân Lưu Tín”</strong> thu nhỏ bầu trời di sản ấy trong một vật phẩm thân thuộc, gìn giữ những lời nhắn yêu thương của gia đình.</p></div>
+          <div className="figma-story-image"><Image src={`${A}/story.png`} alt="Mũ thượng triều triều Nguyễn" fill sizes="(max-width: 760px) 100vw, 42vw" /></div>
         </div>
-      </section>
-
-      {/* =====================================================
-          02 — VERIFICATION
-      ===================================================== */}
-
-      <section
-        id="verification"
-        className="content-section section-pad chapter-cream"
-      >
-        {/* ===================================================
-            HEADING
-        =================================================== */}
-
-        <div className="section-heading">
-          <span className="section-number">
-            {verification.number}
-          </span>
-
-          <div>
-            <p className="eyebrow">
-              {verification.eyebrow}
-            </p>
-
-            <h2>
-              {verification.title}
-            </h2>
-
-            <p>
-              {verification.description}
-            </p>
-          </div>
-        </div>
-
-        {/* ===================================================
-            SUMMARY CARDS
-        =================================================== */}
-
-        <div className="verification-summary">
-          {verification.items.map(
-            (item) => {
-              const Icon =
-                verificationIcons[
-                  item.key
-                ];
-
-              return (
-                <article
-                  key={item.key}
-                  className="verification-summary-card"
-                >
-                  <Icon
-                    aria-hidden="true"
-                  />
-
-                  <small>
-                    {item.eyebrow}
-                  </small>
-
-                  <h3>
-                    {item.title}
-                  </h3>
-
-                  <p>
-                    {item.description}
-                  </p>
-                </article>
-              );
-            }
-          )}
-        </div>
-
-        {/* ===================================================
-            BASIC + TRACE RESULT
-        =================================================== */}
-
-        <div className="verification-basic-grid">
-          {/* BASIC INFORMATION */}
-
-          <article className="basic-product-info">
-            <p className="eyebrow">
-              {
-                verification
-                  .productInfo
-                  .eyebrow
-              }
-            </p>
-
-            <h3>
-              {
-                verification
-                  .productInfo
-                  .title
-              }
-            </h3>
-
-            <dl>
-              {verification.productInfo.fields.map(
-                (item) => (
-                  <div key={item.label}>
-                    <dt>
-                      {item.label}
-                    </dt>
-
-                    <dd>
-                      {item.value}
-                    </dd>
-                  </div>
-                )
-              )}
-            </dl>
-          </article>
-
-          {/* TRACE RESULT */}
-
-          <article className="basic-trace-result">
-            <div>
-              <Fingerprint
-                size={30}
-                aria-hidden="true"
-              />
-
-              <span className="valid">
-                <Check
-                  size={13}
-                  aria-hidden="true"
-                />
-
-                {
-                  verification
-                    .traceResult
-                    .validLabel
-                }
-              </span>
-            </div>
-
-            <p className="eyebrow">
-              {
-                verification
-                  .traceResult
-                  .eyebrow
-              }
-            </p>
-
-            <h3>
-              {
-                verification
-                  .traceResult
-                  .codeLabel
-              }
-            </h3>
-
-            <p>
-              {
-                verification
-                  .traceResult
-                  .description
-              }
-            </p>
-
-            <a
-              className="advanced-link"
-              href="#advanced"
-            >
-              <span>
-                {
-                  verification
-                    .traceResult
-                    .advancedLink
-                }
-              </span>
-
-              <ArrowDown
-                size={14}
-                aria-hidden="true"
-              />
-            </a>
-          </article>
-        </div>
-      </section>
-
-      {/* =====================================================
-          03 — HERITAGE STORY
-      ===================================================== */}
-
-      <section
-        id="heritage-story"
-        className="content-section section-pad chapter-wine"
-      >
-        {/* ===================================================
-            HEADING
-        =================================================== */}
-
-        <div className="section-heading">
-          <span className="section-number">
-            {heritage.number}
-          </span>
-
-          <div>
-            <p className="eyebrow">
-              {heritage.eyebrow}
-            </p>
-
-            <h2>
-              {heritage.title}
-            </h2>
-
-            <p>
-              {heritage.description}
-            </p>
-          </div>
-        </div>
-
-        {/* ===================================================
-            STORY
-        =================================================== */}
-
-        <div className="heritage-grid">
-          <figure>
-            <Image
-              src={`${BASE}/heritage/heritage-hat-front.webp`}
-              alt="Mũ Cửu Long Thông Thiên"
-              width={1100}
-              height={1100}
-            />
-
-            <figcaption>
-              {heritage.sourceCaption}
-            </figcaption>
-          </figure>
-
-          <div className="heritage-story">
-            <p className="eyebrow">
-              {heritage.storyEyebrow}
-            </p>
-
-            <blockquote>
-              {heritage.storyTitle}
-            </blockquote>
-
-            <p>
-              {heritage.storyDescription}
-            </p>
-
-            <a
-              className="story-more-link"
-              href="#advanced"
-            >
-              <span>
-                {heritage.advancedLink}
-              </span>
-
-              <ArrowDown
-                size={14}
-                aria-hidden="true"
-              />
-            </a>
-          </div>
-        </div>
-
-        {/* ===================================================
-            HIGHLIGHTS
-        =================================================== */}
-
-        <div className="heritage-depth">
-          {heritage.highlights.map(
-            (item) => (
-              <article
-                key={item.number}
-              >
-                <span>
-                  {item.number}
-                </span>
-
-                <div>
-                  <h3>
-                    {item.title}
-                  </h3>
-
-                  <p>
-                    {item.description}
-                  </p>
-                </div>
-              </article>
-            )
-          )}
-        </div>
-      </section>
-
-      {/* =====================================================
-          04 — VTC MERCH
-      ===================================================== */}
-
-      <section
-        id="merch"
-        className="content-section section-pad chapter-cream"
-      >
-        {/* ===================================================
-            HEADING
-        =================================================== */}
-
-        <div className="section-heading">
-          <span className="section-number">
-            {merch.number}
-          </span>
-
-          <div>
-            <p className="eyebrow">
-              {merch.eyebrow}
-            </p>
-
-            <h2>
-              {merch.title}
-            </h2>
-
-            <p>
-              {merch.description}
-            </p>
-          </div>
-        </div>
-
-        {/* ===================================================
-            FEATURE
-        =================================================== */}
-
-        <div className="merch-feature">
-          <div className="merch-feature-copy">
-            <p className="eyebrow">
-              {merch.feature.eyebrow}
-            </p>
-
-            <h3>
-              {merch.feature.title}
-            </h3>
-
-            <p>
-              {merch.feature.description}
-            </p>
-
-            <a
-              className="primary-button"
-              href="#"
-              aria-label={
-                merch.feature.cta
-              }
-            >
-              <span>
-                {merch.feature.cta}
-              </span>
-
-              <ArrowUpRight
-                size={15}
-                aria-hidden="true"
-              />
-            </a>
-          </div>
-
-          <div className="merch-feature-visual">
-            <Image
-              src={`${BASE}/heritage/product-lifestyle.webp`}
-              alt="VTC Merch"
-              width={1400}
-              height={1000}
-            />
-          </div>
-        </div>
-
-        {/* ===================================================
-            MERCH CARDS
-        =================================================== */}
-
-        <div className="merch-cards">
-          {merch.cards.map(
-            (item, index) => {
-              const icons = [
-                PackageCheck,
-                Sparkles,
-                Landmark,
-              ];
-
-              const Icon =
-                icons[index] ??
-                Sparkles;
-
-              return (
-                <article
-                  key={`${item.eyebrow}-${item.title}`}
-                >
-                  <Icon
-                    aria-hidden="true"
-                  />
-
-                  <small>
-                    {item.eyebrow}
-                  </small>
-
-                  <h3>
-                    {item.title}
-                  </h3>
-
-                  <p>
-                    {item.description}
-                  </p>
-                </article>
-              );
-            }
-          )}
-        </div>
-      </section>
-
-      {/* =====================================================
-          05 — DOCUMENTS
-      ===================================================== */}
-
-      <section
-        id="documents"
-        className="records section-pad chapter-wine"
-      >
-        {/* ===================================================
-            LEFT
-        =================================================== */}
-
-        <div>
-          <span className="section-number">
-            {documents.number}
-          </span>
-
-          <p className="eyebrow">
-            {documents.eyebrow}
-          </p>
-
-          <h2>
-            {documents.title}
-          </h2>
-
-          <p>
-            {documents.description}
-          </p>
-        </div>
-
-        {/* ===================================================
-            RIGHT
-        =================================================== */}
-
-        <div>
-          {documents.items.map(
-            (item, index) => {
-              const icons = [
-                ShieldCheck,
-                FileText,
-              ];
-
-              const Icon =
-                icons[index] ??
-                FileText;
-
-              return (
-                <div
-                  key={item.title}
-                  className="record-row"
-                >
-                  <Icon
-                    size={20}
-                    aria-hidden="true"
-                  />
-
-                  <div>
-                    <b>
-                      {item.title}
-                    </b>
-
-                    <small>
-                      {item.subtitle}
-                    </small>
-
-                    <small>
-                      {item.meta}
-                    </small>
-                  </div>
-
-                  <CheckCircle2
-                    size={18}
-                    aria-hidden="true"
-                  />
-                </div>
-              );
-            }
-          )}
-
-          <a
-            className="records-advanced-link"
-            href="#advanced"
-          >
-            <span>
-              {documents.advancedLink}
-            </span>
-
-            <ArrowDown
-              size={14}
-              aria-hidden="true"
-            />
-          </a>
-        </div>
-      </section>
-
-      {/* =====================================================
-          06 — ADVANCED
-      ===================================================== */}
-
-      <AdvancedInfo locale="vi" />
-
-      {/* =====================================================
-          FOOTER
-      ===================================================== */}
-
-      <footer className="site-footer">
-        {/* ===================================================
-            PLATFORM
-        =================================================== */}
-
-        <div className="footer-brand">
-          <span
-            className="brand-seal"
-            aria-hidden="true"
-          >
-            ẤN
-          </span>
-
-          <div>
-            <b>
-              {footer.platformTitle}
-            </b>
-
-            <small>
-              {footer.platformSubtitle}
-            </small>
-          </div>
-        </div>
-
-        {/* ===================================================
-            FOOTER NAV
-        =================================================== */}
-
-        <div className="footer-info">
-          <p>
-            {footer.navTitle}
-          </p>
-
-          {content.nav.map(
-            (item) => (
-              <a
-                key={item.id}
-                href={`#${item.id}`}
-              >
-                {item.label}
-              </a>
-            )
-          )}
-        </div>
-
-        {/* ===================================================
-            OPERATOR
-        =================================================== */}
-
-        <div className="footer-operator">
-          <Image
-            src={`${BASE}/heritage/vtc-logo.webp`}
-            alt="VTC"
-            width={180}
-            height={90}
-          />
-
-          <div>
-            <small>
-              {footer.operatorLabel}
-            </small>
-
-            <b>
-              {footer.operatorName}
-            </b>
-
-            <em>
-              {footer.operatorDescription}
-            </em>
-          </div>
-        </div>
-
-        {/* ===================================================
-            BACK TO TOP
-        =================================================== */}
-
-        <a
-          className="back-top"
-          href="#overview"
-        >
-          <span>
-            {footer.backToTop}
-          </span>
-
-          <ArrowUpRight
-            size={14}
-            aria-hidden="true"
-          />
-        </a>
-
-        <p className="footer-bottom">
-          {footer.copyright}
-        </p>
-      </footer>
-    </main>
-  );
+        <div className="figma-meaning-grid"><article><Image src={`${A}/icon-cloud.png`} alt="" width={60} height={60} /><div><h3>Long Vân (Rồng và Mây)</h3><p>Họa tiết rồng phượng uốn lượn giữa những tầng mây, đại diện cho chí lớn và sự tự do.</p></div></article><article><Image src={`${A}/icon-note.png`} alt="" width={60} height={60} /><div><h3>Lưu Tín (Lưu giữ thông điệp)</h3><p>Chiếc nam châm lưu giữ giấy nhớ, lời nhắn và những kết nối thân thuộc trong gia đình.</p></div></article></div>
+      </div>
+    </section>
+
+    <footer className="figma-footer"><Image src={`${A}/raw-01.png`} alt="VTC Merch" width={118} height={30} /><p>Nền tảng được vận hành bởi<br/><b>Tổng công ty Truyền thông Đa phương tiện VTC</b></p><small>© 2026 VTC Merch. All rights reserved.</small></footer>
+  </main>;
 }

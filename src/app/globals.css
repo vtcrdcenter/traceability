@@ -3374,3 +3374,18 @@ dd {
     animation-iteration-count: 1 !important;
   }
 }
+
+/* Interactive STL product preview */
+.hero-image:has(.product-viewer) {
+  background: radial-gradient(circle at 50% 38%, #782f3c, #380f1c);
+}
+.product-viewer { position: absolute; inset: 0; }
+.product-viewer-canvas { position: absolute; inset: 0; cursor: grab; }
+.product-viewer-canvas:active { cursor: grabbing; }
+.product-viewer-canvas canvas { display: block; touch-action: none; }
+.product-viewer-fallback { object-fit: contain; padding: 48px; }
+.product-viewer-label {
+  position: absolute; bottom: 84px; left: 12px; right: 12px;
+  margin: 0; text-align: center; color: #f0d6a0;
+  font-size: 13px; pointer-events: none;
+}

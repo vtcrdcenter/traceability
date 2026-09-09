@@ -14,6 +14,7 @@ import {
   Sparkles,
 } from "lucide-react";
 
+import ProductViewer from "../../components/ProductViewer";
 import TraceHeader from "../../components/TraceHeader";
 import AdvancedInfo from "../../components/AdvancedInfo";
 import {
@@ -201,13 +202,7 @@ export default function Stt01Page() {
         =================================================== */}
 
         <div className="hero-image">
-          <Image
-            src={`${BASE}/heritage/stt-01-product.webp`}
-            alt={product.name}
-            width={1200}
-            height={1200}
-            priority
-          />
+          <ProductViewer />
 
           <div
             className="edition"

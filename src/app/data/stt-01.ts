@@ -284,6 +284,10 @@ export type ProductContent = {
 const sharedProduct = {
   code: "STT-01",
   traceCode: "VTC-STT-01",
+
+  sizeVi: "6.8 × 7.4 cm, dày 0.7 cm",
+  sizeEn: "6.8 × 7.4 cm, 0.7 cm thick",
+
   version: "01",
   lot: "STT-01-2026",
   serial: "000001",
@@ -358,7 +362,7 @@ const vi: ProductContent = {
     code: sharedProduct.code,
     traceCode: sharedProduct.traceCode,
     type: "Nam châm lưu niệm nhiều lớp",
-    size: "Theo phương án thiết kế",
+    size: sharedProduct.sizeVi,
     version: sharedProduct.version,
     lot: sharedProduct.lot,
     serial: sharedProduct.serial,
@@ -439,7 +443,7 @@ const vi: ProductContent = {
         },
         {
           label: "Kích thước",
-          value: "Theo phương án thiết kế",
+          value: sharedProduct.sizeVi,
         },
       ],
     },
@@ -868,7 +872,7 @@ const en: ProductContent = {
     code: sharedProduct.code,
     traceCode: sharedProduct.traceCode,
     type: "Multi-layer souvenir magnet",
-    size: "According to the design specification",
+    size: sharedProduct.sizeEn,
     version: sharedProduct.version,
     lot: sharedProduct.lot,
     serial: sharedProduct.serial,
@@ -949,7 +953,7 @@ const en: ProductContent = {
         },
         {
           label: "Dimensions",
-          value: "According to the design specification",
+          value: sharedProduct.sizeEn,
         },
       ],
     },

@@ -1,10 +1,199 @@
-.gallery { min-width: 0; width: 100%; }
-.main { position: relative; width: 100%; aspect-ratio: 1 / .8; background: #fffaf2; border: 1px solid #e4d6c4; border-radius: 8px; }
-.main img { object-fit: contain; padding: 16px; }
-.thumbs { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; margin-top: 14px; }
-.thumb { position: relative; min-width: 0; width: 100%; min-height: 44px; aspect-ratio: 1 / .8; padding: 0; border: 2px solid #dacbb8; border-radius: 6px; background: #fffaf2; cursor: pointer; transition: border-color .18s, background-color .18s; }
-.thumb img { object-fit: contain; padding: 5px; }
-.thumb:hover { border-color: #a26b35; background: #fff3dc; }
-.thumb[aria-selected="true"] { border-color: #7f1821; box-shadow: 0 0 0 1px #d9aa48; }
-.thumb:focus-visible { outline: 2px solid #7f1821; outline-offset: 4px; }
-@media (max-width: 800px) { .thumbs { gap: 8px; } }
+.gallery {
+  width: 100%;
+  min-width: 0;
+
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 112px;
+  grid-template-rows: minmax(0, 1fr);
+
+  gap: 14px;
+
+  align-items: stretch;
+}
+
+/* =========================================================
+   ẢNH CHÍNH
+========================================================= */
+
+.main {
+  position: relative;
+
+  width: 100%;
+  min-width: 0;
+
+  aspect-ratio: 1 / 0.8;
+
+  overflow: hidden;
+
+  border: 1px solid #e4d6c4;
+  border-radius: 8px;
+
+  background: #fffaf2;
+}
+
+.main img {
+  object-fit: contain !important;
+  object-position: center !important;
+
+  padding: 16px;
+}
+
+/* =========================================================
+   THUMBNAILS — DESKTOP
+   4 ảnh dọc bên phải
+========================================================= */
+
+.thumbs {
+  min-width: 0;
+
+  display: grid;
+
+  grid-template-columns: 1fr;
+  grid-template-rows:
+    repeat(4, minmax(0, 1fr));
+
+  gap: 10px;
+
+  margin: 0;
+}
+
+.thumb {
+  position: relative;
+
+  width: 100%;
+  min-width: 0;
+  min-height: 0;
+
+  overflow: hidden;
+
+  padding: 0;
+
+  border: 1px solid #dacbb8;
+  border-radius: 6px;
+
+  background: #fffaf2;
+
+  cursor: pointer;
+
+  opacity: 0.72;
+
+  transition:
+    border-color 0.18s ease,
+    box-shadow 0.18s ease,
+    background-color 0.18s ease,
+    opacity 0.18s ease,
+    transform 0.18s ease;
+}
+
+.thumb img {
+  object-fit: contain !important;
+  object-position: center !important;
+
+  padding: 5px;
+}
+
+.thumb:hover {
+  border-color: #a26b35;
+
+  background: #fff3dc;
+
+  opacity: 1;
+
+  transform: translateX(-2px);
+}
+
+.thumb[aria-selected="true"] {
+  border-color: #7f1821;
+
+  box-shadow:
+    0 0 0 1px #d9aa48;
+
+  opacity: 1;
+}
+
+.thumb:focus-visible {
+  outline: 2px solid #7f1821;
+  outline-offset: 3px;
+}
+
+/* =========================================================
+   TABLET
+========================================================= */
+
+@media (max-width: 1024px) {
+  .gallery {
+    grid-template-columns:
+      minmax(0, 1fr)
+      96px;
+
+    gap: 10px;
+  }
+
+  .thumbs {
+    gap: 8px;
+  }
+}
+
+/* =========================================================
+   MOBILE
+   Ảnh chính trên — thumbnail ngang bên dưới
+========================================================= */
+
+@media (max-width: 800px) {
+  .gallery {
+    display: block;
+  }
+
+  .main {
+    aspect-ratio: 1 / 0.88;
+  }
+
+  .main img {
+    padding: 10px;
+  }
+
+  .thumbs {
+    display: grid;
+
+    grid-template-columns:
+      repeat(4, minmax(0, 1fr));
+
+    grid-template-rows: none;
+
+    gap: 8px;
+
+    margin-top: 10px;
+  }
+
+  .thumb {
+    aspect-ratio: 1 / 0.78;
+
+    min-height: 56px;
+  }
+
+  .thumb:hover {
+    transform: none;
+  }
+}
+
+/* =========================================================
+   SMALL MOBILE
+========================================================= */
+
+@media (max-width: 420px) {
+  .main {
+    aspect-ratio: 1 / 0.95;
+  }
+
+  .thumbs {
+    gap: 6px;
+  }
+
+  .thumb {
+    min-height: 50px;
+  }
+
+  .thumb img {
+    padding: 3px;
+  }
+}

@@ -14,12 +14,12 @@
 .hero h1 { margin: 0; color: #dfbd74; font-size: clamp(48px, 4.4vw, 64px); font-weight: 500; line-height: 1.12; letter-spacing: -.03em; }
 .hero h1 span { display: block; color: white; }
 .hero-copy > p { max-width: 500px; margin: 26px 0 0; color: #fff4eb; font-size: 13px; font-weight: 300; line-height: 1.8; }
-.section { position: relative; isolation: isolate; overflow: hidden; padding-block: clamp(42px, 4vw, 60px); }
+.section { position: relative; isolation: isolate; overflow: hidden; padding-block: clamp(34px, 3.2vw, 48px); }
 .product { background: var(--cream); }
 .product h2::after { content: ""; display: inline-block; vertical-align: middle; width: 175px; height: 64px; margin-left: 18px; background: url('/traceability/figma/cloud-ornament.svg') center / contain no-repeat; opacity: .45; }
-.product-grid { display: grid; grid-template-columns: minmax(0, 1.37fr) minmax(0, 1fr); gap: clamp(24px, 3.2vw, 46px); align-items: stretch; }
+.product-grid { display: grid; grid-template-columns: minmax(0, 1.22fr) minmax(0, 1fr); gap: clamp(24px, 3vw, 42px); align-items: start; }
 .facts { min-width: 0; width: 100%; margin: 0; border: 1px solid #ddcfbe; border-radius: 7px; overflow: hidden; display: grid; }
-.facts > div { display: grid; grid-template-columns: minmax(0, .9fr) minmax(0, 1.2fr); gap: 18px; padding: 12px 22px; border-bottom: 1px solid #ddcfbe; align-items: center; }
+.facts > div { display: grid; grid-template-columns: minmax(0, .9fr) minmax(0, 1.2fr); gap: 18px; padding: 10px 20px; border-bottom: 1px solid #ddcfbe; align-items: center; }
 .facts > div:last-child { border-bottom: 0; }
 .facts dt, .facts dd { min-width: 0; overflow-wrap: anywhere; font-size: 12px; line-height: 1.65; }
 .facts dt { color: #756052; font-weight: 300; }
@@ -39,7 +39,7 @@
 .experience { position: relative; isolation: isolate; overflow: hidden; padding-block: 44px 36px; background: radial-gradient(ellipse at center, #7f1821 55%, #60191d); color: white; text-align: center; }
 .experience h2 { margin-bottom: 18px; color: #dfbd74; }
 .experience > .shell > p { max-width: 900px; margin: 0 auto; color: #fff0e5; font-size: 12px; line-height: 1.7; }
-.viewer-stage { position: relative; width: min(700px, 100%); height: clamp(400px, 39vw, 550px); margin: 16px auto 0; isolation: isolate; }
+.viewer-stage { position: relative; width: min(760px, 100%); height: clamp(410px, 38vw, 520px); margin: 8px auto 0; isolation: isolate; }
 .story { background: var(--cream); }
 .source { margin: 44px 0; text-align: left; }
 .source b, .story-grid b { color: #30221d; font-size: 10px; font-weight: 600; }
@@ -100,7 +100,7 @@
   .experience { padding: 34px 0 22px; }
   .experience h2 { font-size: 27px; }
   .experience > .shell > p { font-size: 11px; }
-  .viewer-stage { height: 350px; }
+  .viewer-stage { height: clamp(340px, 92vw, 430px); }
   .cloudCornerLeft, .cloudCornerRight { width: 150px; height: 110px; opacity: .22; }
   .cloudTitleLeft { left: -75px; } .cloudTitleRight { right: -75px; }
   .source { margin: 34px 0; }

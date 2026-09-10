@@ -1,0 +1,149 @@
+.hero {
+  overflow-x: clip;
+}
+
+.heroGrid {
+  min-width: 0;
+}
+
+.heroCopy,
+.heroImage {
+  min-width: 0;
+}
+
+/* ================================
+   KHUNG BẢO CHỨNG
+================================ */
+
+.attestation {
+  width: min(450px, 100%) !important;
+  min-height: 84px;
+
+  display: flex !important;
+  align-items: center;
+
+  gap: 18px;
+
+  margin-top: 34px;
+
+  padding: 14px 20px !important;
+
+  border: 1px solid #ffb100 !important;
+  border-radius: 8px !important;
+
+  background: #5b1017 !important;
+
+  box-shadow: none;
+}
+
+.attestationIcon {
+  width: 46px;
+  height: 46px;
+
+  flex: 0 0 46px;
+
+  display: grid;
+  place-items: center;
+
+  color: #f3c86f;
+}
+
+.attestationIcon svg {
+  display: block;
+
+  width: 42px;
+  height: 42px;
+}
+
+.attestationText {
+  min-width: 0;
+}
+
+.attestationText small {
+  display: block;
+
+  margin: 0 0 4px;
+
+  color: #e3b968 !important;
+
+  font-size: 9px;
+  font-weight: 600;
+
+  line-height: 1.45;
+
+  letter-spacing: 0.08em;
+}
+
+.attestationText strong {
+  display: block;
+
+  color: #f3c86f !important;
+
+  font-size: clamp(15px, 1.45vw, 20px);
+  font-weight: 700;
+
+  line-height: 1.25;
+}
+
+/* ================================
+   MOBILE
+   ẢNH HERO TRƯỚC → CHỮ SAU
+================================ */
+
+@media (max-width: 760px) {
+  .heroGrid {
+    display: flex !important;
+    flex-direction: column !important;
+  }
+
+  .heroImage {
+    order: 1 !important;
+
+    width: 100% !important;
+
+    min-height: 0 !important;
+
+    margin: 0 !important;
+
+    aspect-ratio: 4 / 3;
+
+    overflow: hidden;
+  }
+
+  .heroImage img {
+    object-fit: cover !important;
+    object-position: center !important;
+  }
+
+  .heroCopy {
+    order: 2 !important;
+
+    padding-top: 42px !important;
+  }
+
+  .attestation {
+    width: 100% !important;
+
+    margin-top: 28px;
+
+    padding: 13px 16px !important;
+
+    gap: 14px;
+  }
+
+  .attestationIcon {
+    width: 42px;
+    height: 42px;
+
+    flex-basis: 42px;
+  }
+
+  .attestationIcon svg {
+    width: 38px;
+    height: 38px;
+  }
+
+  .attestationText strong {
+    font-size: 16px;
+  }
+}

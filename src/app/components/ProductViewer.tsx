@@ -10,14 +10,16 @@ export default function ProductViewer() {
   const [ready, setReady] = useState(false);
 
   useEffect(() => {
-    const element = host.current;
+    const hostElement = host.current;
 
-    if (!element) return;
+    if (!hostElement) {
+      return;
+    }
 
     let disposed = false;
     let cleanup = () => {};
 
-    async function init() {
+    async function init(element: HTMLDivElement) {
       const [
         THREE,
         { OrbitControls },
@@ -30,7 +32,9 @@ export default function ProductViewer() {
         import("three/addons/environments/RoomEnvironment.js"),
       ]);
 
-      if (disposed) return;
+      if (disposed) {
+        return;
+      }
 
       /**
        * =========================================================
@@ -45,8 +49,8 @@ export default function ProductViewer() {
       });
 
       /**
-       * Giới hạn DPR để tránh GPU quá tải trên mobile,
-       * đặc biệt Safari/iPhone.
+       * Giới hạn DPR để giảm tải GPU,
+       * đặc biệt trên mobile / Safari.
        */
       renderer.setPixelRatio(
         Math.min(
@@ -56,10 +60,8 @@ export default function ProductViewer() {
       );
 
       renderer.outputColorSpace = THREE.SRGBColorSpace;
-
       renderer.toneMapping = THREE.ACESFilmicToneMapping;
       renderer.toneMappingExposure = 1.25;
-
       renderer.setClearColor(0x000000, 0);
 
       element.appendChild(renderer.domElement);
@@ -85,17 +87,11 @@ export default function ProductViewer() {
         100
       );
 
-      /**
-       * Góc mặc định của sản phẩm.
-       *
-       * Đây chính là vị trí mà camera sẽ quay trở lại
-       * sau 2–3 giây người dùng không tương tác.
-       */
       camera.position.set(0, 0.18, 3.4);
 
       /**
        * =========================================================
-       * ORBIT CONTROLS
+       * CONTROLS
        * =========================================================
        */
 
@@ -106,58 +102,41 @@ export default function ProductViewer() {
 
       controls.enablePan = false;
 
-      /**
-       * Damping giúp thao tác kéo mượt hơn.
-       */
       controls.enableDamping = true;
       controls.dampingFactor = 0.06;
 
-      /**
-       * Auto rotate mặc định.
-       */
       controls.autoRotate = true;
       controls.autoRotateSpeed = 0.55;
 
-      /**
-       * Zoom nhẹ.
-       */
       controls.enableZoom = true;
       controls.zoomSpeed = 0.45;
 
       /**
-       * Giới hạn góc nhìn dọc.
-       *
-       * Không cho người dùng lật sản phẩm ngược hoàn toàn.
+       * Giới hạn góc nhìn dọc để không lật ngược sản phẩm.
        */
       controls.minPolarAngle = Math.PI * 0.23;
       controls.maxPolarAngle = Math.PI * 0.77;
 
       /**
        * Mobile:
-       * - 1 ngón: rotate
-       * - 2 ngón: pinch zoom + rotate
+       * 1 ngón = xoay
+       * 2 ngón = zoom + xoay
        */
       controls.touches.ONE = THREE.TOUCH.ROTATE;
       controls.touches.TWO = THREE.TOUCH.DOLLY_ROTATE;
 
-      /**
-       * Không cho camera tiến quá sát hoặc quá xa.
-       * Giá trị sẽ tiếp tục được hiệu chỉnh khi resize.
-       */
       controls.minDistance = 2;
       controls.maxDistance = 5;
 
       /**
        * =========================================================
-       * LIGHTING / ENVIRONMENT
+       * ENVIRONMENT / LIGHTING
        * =========================================================
        */
 
       const environment = new RoomEnvironment();
 
       const pmrem = new THREE.PMREMGenerator(renderer);
-
-      pmrem.compileEquirectangularShader();
 
       const environmentTarget = pmrem.fromScene(
         environment,
@@ -170,7 +149,7 @@ export default function ProductViewer() {
       pmrem.dispose();
 
       /**
-       * Bổ sung đèn để hoa văn trên bề mặt vàng rõ hơn.
+       * Đèn chính.
        */
       const keyLight = new THREE.DirectionalLight(
         0xfff2cf,
@@ -181,6 +160,9 @@ export default function ProductViewer() {
 
       scene.add(keyLight);
 
+      /**
+       * Đèn bù.
+       */
       const fillLight = new THREE.DirectionalLight(
         0xffd27a,
         1.3
@@ -190,6 +172,9 @@ export default function ProductViewer() {
 
       scene.add(fillLight);
 
+      /**
+       * Đèn viền.
+       */
       const rimLight = new THREE.DirectionalLight(
         0xffffff,
         0.85
@@ -203,27 +188,18 @@ export default function ProductViewer() {
        * =========================================================
        * GOLD MATERIAL
        * =========================================================
-       *
-       * Trước mắt toàn bộ GLB được hiển thị vật liệu vàng
-       * để kiểm thử 3D.
        */
 
       const goldMaterial = new THREE.MeshStandardMaterial({
         color: new THREE.Color("#D9AA48"),
-
         metalness: 0.82,
-
-        /**
-         * Không đặt quá thấp vì sẽ tạo cảm giác "chrome".
-         */
         roughness: 0.28,
-
         envMapIntensity: 1.25,
       });
 
       /**
        * =========================================================
-       * STATE CỦA VIEWER
+       * VIEWER STATE
        * =========================================================
        */
 
@@ -234,93 +210,63 @@ export default function ProductViewer() {
         | ReturnType<typeof setTimeout>
         | undefined;
 
-      /**
-       * Trạng thái camera đang quay về góc mặc định.
-       */
       let returningHome = false;
-
       let returnStartTime = 0;
 
       const RETURN_DURATION = 950;
 
-      /**
-       * Camera tại thời điểm bắt đầu quay về.
-       */
       const returnStartSpherical =
         new THREE.Spherical();
 
-      /**
-       * Góc camera mặc định.
-       */
       const homeSpherical =
         new THREE.Spherical();
 
-      /**
-       * Vector dùng tạm để tránh tạo object liên tục
-       * trong animation loop.
-       */
       const tempVector =
         new THREE.Vector3();
 
-      /**
-       * Target mặc định luôn nằm ở tâm model.
-       */
       const homeTarget =
         new THREE.Vector3(0, 0, 0);
 
       /**
        * =========================================================
-       * HELPER
+       * HELPERS
        * =========================================================
        */
 
-      const normalizeAngleDelta = (
-        angle: number
-      ) =>
-        Math.atan2(
+      const normalizeAngleDelta = (angle: number) => {
+        return Math.atan2(
           Math.sin(angle),
           Math.cos(angle)
         );
+      };
 
-      /**
-       * Ease in-out mượt.
-       */
-      const easeInOutCubic = (
-        value: number
-      ) =>
-        value < 0.5
+      const easeInOutCubic = (value: number) => {
+        return value < 0.5
           ? 4 * value * value * value
           : 1 -
-            Math.pow(
-              -2 * value + 2,
-              3
-            ) /
-              2;
+              Math.pow(
+                -2 * value + 2,
+                3
+              ) /
+                2;
+      };
 
       /**
        * =========================================================
-       * TRỞ VỀ VỊ TRÍ BAN ĐẦU
+       * RETURN HOME
        * =========================================================
        */
 
       const beginReturnHome = () => {
-        if (
-          disposed ||
-          !loaded
-        )
+        if (disposed || !loaded) {
           return;
+        }
 
         controls.autoRotate = false;
 
         returningHome = true;
+        returnStartTime = performance.now();
 
-        returnStartTime =
-          performance.now();
-
-        /**
-         * Lấy vị trí hiện tại của camera
-         * dưới dạng spherical coordinates.
-         */
         tempVector
           .copy(camera.position)
           .sub(controls.target);
@@ -329,10 +275,6 @@ export default function ProductViewer() {
           tempVector
         );
 
-        /**
-         * Giữ khoảng cách zoom hiện tại ở mức hợp lý,
-         * nhưng quay về đúng hướng presentation ban đầu.
-         */
         homeSpherical.radius =
           THREE.MathUtils.clamp(
             returnStartSpherical.radius,
@@ -352,12 +294,7 @@ export default function ProductViewer() {
           clearTimeout(resumeTimer);
         }
 
-        /**
-         * Nếu người dùng chạm vào trong lúc camera
-         * đang quay về thì dừng return ngay.
-         */
         returningHome = false;
-
         controls.autoRotate = false;
       };
 
@@ -366,13 +303,6 @@ export default function ProductViewer() {
           clearTimeout(resumeTimer);
         }
 
-        /**
-         * Sau 2.5 giây không thao tác:
-         *
-         * KHÔNG tiếp tục auto rotate từ hướng hiện tại.
-         *
-         * Camera sẽ quay mượt về vị trí mặc định trước.
-         */
         resumeTimer = setTimeout(() => {
           beginReturnHome();
         }, 2500);
@@ -395,37 +325,22 @@ export default function ProductViewer() {
        */
 
       const resize = () => {
-        const width =
-          element.clientWidth;
+        const width = element.clientWidth;
+        const height = element.clientHeight;
 
-        const height =
-          element.clientHeight;
-
-        if (
-          width <= 0 ||
-          height <= 0
-        )
+        if (width <= 0 || height <= 0) {
           return;
+        }
 
-        camera.aspect =
-          width / height;
+        camera.aspect = width / height;
 
-        /**
-         * FOV dọc = 38°.
-         *
-         * Tính khoảng cách để model không bị crop
-         * ở màn hình hẹp/mobile.
-         */
         const verticalFov =
           THREE.MathUtils.degToRad(
             camera.fov
           );
 
         const aspectFactor =
-          Math.min(
-            camera.aspect,
-            1
-          );
+          Math.min(camera.aspect, 1);
 
         const distance =
           1.18 /
@@ -433,14 +348,10 @@ export default function ProductViewer() {
             Math.atan(
               Math.tan(
                 verticalFov / 2
-              ) *
-                aspectFactor
+              ) * aspectFactor
             )
           );
 
-        /**
-         * Không làm model quá nhỏ trên desktop.
-         */
         const finalDistance =
           THREE.MathUtils.clamp(
             distance,
@@ -448,26 +359,21 @@ export default function ProductViewer() {
             4.3
           );
 
-        /**
-         * Khi resize ban đầu:
-         * chỉ thay đổi bán kính,
-         * không thay đổi hướng camera.
-         */
         tempVector
           .copy(camera.position)
-          .sub(controls.target)
+          .sub(controls.target);
+
+        if (tempVector.lengthSq() === 0) {
+          tempVector.set(0, 0, 1);
+        }
+
+        tempVector
           .normalize()
-          .multiplyScalar(
-            finalDistance
-          );
+          .multiplyScalar(finalDistance);
 
-        camera.position.copy(
-          controls.target
-        );
-
-        camera.position.add(
-          tempVector
-        );
+        camera.position
+          .copy(controls.target)
+          .add(tempVector);
 
         controls.minDistance =
           finalDistance * 0.78;
@@ -475,9 +381,6 @@ export default function ProductViewer() {
         controls.maxDistance =
           finalDistance * 1.28;
 
-        /**
-         * Cập nhật radius home theo viewport mới.
-         */
         homeSpherical.radius =
           finalDistance;
 
@@ -498,8 +401,7 @@ export default function ProductViewer() {
       resize();
 
       /**
-       * Sau resize lần đầu, lưu chính xác
-       * hướng camera mặc định.
+       * Lưu góc camera mặc định sau lần resize đầu tiên.
        */
       tempVector
         .copy(camera.position)
@@ -511,28 +413,25 @@ export default function ProductViewer() {
 
       /**
        * =========================================================
-       * VISIBILITY OPTIMIZATION
+       * INTERSECTION OBSERVER
        * =========================================================
        */
 
       const intersectionObserver =
         new IntersectionObserver(
           ([entry]) => {
-            visible =
-              entry.isIntersecting;
+            visible = entry.isIntersecting;
           },
           {
             rootMargin: "150px",
           }
         );
 
-      intersectionObserver.observe(
-        element
-      );
+      intersectionObserver.observe(element);
 
       /**
        * =========================================================
-       * WEBGL CONTEXT
+       * WEBGL CONTEXT LOST
        * =========================================================
        */
 
@@ -562,18 +461,8 @@ export default function ProductViewer() {
        * =========================================================
        */
 
-      const loader =
-        new GLTFLoader();
+      const loader = new GLTFLoader();
 
-      /**
-       * GitHub Pages của repository đang chạy tại:
-       *
-       * /traceability/
-       *
-       * Vì vậy asset phải nằm ở:
-       *
-       * public/heritage/magnet-2.glb
-       */
       const MODEL_URL =
         "/traceability/heritage/magnet-2.glb";
 
@@ -582,76 +471,57 @@ export default function ProductViewer() {
           MODEL_URL
         );
 
-      if (disposed) return;
+      if (disposed) {
+        return;
+      }
 
       const model = gltf.scene;
 
       /**
        * =========================================================
-       * CHUẨN HÓA MODEL
+       * APPLY GOLD MATERIAL
        * =========================================================
        */
 
-      model.traverse(
-        (object) => {
+      model.traverse((object) => {
+        if (object instanceof THREE.Mesh) {
+          object.material = goldMaterial;
+
+          object.castShadow = false;
+          object.receiveShadow = false;
+
           if (
-            object instanceof
-            THREE.Mesh
+            !object.geometry.attributes.normal
           ) {
-            /**
-             * Giữ geometry của GLB,
-             * nhưng áp vật liệu vàng thống nhất
-             * trong giai đoạn kiểm thử.
-             */
-            object.material =
-              goldMaterial;
-
-            object.castShadow =
-              false;
-
-            object.receiveShadow =
-              false;
-
-            /**
-             * Nếu GLB thiếu normal thì bổ sung.
-             */
-            if (
-              !object.geometry
-                .attributes.normal
-            ) {
-              object.geometry.computeVertexNormals();
-            }
+            object.geometry.computeVertexNormals();
           }
         }
-      );
+      });
 
       /**
-       * Tìm bounding box thực tế.
+       * =========================================================
+       * NORMALIZE MODEL SIZE
+       * =========================================================
        */
+
       let box =
         new THREE.Box3().setFromObject(
           model
         );
 
-      let size =
+      const size =
         new THREE.Vector3();
 
-      let center =
+      const center =
         new THREE.Vector3();
 
       box.getSize(size);
       box.getCenter(center);
 
       if (
-        !Number.isFinite(
-          size.x
-        ) ||
-        !Number.isFinite(
-          size.y
-        ) ||
-        !Number.isFinite(
-          size.z
-        )
+        !Number.isFinite(size.x) ||
+        !Number.isFinite(size.y) ||
+        !Number.isFinite(size.z)
       ) {
         throw new Error(
           "Invalid GLB dimensions"
@@ -659,14 +529,10 @@ export default function ProductViewer() {
       }
 
       /**
-       * Đưa tâm model về (0,0,0).
+       * Đưa model về tâm.
        */
       model.position.sub(center);
 
-      /**
-       * Sau khi center lại,
-       * tính bounding box một lần nữa.
-       */
       box =
         new THREE.Box3().setFromObject(
           model
@@ -683,9 +549,7 @@ export default function ProductViewer() {
 
       if (
         maxDimension <= 0 ||
-        !Number.isFinite(
-          maxDimension
-        )
+        !Number.isFinite(maxDimension)
       ) {
         throw new Error(
           "Invalid model size"
@@ -693,19 +557,15 @@ export default function ProductViewer() {
       }
 
       /**
-       * Chuẩn hóa kích thước model.
-       *
-       * Largest dimension ≈ 2.
+       * Chuẩn hóa kích thước.
        */
       const scale =
         2 / maxDimension;
 
-      model.scale.setScalar(
-        scale
-      );
+      model.scale.setScalar(scale);
 
       /**
-       * Tính lại tâm chính xác sau scale.
+       * Tính lại tâm sau scale.
        */
       box =
         new THREE.Box3().setFromObject(
@@ -720,7 +580,7 @@ export default function ProductViewer() {
 
       /**
        * =========================================================
-       * MODEL READY
+       * READY
        * =========================================================
        */
 
@@ -729,8 +589,8 @@ export default function ProductViewer() {
       setReady(true);
 
       /**
-       * Theo yêu cầu mới:
-       * không hiển thị "Kéo để khám phá sản phẩm".
+       * Theo yêu cầu:
+       * không hiển thị text "Kéo để khám phá sản phẩm".
        */
       setStatus("");
 
@@ -757,24 +617,21 @@ export default function ProductViewer() {
 
           const delta =
             Math.min(
-              (now -
-                lastTime) /
-                1000,
+              (now - lastTime) / 1000,
               0.05
             );
 
           lastTime = now;
 
           /**
-           * ============================================
-           * CAMERA RETURN ANIMATION
-           * ============================================
+           * =============================================
+           * RETURN TO HOME ANIMATION
+           * =============================================
            */
 
           if (returningHome) {
             const elapsed =
-              now -
-              returnStartTime;
+              now - returnStartTime;
 
             const progress =
               THREE.MathUtils.clamp(
@@ -789,11 +646,6 @@ export default function ProductViewer() {
                 progress
               );
 
-            /**
-             * Theta cần đi theo đường ngắn nhất
-             * để tránh camera quay gần 360°
-             * chỉ để trở về góc mặc định.
-             */
             const thetaDifference =
               normalizeAngleDelta(
                 homeSpherical.theta -
@@ -844,19 +696,13 @@ export default function ProductViewer() {
             );
 
             if (progress >= 1) {
-              returningHome =
-                false;
+              returningHome = false;
 
               controls.target.copy(
                 homeTarget
               );
 
-              /**
-               * Chỉ sau khi camera đã về đúng
-               * presentation angle mới bật auto rotate.
-               */
-              controls.autoRotate =
-                true;
+              controls.autoRotate = true;
             }
           }
 
@@ -877,14 +723,10 @@ export default function ProductViewer() {
 
       cleanup = () => {
         if (resumeTimer) {
-          clearTimeout(
-            resumeTimer
-          );
+          clearTimeout(resumeTimer);
         }
 
-        renderer.setAnimationLoop(
-          null
-        );
+        renderer.setAnimationLoop(null);
 
         resizeObserver.disconnect();
 
@@ -907,19 +749,11 @@ export default function ProductViewer() {
           handleContextLost
         );
 
-        /**
-         * Dispose geometry của GLB.
-         */
-        model.traverse(
-          (object) => {
-            if (
-              object instanceof
-              THREE.Mesh
-            ) {
-              object.geometry.dispose();
-            }
+        model.traverse((object) => {
+          if (object instanceof THREE.Mesh) {
+            object.geometry.dispose();
           }
-        );
+        });
 
         goldMaterial.dispose();
 
@@ -931,7 +765,7 @@ export default function ProductViewer() {
       };
     }
 
-    init().catch(
+    init(hostElement).catch(
       (error) => {
         console.error(
           "[ProductViewer]",
@@ -952,7 +786,6 @@ export default function ProductViewer() {
 
     return () => {
       disposed = true;
-
       cleanup();
     };
   }, []);
@@ -965,7 +798,6 @@ export default function ProductViewer() {
           src="/traceability/figma/product-front.png"
           alt="Long Vân Lưu Tín"
           fill
-          priority={false}
           sizes="(max-width: 768px) 100vw, 50vw"
         />
       )}

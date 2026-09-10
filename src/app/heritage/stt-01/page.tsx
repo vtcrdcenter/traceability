@@ -36,6 +36,7 @@ const facts = [
 const certificates = [
   {
     number: "01",
+    logo: "museum.png",
     eyebrow: "ĐƠN VỊ BẢO CHỨNG",
     title: "Bảo tàng Lịch sử Quốc gia",
     copy:
@@ -177,10 +178,11 @@ export default function Stt01Page() {
       <section
         className={`${styles["hero"]} ${heroStyles.hero}`}
       >
+        <span aria-hidden="true" className={`${styles.ornament} ${styles.heroCloud}`} />
+        <span aria-hidden="true" className={`${styles.ornament} ${styles.heroCloudLow}`} />
         <div
           className={[
             styles["shell"],
-            styles["hero-grid"],
             heroStyles.heroGrid,
           ].join(" ")}
         >
@@ -215,10 +217,7 @@ export default function Stt01Page() {
             ============================================= */}
 
             <div
-              className={[
-                styles["attestation"],
-                heroStyles.attestation,
-              ].join(" ")}
+              className={heroStyles.attestation}
             >
               <div
                 className={heroStyles.attestationIcon}
@@ -244,17 +243,14 @@ export default function Stt01Page() {
           {/* HERO IMAGE */}
 
           <div
-            className={[
-              styles["hero-image"],
-              heroStyles.heroImage,
-            ].join(" ")}
+            className={heroStyles.heroImage}
           >
             <Image
               src={`${A}/hero.png`}
               alt="Long Vân Lưu Tín trong không gian sống"
               fill
               priority
-              sizes="(max-width: 800px) 100vw, 620px"
+              sizes="(max-width: 800px) 100vw, 71vw"
             />
           </div>
         </div>
@@ -301,6 +297,9 @@ export default function Stt01Page() {
         ].join(" ")}
         id="certificates"
       >
+        <span aria-hidden="true" className={`${styles.ornament} ${styles.cloudLeft}`} />
+        <span aria-hidden="true" className={`${styles.ornament} ${styles.cloudRight}`} />
+        <span aria-hidden="true" className={`${styles.ornament} ${styles.cloudDivider}`} />
         <div className={styles["shell"]}>
           <h2>
             Chứng nhận giá trị văn hóa
@@ -372,6 +371,10 @@ export default function Stt01Page() {
         className={styles["experience"]}
         id="experience"
       >
+        <span aria-hidden="true" className={`${styles.ornament} ${styles.cloudTitleLeft}`} />
+        <span aria-hidden="true" className={`${styles.ornament} ${styles.cloudTitleRight}`} />
+        <span aria-hidden="true" className={`${styles.ornament} ${styles.cloudCornerLeft}`} />
+        <span aria-hidden="true" className={`${styles.ornament} ${styles.cloudCornerRight}`} />
         <div className={styles["shell"]}>
           <h2>
             Trải nghiệm sản phẩm ở mọi góc nhìn
@@ -400,6 +403,8 @@ export default function Stt01Page() {
         ].join(" ")}
         id="story"
       >
+        <span aria-hidden="true" className={`${styles.ornament} ${styles.cloudRight}`} />
+        <span aria-hidden="true" className={`${styles.ornament} ${styles.storyCloudBottom}`} />
         <div className={styles["shell"]}>
           <h2>
             Bầu trời di sản trong tổ ấm hiện đại
@@ -445,15 +450,25 @@ export default function Stt01Page() {
                 <strong>
                   Đồ án “Long Vân”
                 </strong>{" "}
-                không chỉ biểu trưng cho vương quyền,
-                mà còn gói trọn khát vọng về một vũ
-                trụ khoáng đạt, thái hòa. Ngày nay,{" "}
+                – rồng phượng tung cánh giữa trùng điệp mây trời –
+                không chỉ biểu trưng cho vương quyền tột đỉnh,
+                mà còn gói trọn khát vọng về một vũ trụ khoáng đạt,
+                thái hòa. Mỗi viên ngọc trai, san hô hay đá quý được
+                đính kết tỉ mỉ chính là tinh hoa của đất trời tụ hội.
+              </p>
+
+              <p>
+                Ngày nay,{" "}
                 <strong>
                   “Long Vân Lưu Tín”
                 </strong>{" "}
-                thu nhỏ bầu trời di sản ấy trong một
-                vật phẩm thân thuộc, gìn giữ những lời
-                nhắn yêu thương của gia đình.
+                thu nhỏ trọn vẹn cả một bầu trời di sản ấy, đặt khiêm nhường
+                nhưng kiêu hãnh trên cánh cửa tủ lạnh trong căn bếp hiền hòa
+                của bạn. Không còn mang sức nặng của vương miện chốn vương triều,
+                phiên bản thu nhỏ này trở thành một “người cận vệ” thân thiết,
+                ngày ngày nâng niu và gìn giữ những thông điệp yêu thương của
+                gia đình: một công thức nấu ăn mới, một lời nhắc nhở đầy yêu
+                thương, hay một bức ảnh kỷ niệm chuyến đi đầy ắp tiếng cười…
               </p>
             </div>
 

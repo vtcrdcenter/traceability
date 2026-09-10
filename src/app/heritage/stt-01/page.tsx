@@ -4,15 +4,19 @@ import Image from "next/image";
 import ProductGallery from "../../components/ProductGallery";
 import ProductViewer from "../../components/ProductViewer";
 
-import styles from "./stt01.module.css";
 import { stt01Content } from "../../data/stt-01";
+
+import styles from "./stt01.module.css";
+import heroStyles from "./heroStep1.module.css";
 
 const BASE = "/traceability";
 const A = `${BASE}/figma`;
 
 export const metadata: Metadata = {
   title: "Long Vân Lưu Tín",
-  icons: { icon: `${A}/icon-cloud.png` },
+  icons: {
+    icon: `${A}/icon-cloud.png`,
+  },
   description:
     "Hồ sơ truy xuất sản phẩm văn hóa Long Vân Lưu Tín của VTC Merch.",
 };
@@ -61,9 +65,91 @@ const certificates = [
   },
 ];
 
+/* =========================================================
+   MUSEUM ICON
+   Chỉ là biểu tượng kiến trúc, không phải logo BTLSQG
+========================================================= */
+
+function MuseumIcon() {
+  return (
+    <svg
+      viewBox="0 0 48 48"
+      aria-hidden="true"
+      focusable="false"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <path
+        d="M6 18L24 7L42 18"
+        stroke="currentColor"
+        strokeWidth="2.2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+
+      <path
+        d="M9 18H39"
+        stroke="currentColor"
+        strokeWidth="2.2"
+        strokeLinecap="round"
+      />
+
+      <path
+        d="M12 21V36"
+        stroke="currentColor"
+        strokeWidth="2.2"
+        strokeLinecap="round"
+      />
+
+      <path
+        d="M20 21V36"
+        stroke="currentColor"
+        strokeWidth="2.2"
+        strokeLinecap="round"
+      />
+
+      <path
+        d="M28 21V36"
+        stroke="currentColor"
+        strokeWidth="2.2"
+        strokeLinecap="round"
+      />
+
+      <path
+        d="M36 21V36"
+        stroke="currentColor"
+        strokeWidth="2.2"
+        strokeLinecap="round"
+      />
+
+      <path
+        d="M8 39H40"
+        stroke="currentColor"
+        strokeWidth="2.2"
+        strokeLinecap="round"
+      />
+
+      <path
+        d="M5 43H43"
+        stroke="currentColor"
+        strokeWidth="2.2"
+        strokeLinecap="round"
+      />
+    </svg>
+  );
+}
+
+/* =========================================================
+   PAGE
+========================================================= */
+
 export default function Stt01Page() {
   return (
     <main className={styles["landing"]}>
+      {/* =====================================================
+          HEADER
+      ===================================================== */}
+
       <header className={styles["header"]}>
         <Image
           src={`${A}/raw-01.png`}
@@ -75,16 +161,37 @@ export default function Stt01Page() {
 
         <nav aria-label="Ngôn ngữ">
           <b>VI</b>
+
           <span>|</span>
+
           <a href={`${BASE}/en/heritage/stt-01/`}>
             EN
           </a>
         </nav>
       </header>
 
-      <section className={styles["hero"]}>
-        <div className={styles["shell"] + " " + styles["hero-grid"]}>
-          <div className={styles["hero-copy"]}>
+      {/* =====================================================
+          HERO
+      ===================================================== */}
+
+      <section
+        className={`${styles["hero"]} ${heroStyles.hero}`}
+      >
+        <div
+          className={[
+            styles["shell"],
+            styles["hero-grid"],
+            heroStyles.heroGrid,
+          ].join(" ")}
+        >
+          {/* HERO COPY */}
+
+          <div
+            className={[
+              styles["hero-copy"],
+              heroStyles.heroCopy,
+            ].join(" ")}
+          >
             <span className={styles["kicker"]}>
               SẢN PHẨM VĂN HÓA
             </span>
@@ -103,8 +210,26 @@ export default function Stt01Page() {
               nhất của hiện tại.
             </p>
 
-            <div className={styles["attestation"]}>
-              <div>
+            {/* =============================================
+                ATTESTATION
+            ============================================= */}
+
+            <div
+              className={[
+                styles["attestation"],
+                heroStyles.attestation,
+              ].join(" ")}
+            >
+              <div
+                className={heroStyles.attestationIcon}
+                aria-hidden="true"
+              >
+                <MuseumIcon />
+              </div>
+
+              <div
+                className={heroStyles.attestationText}
+              >
                 <small>
                   ĐƯỢC BẢO CHỨNG NGÀY 29/08/2026 BỞI
                 </small>
@@ -116,7 +241,14 @@ export default function Stt01Page() {
             </div>
           </div>
 
-          <div className={styles["hero-image"]}>
+          {/* HERO IMAGE */}
+
+          <div
+            className={[
+              styles["hero-image"],
+              heroStyles.heroImage,
+            ].join(" ")}
+          >
             <Image
               src={`${A}/hero.png`}
               alt="Long Vân Lưu Tín trong không gian sống"
@@ -128,8 +260,15 @@ export default function Stt01Page() {
         </div>
       </section>
 
+      {/* =====================================================
+          PRODUCT INFORMATION
+      ===================================================== */}
+
       <section
-        className={styles["section"] + " " + styles["product"]}
+        className={[
+          styles["section"],
+          styles["product"],
+        ].join(" ")}
         id="product-info"
       >
         <div className={styles["shell"]}>
@@ -142,6 +281,7 @@ export default function Stt01Page() {
               {facts.map(([dt, dd]) => (
                 <div key={dt}>
                   <dt>{dt}</dt>
+
                   <dd>{dd}</dd>
                 </div>
               ))}
@@ -150,12 +290,21 @@ export default function Stt01Page() {
         </div>
       </section>
 
+      {/* =====================================================
+          CERTIFICATES
+      ===================================================== */}
+
       <section
-        className={styles["section"] + " " + styles["certificates"]}
+        className={[
+          styles["section"],
+          styles["certificates"],
+        ].join(" ")}
         id="certificates"
       >
         <div className={styles["shell"]}>
-          <h2>Chứng nhận giá trị văn hóa</h2>
+          <h2>
+            Chứng nhận giá trị văn hóa
+          </h2>
 
           <div className={styles["card-grid"]}>
             {certificates.map((card) => (
@@ -163,12 +312,16 @@ export default function Stt01Page() {
                 className={styles["card"]}
                 key={card.number}
               >
-                <span className={styles["card-number"]}>
+                <span
+                  className={styles["card-number"]}
+                >
                   {card.number}
                 </span>
 
                 {card.logo && (
-                  <div className={styles["card-logo"]}>
+                  <div
+                    className={styles["card-logo"]}
+                  >
                     <Image
                       src={`${A}/${card.logo}`}
                       alt=""
@@ -178,13 +331,31 @@ export default function Stt01Page() {
                   </div>
                 )}
 
-                <small>{card.eyebrow}</small>
+                <small>
+                  {card.eyebrow}
+                </small>
 
-                <h3>{card.title}</h3>
+                <h3>
+                  {card.title}
+                </h3>
 
-                <p>{card.copy}</p>
+                <p>
+                  {card.copy}
+                </p>
 
-                <a href={card.href}>
+                <a
+                  href={card.href}
+                  target={
+                    card.href.startsWith("http")
+                      ? "_blank"
+                      : undefined
+                  }
+                  rel={
+                    card.href.startsWith("http")
+                      ? "noopener noreferrer"
+                      : undefined
+                  }
+                >
                   {card.link}
                 </a>
               </article>
@@ -193,8 +364,12 @@ export default function Stt01Page() {
         </div>
       </section>
 
+      {/* =====================================================
+          3D EXPERIENCE
+      ===================================================== */}
+
       <section
-        className={styles.experience}
+        className={styles["experience"]}
         id="experience"
       >
         <div className={styles["shell"]}>
@@ -214,8 +389,15 @@ export default function Stt01Page() {
         </div>
       </section>
 
+      {/* =====================================================
+          STORY
+      ===================================================== */}
+
       <section
-        className={styles["section"] + " " + styles["story"]}
+        className={[
+          styles["section"],
+          styles["story"],
+        ].join(" ")}
         id="story"
       >
         <div className={styles["shell"]}>
@@ -223,8 +405,12 @@ export default function Stt01Page() {
             Bầu trời di sản trong tổ ấm hiện đại
           </h2>
 
+          {/* SOURCE */}
+
           <div className={styles["source"]}>
-            <b>NGUỒN CẢM HỨNG CHÍNH</b>
+            <b>
+              NGUỒN CẢM HỨNG CHÍNH
+            </b>
 
             <p>
               Mũ thượng triều được nhà vua sử dụng
@@ -238,9 +424,13 @@ export default function Stt01Page() {
             </p>
           </div>
 
+          {/* STORY BODY */}
+
           <div className={styles["story-grid"]}>
             <div>
-              <b>CÂU CHUYỆN SẢN PHẨM</b>
+              <b>
+                CÂU CHUYỆN SẢN PHẨM
+              </b>
 
               <p>
                 Hơn một thế kỷ trước, dưới bầu trời
@@ -267,7 +457,9 @@ export default function Stt01Page() {
               </p>
             </div>
 
-            <div className={styles["story-image"]}>
+            <div
+              className={styles["story-image"]}
+            >
               <Image
                 src={`${A}/story.png`}
                 alt="Mũ thượng triều triều Nguyễn"
@@ -277,7 +469,13 @@ export default function Stt01Page() {
             </div>
           </div>
 
-          <div className={styles["meaning-grid"]}>
+          {/* =================================================
+              MEANING
+          ================================================= */}
+
+          <div
+            className={styles["meaning-grid"]}
+          >
             <article>
               <Image
                 src={`${A}/icon-cloud.png`}
@@ -322,6 +520,10 @@ export default function Stt01Page() {
           </div>
         </div>
       </section>
+
+      {/* =====================================================
+          FOOTER
+      ===================================================== */}
 
       <footer className={styles["footer"]}>
         <Image

@@ -4,6 +4,9 @@ import Image from "next/image";
 import ProductGallery from "../../components/ProductGallery";
 import ProductViewer from "../../components/ProductViewer";
 
+import styles from "./stt01.module.css";
+import { stt01Content } from "../../data/stt-01";
+
 const BASE = "/traceability";
 const A = `${BASE}/figma`;
 
@@ -17,7 +20,7 @@ const facts = [
   ["Tên sản phẩm", "Long Vân Lưu Tín"],
   ["Mã sản phẩm", "893-110006-001-1"],
   ["Loại sản phẩm", "Miếng dán tủ lạnh"],
-  ["Kích thước", "6.8 × 7.4 cm, dày 0.7 cm"],
+  ["Kích thước", stt01Content.vi.product.size],
   ["Chất liệu", "Hợp kim, mạ viền vàng, ngọc trai"],
   ["Xuất xứ", "Việt Nam"],
   ["Thời gian sản xuất", "09/2026"],
@@ -33,6 +36,7 @@ const certificates = [
     copy:
       "Đơn vị xác nhận nguồn tham chiếu văn hóa của sản phẩm, bảo chứng nội dung khai thác giá trị văn hóa từ hình tượng mũ thượng triều thời Nguyễn, hồ sơ thiết kế và nghệ thuật trang sức cung đình Việt Nam.",
     link: "Tìm hiểu về BTLSQG →",
+    href: "https://baotanglichsu.vn/",
   },
   {
     number: "02",
@@ -42,6 +46,7 @@ const certificates = [
     copy:
       "Thiết kế của sản phẩm “Dấu Ấn Thượng triều Nguyễn” đã được cấp Giấy chứng nhận đăng ký quyền tác giả.",
     link: "Xem giấy chứng nhận →",
+    href: `${BASE}/heritage/copyright-certificate.png`,
   },
   {
     number: "03",
@@ -51,13 +56,14 @@ const certificates = [
     copy:
       "Tổng công ty Truyền thông Đa phương tiện VTC là đơn vị vận hành nền tảng lưu trữ và hỗ trợ tra cứu hồ sơ số của sản phẩm.",
     link: "Tìm hiểu về VTC →",
+    href: "https://vtc.org.vn/",
   },
 ];
 
 export default function Stt01Page() {
   return (
-    <main className="figma-landing">
-      <header className="figma-header">
+    <main className={styles["landing"]}>
+      <header className={styles["header"]}>
         <Image
           src={`${A}/raw-01.png`}
           alt="VTC Merch"
@@ -75,10 +81,10 @@ export default function Stt01Page() {
         </nav>
       </header>
 
-      <section className="figma-hero">
-        <div className="figma-shell figma-hero-grid">
-          <div className="figma-hero-copy">
-            <span className="figma-kicker">
+      <section className={styles["hero"]}>
+        <div className={styles["shell"] + " " + styles["hero-grid"]}>
+          <div className={styles["hero-copy"]}>
+            <span className={styles["kicker"]}>
               SẢN PHẨM VĂN HÓA
             </span>
 
@@ -96,7 +102,7 @@ export default function Stt01Page() {
               nhất của hiện tại.
             </p>
 
-            <div className="figma-attestation figma-attestation--text">
+            <div className={styles["attestation"]}>
               <div>
                 <small>
                   ĐƯỢC BẢO CHỨNG NGÀY 29/08/2026 BỞI
@@ -109,29 +115,29 @@ export default function Stt01Page() {
             </div>
           </div>
 
-          <div className="figma-hero-image">
+          <div className={styles["hero-image"]}>
             <Image
               src={`${A}/hero.png`}
               alt="Long Vân Lưu Tín trong không gian sống"
               fill
               priority
-              sizes="(max-width: 760px) 100vw, 58vw"
+              sizes="(max-width: 800px) 100vw, 620px"
             />
           </div>
         </div>
       </section>
 
       <section
-        className="figma-section figma-product"
+        className={styles["section"] + " " + styles["product"]}
         id="product-info"
       >
-        <div className="figma-shell">
+        <div className={styles["shell"]}>
           <h2>Thông tin sản phẩm</h2>
 
-          <div className="figma-product-grid">
+          <div className={styles["product-grid"]}>
             <ProductGallery />
 
-            <dl className="figma-facts">
+            <dl className={styles["facts"]}>
               {facts.map(([dt, dd]) => (
                 <div key={dt}>
                   <dt>{dt}</dt>
@@ -144,24 +150,24 @@ export default function Stt01Page() {
       </section>
 
       <section
-        className="figma-section figma-certificates"
+        className={styles["section"] + " " + styles["certificates"]}
         id="certificates"
       >
-        <div className="figma-shell">
+        <div className={styles["shell"]}>
           <h2>Chứng nhận giá trị văn hóa</h2>
 
-          <div className="figma-card-grid">
+          <div className={styles["card-grid"]}>
             {certificates.map((card) => (
               <article
-                className="figma-card"
+                className={styles["card"]}
                 key={card.number}
               >
-                <span className="figma-card-number">
+                <span className={styles["card-number"]}>
                   {card.number}
                 </span>
 
                 {card.logo && (
-                  <div className="figma-card-logo">
+                  <div className={styles["card-logo"]}>
                     <Image
                       src={`${A}/${card.logo}`}
                       alt=""
@@ -177,7 +183,7 @@ export default function Stt01Page() {
 
                 <p>{card.copy}</p>
 
-                <a href="#product-info">
+                <a href={card.href}>
                   {card.link}
                 </a>
               </article>
@@ -187,10 +193,10 @@ export default function Stt01Page() {
       </section>
 
       <section
-        className="figma-3d"
+        className={styles.experience}
         id="experience"
       >
-        <div className="figma-shell">
+        <div className={styles["shell"]}>
           <h2>
             Trải nghiệm sản phẩm ở mọi góc nhìn
           </h2>
@@ -201,22 +207,22 @@ export default function Stt01Page() {
             với mô hình 3D tương tác.
           </p>
 
-          <div className="figma-viewer-stage">
+          <div className={styles["viewer-stage"]}>
             <ProductViewer />
           </div>
         </div>
       </section>
 
       <section
-        className="figma-section figma-story"
+        className={styles["section"] + " " + styles["story"]}
         id="story"
       >
-        <div className="figma-shell">
+        <div className={styles["shell"]}>
           <h2>
             Bầu trời di sản trong tổ ấm hiện đại
           </h2>
 
-          <div className="figma-source">
+          <div className={styles["source"]}>
             <b>NGUỒN CẢM HỨNG CHÍNH</b>
 
             <p>
@@ -231,7 +237,7 @@ export default function Stt01Page() {
             </p>
           </div>
 
-          <div className="figma-story-grid">
+          <div className={styles["story-grid"]}>
             <div>
               <b>CÂU CHUYỆN SẢN PHẨM</b>
 
@@ -260,17 +266,17 @@ export default function Stt01Page() {
               </p>
             </div>
 
-            <div className="figma-story-image">
+            <div className={styles["story-image"]}>
               <Image
                 src={`${A}/story.png`}
                 alt="Mũ thượng triều triều Nguyễn"
                 fill
-                sizes="(max-width: 760px) 100vw, 42vw"
+                sizes="(max-width: 800px) 100vw, 560px"
               />
             </div>
           </div>
 
-          <div className="figma-meaning-grid">
+          <div className={styles["meaning-grid"]}>
             <article>
               <Image
                 src={`${A}/icon-cloud.png`}
@@ -316,7 +322,7 @@ export default function Stt01Page() {
         </div>
       </section>
 
-      <footer className="figma-footer">
+      <footer className={styles["footer"]}>
         <Image
           src={`${A}/raw-01.png`}
           alt="VTC Merch"

@@ -5,7 +5,11 @@ import {
   KeyboardEvent,
   useCallback,
   useState,
+  useRef,
+  useId,
 } from "react";
+
+import styles from "./ProductGallery.module.css";
 
 const BASE = "/traceability/figma";
 
@@ -34,6 +38,8 @@ const galleryItems: GalleryItem[] = [
 ];
 
 export default function ProductGallery() {
+  const id = useId();
+  const buttons = useRef<(HTMLButtonElement | null)[]>([]);
   const [activeIndex, setActiveIndex] = useState(0);
 
   const activeItem = galleryItems[activeIndex];
@@ -70,38 +76,37 @@ export default function ProductGallery() {
           galleryItems.length;
       }
 
+      if (event.key === "Home" || event.key === "End") {
+        event.preventDefault();
+        nextIndex = event.key === "Home" ? 0 : galleryItems.length - 1;
+      }
+
       if (nextIndex === index) {
         return;
       }
 
       setActiveIndex(nextIndex);
 
-      requestAnimationFrame(() => {
-        document
-          .querySelector<HTMLButtonElement>(
-            `[data-gallery-index="${nextIndex}"]`
-          )
-          ?.focus();
-      });
+      buttons.current[nextIndex]?.focus();
     },
     []
   );
 
   return (
-    <div className="figma-gallery">
-      <div className="figma-gallery-main">
+    <div className={styles.gallery}>
+      <div className={styles.main} role="tabpanel" id={`${id}-panel`} aria-labelledby={`${id}-tab-${activeIndex}`}>
         <Image
           key={activeItem.src}
           src={`${BASE}/${activeItem.src}`}
           alt={activeItem.alt}
           fill
           priority={activeIndex === 0}
-          sizes="(max-width: 760px) 100vw, 48vw"
+          sizes="(max-width: 800px) 100vw, 620px"
         />
       </div>
 
       <div
-        className="figma-thumbs"
+        className={styles.thumbs}
         role="tablist"
         aria-label="Hình ảnh sản phẩm"
       >
@@ -115,7 +120,11 @@ export default function ProductGallery() {
               role="tab"
               aria-selected={active}
               aria-label={`Xem hình ${index + 1}: ${item.alt}`}
-              className={active ? "active" : undefined}
+              className={styles.thumb}
+              id={`${id}-tab-${index}`}
+              aria-controls={`${id}-panel`}
+              tabIndex={active ? 0 : -1}
+              ref={(element) => { buttons.current[index] = element; }}
               data-gallery-index={index}
               onClick={() => selectImage(index)}
               onKeyDown={(event) =>

@@ -1,0 +1,10 @@
+.gallery { min-width: 0; width: 100%; }
+.main { position: relative; width: 100%; aspect-ratio: 1 / .8; background: #fffaf2; border: 1px solid #e4d6c4; border-radius: 8px; }
+.main img { object-fit: contain; padding: 16px; }
+.thumbs { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; margin-top: 14px; }
+.thumb { position: relative; min-width: 0; width: 100%; min-height: 44px; aspect-ratio: 1 / .8; padding: 0; border: 2px solid #dacbb8; border-radius: 6px; background: #fffaf2; cursor: pointer; transition: border-color .18s, background-color .18s; }
+.thumb img { object-fit: contain; padding: 5px; }
+.thumb:hover { border-color: #a26b35; background: #fff3dc; }
+.thumb[aria-selected="true"] { border-color: #7f1821; box-shadow: 0 0 0 1px #d9aa48; }
+.thumb:focus-visible { outline: 2px solid #7f1821; outline-offset: 4px; }
+@media (max-width: 800px) { .thumbs { gap: 8px; } }

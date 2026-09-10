@@ -2,821 +2,314 @@
 
 import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
+import type { Object3D, Material, Texture } from "three";
+import styles from "./ProductViewer.module.css";
 
 export default function ProductViewer() {
   const host = useRef<HTMLDivElement>(null);
-
   const [status, setStatus] = useState("Đang tải mô hình 3D…");
   const [ready, setReady] = useState(false);
 
   useEffect(() => {
-    const hostElement = host.current;
-
-    if (!hostElement) {
-      return;
-    }
-
+    const element = host.current;
+    if (!element) return;
     let disposed = false;
-    let cleanup = () => {};
+    const releases: (() => void)[] = [];
+    // Register each resource immediately, including before asynchronous loading.
+    const cleanup = () => {
+      while (releases.length) releases.pop()?.();
+    };
 
     async function init(element: HTMLDivElement) {
-      const [
-        THREE,
-        { OrbitControls },
-        { GLTFLoader },
-        { RoomEnvironment },
-      ] = await Promise.all([
+      const [THREE, { OrbitControls }, { GLTFLoader }, { RoomEnvironment }] = await Promise.all([
         import("three"),
         import("three/addons/controls/OrbitControls.js"),
         import("three/addons/loaders/GLTFLoader.js"),
         import("three/addons/environments/RoomEnvironment.js"),
       ]);
+      if (disposed) return;
 
-      if (disposed) {
-        return;
-      }
+      const disposedMaterials = new Set<Material>();
+      const disposedTextures = new Set<Texture>();
+      const disposeMaterials = (materials: Set<Material>) => {
+        const textures = new Set<Texture>();
+        for (const material of materials) {
+          if (disposedMaterials.has(material)) continue;
+          disposedMaterials.add(material);
+          for (const value of Object.values(material)) {
+            if (value instanceof THREE.Texture) textures.add(value);
+          }
+          material.dispose();
+        }
+        for (const texture of textures) {
+          if (!disposedTextures.has(texture)) { texture.dispose(); disposedTextures.add(texture); }
+        }
+      };
+      const disposeModel = (root: Object3D) => {
+        const geometries = new Set<import("three").BufferGeometry>();
+        const materials = new Set<Material>();
+        root.traverse((object) => {
+          if (object instanceof THREE.Mesh) {
+            geometries.add(object.geometry);
+            (Array.isArray(object.material) ? object.material : [object.material]).forEach((m) => materials.add(m));
+          }
+        });
+        geometries.forEach((geometry) => geometry.dispose());
+        disposeMaterials(materials);
+      };
 
-      /**
-       * =========================================================
-       * RENDERER
-       * =========================================================
-       */
-
-      const renderer = new THREE.WebGLRenderer({
-        alpha: true,
-        antialias: true,
-        powerPreference: "high-performance",
-      });
-
-      /**
-       * Giới hạn DPR để giảm tải GPU,
-       * đặc biệt trên mobile / Safari.
-       */
-      renderer.setPixelRatio(
-        Math.min(
-          window.devicePixelRatio || 1,
-          window.innerWidth <= 768 ? 1.5 : 2
-        )
-      );
-
+      const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true, powerPreference: "low-power" });
+      releases.push(() => { renderer.dispose(); renderer.domElement.remove(); });
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 1.5));
       renderer.outputColorSpace = THREE.SRGBColorSpace;
       renderer.toneMapping = THREE.ACESFilmicToneMapping;
       renderer.toneMappingExposure = 1.25;
       renderer.setClearColor(0x000000, 0);
-
       element.appendChild(renderer.domElement);
 
-      /**
-       * =========================================================
-       * SCENE
-       * =========================================================
-       */
-
       const scene = new THREE.Scene();
-
-      /**
-       * =========================================================
-       * CAMERA
-       * =========================================================
-       */
-
-      const camera = new THREE.PerspectiveCamera(
-        38,
-        1,
-        0.01,
-        100
-      );
-
+      const camera = new THREE.PerspectiveCamera(38, 1, 0.01, 100);
       camera.position.set(0, 0.18, 3.4);
-
-      /**
-       * =========================================================
-       * CONTROLS
-       * =========================================================
-       */
-
-      const controls = new OrbitControls(
-        camera,
-        renderer.domElement
-      );
-
+      const controls = new OrbitControls(camera, renderer.domElement);
+      releases.push(() => controls.dispose());
       controls.enablePan = false;
-
-      controls.enableDamping = true;
-      controls.dampingFactor = 0.06;
-
+      controls.enableDamping = false;
       controls.autoRotate = true;
       controls.autoRotateSpeed = 0.55;
-
-      controls.enableZoom = true;
-      controls.zoomSpeed = 0.45;
-
-      /**
-       * Giới hạn góc nhìn dọc để không lật ngược sản phẩm.
-       */
+      controls.zoomSpeed = 0.35;
       controls.minPolarAngle = Math.PI * 0.23;
       controls.maxPolarAngle = Math.PI * 0.77;
-
-      /**
-       * Mobile:
-       * 1 ngón = xoay
-       * 2 ngón = zoom + xoay
-       */
       controls.touches.ONE = THREE.TOUCH.ROTATE;
       controls.touches.TWO = THREE.TOUCH.DOLLY_ROTATE;
 
-      controls.minDistance = 2;
-      controls.maxDistance = 5;
-
-      /**
-       * =========================================================
-       * ENVIRONMENT / LIGHTING
-       * =========================================================
-       */
-
-      const environment = new RoomEnvironment();
-
-      const pmrem = new THREE.PMREMGenerator(renderer);
-
-      const environmentTarget = pmrem.fromScene(
-        environment,
-        0.04
-      );
-
-      scene.environment = environmentTarget.texture;
-
-      environment.dispose();
-      pmrem.dispose();
-
-      /**
-       * Đèn chính.
-       */
-      const keyLight = new THREE.DirectionalLight(
-        0xfff2cf,
-        2.2
-      );
-
-      keyLight.position.set(3, 4, 5);
-
-      scene.add(keyLight);
-
-      /**
-       * Đèn bù.
-       */
-      const fillLight = new THREE.DirectionalLight(
-        0xffd27a,
-        1.3
-      );
-
-      fillLight.position.set(-4, 1, 3);
-
-      scene.add(fillLight);
-
-      /**
-       * Đèn viền.
-       */
-      const rimLight = new THREE.DirectionalLight(
-        0xffffff,
-        0.85
-      );
-
-      rimLight.position.set(0, 3, -4);
-
-      scene.add(rimLight);
-
-      /**
-       * =========================================================
-       * GOLD MATERIAL
-       * =========================================================
-       */
-
-      const goldMaterial = new THREE.MeshStandardMaterial({
-        color: new THREE.Color("#D9AA48"),
-        metalness: 0.82,
-        roughness: 0.28,
-        envMapIntensity: 1.25,
-      });
-
-      /**
-       * =========================================================
-       * VIEWER STATE
-       * =========================================================
-       */
+      let environmentTarget: import("three").WebGLRenderTarget | undefined;
+      releases.push(() => environmentTarget?.dispose());
+      const rebuildEnvironment = () => {
+        const environment = new RoomEnvironment();
+        const pmrem = new THREE.PMREMGenerator(renderer);
+        try {
+          const target = pmrem.fromScene(environment, 0.04);
+          environmentTarget?.dispose();
+          environmentTarget = target;
+          scene.environment = target.texture;
+        } finally {
+          environment.dispose();
+          pmrem.dispose();
+        }
+      };
+      rebuildEnvironment();
+      const key = new THREE.DirectionalLight(0xfff2cf, 2.2);
+      key.position.set(3, 4, 5);
+      const fill = new THREE.DirectionalLight(0xffd27a, 1.3);
+      fill.position.set(-4, 1, 3);
+      const rim = new THREE.DirectionalLight(0xffffff, 0.85);
+      rim.position.set(0, 3, -4);
+      scene.add(key, fill, rim);
 
       let loaded = false;
-      let visible = true;
+      let contextLost = false;
+      let visible = false;
+      let radius = 1;
+      let returning = false;
+      let returnStarted = 0;
+      let resumeTimer: ReturnType<typeof setTimeout> | undefined;
+      const home = new THREE.Spherical(3.4, Math.PI / 2 - 0.05, 0);
+      const start = new THREE.Spherical();
+      const current = new THREE.Spherical();
+      const offset = new THREE.Vector3();
+      let lastTime = 0;
+      const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+      controls.autoRotate = !reducedMotion.matches;
 
-      let resumeTimer:
-        | ReturnType<typeof setTimeout>
-        | undefined;
-
-      let returningHome = false;
-      let returnStartTime = 0;
-
-      const RETURN_DURATION = 950;
-
-      const returnStartSpherical =
-        new THREE.Spherical();
-
-      const homeSpherical =
-        new THREE.Spherical();
-
-      const tempVector =
-        new THREE.Vector3();
-
-      const homeTarget =
-        new THREE.Vector3(0, 0, 0);
-
-      /**
-       * =========================================================
-       * HELPERS
-       * =========================================================
-       */
-
-      const normalizeAngleDelta = (angle: number) => {
-        return Math.atan2(
-          Math.sin(angle),
-          Math.cos(angle)
-        );
-      };
-
-      const easeInOutCubic = (value: number) => {
-        return value < 0.5
-          ? 4 * value * value * value
-          : 1 -
-              Math.pow(
-                -2 * value + 2,
-                3
-              ) /
-                2;
-      };
-
-      /**
-       * =========================================================
-       * RETURN HOME
-       * =========================================================
-       */
-
-      const beginReturnHome = () => {
-        if (disposed || !loaded) {
-          return;
-        }
-
-        controls.autoRotate = false;
-
-        returningHome = true;
-        returnStartTime = performance.now();
-
-        tempVector
-          .copy(camera.position)
-          .sub(controls.target);
-
-        returnStartSpherical.setFromVector3(
-          tempVector
-        );
-
-        homeSpherical.radius =
-          THREE.MathUtils.clamp(
-            returnStartSpherical.radius,
-            controls.minDistance,
-            controls.maxDistance
-          );
-      };
-
-      /**
-       * =========================================================
-       * USER INTERACTION
-       * =========================================================
-       */
-
-      const handleInteractionStart = () => {
-        if (resumeTimer) {
-          clearTimeout(resumeTimer);
-        }
-
-        returningHome = false;
+      const interactionStart = () => {
+        clearTimeout(resumeTimer);
+        returning = false;
+        controls.enableDamping = false;
         controls.autoRotate = false;
       };
-
-      const handleInteractionEnd = () => {
-        if (resumeTimer) {
-          clearTimeout(resumeTimer);
-        }
-
+      const interactionEnd = () => {
+        clearTimeout(resumeTimer);
         resumeTimer = setTimeout(() => {
-          beginReturnHome();
+          if (disposed || !loaded || contextLost) return;
+          // Capture the current angle before interpolating camera coordinates.
+          controls.enableDamping = false;
+          controls.update(0);
+          start.setFromVector3(offset.copy(camera.position).sub(controls.target));
+          returnStarted = performance.now();
+          returning = true;
         }, 2500);
       };
-
-      controls.addEventListener(
-        "start",
-        handleInteractionStart
-      );
-
-      controls.addEventListener(
-        "end",
-        handleInteractionEnd
-      );
-
-      /**
-       * =========================================================
-       * RESIZE
-       * =========================================================
-       */
+      controls.addEventListener("start", interactionStart);
+      controls.addEventListener("end", interactionEnd);
+      releases.push(() => {
+        clearTimeout(resumeTimer);
+        controls.removeEventListener("start", interactionStart);
+        controls.removeEventListener("end", interactionEnd);
+      });
 
       const resize = () => {
         const width = element.clientWidth;
         const height = element.clientHeight;
-
-        if (width <= 0 || height <= 0) {
-          return;
-        }
-
+        if (!width || !height || contextLost) return;
         camera.aspect = width / height;
-
-        const verticalFov =
-          THREE.MathUtils.degToRad(
-            camera.fov
-          );
-
-        const aspectFactor =
-          Math.min(camera.aspect, 1);
-
-        const distance =
-          1.18 /
-          Math.sin(
-            Math.atan(
-              Math.tan(
-                verticalFov / 2
-              ) * aspectFactor
-            )
-          );
-
-        const finalDistance =
-          THREE.MathUtils.clamp(
-            distance,
-            2.7,
-            4.3
-          );
-
-        tempVector
-          .copy(camera.position)
-          .sub(controls.target);
-
-        if (tempVector.lengthSq() === 0) {
-          tempVector.set(0, 0, 1);
-        }
-
-        tempVector
-          .normalize()
-          .multiplyScalar(finalDistance);
-
-        camera.position
-          .copy(controls.target)
-          .add(tempVector);
-
-        controls.minDistance =
-          finalDistance * 0.78;
-
-        controls.maxDistance =
-          finalDistance * 1.28;
-
-        homeSpherical.radius =
-          finalDistance;
-
+        const halfFov = Math.atan(Math.tan(THREE.MathUtils.degToRad(camera.fov) / 2) * Math.min(camera.aspect, 1));
+        const distance = radius * 1.15 / Math.sin(halfFov);
+        const zoomRatio = camera.position.distanceTo(controls.target) / home.radius;
+        home.radius = distance;
+        controls.minDistance = distance * 0.78;
+        controls.maxDistance = distance * 1.5;
+        offset.copy(camera.position).sub(controls.target).normalize().multiplyScalar(distance * THREE.MathUtils.clamp(zoomRatio, 0.78, 1.5));
+        camera.position.copy(controls.target).add(offset);
+        camera.near = Math.max(0.01, distance / 100);
+        camera.far = distance * 10;
         camera.updateProjectionMatrix();
-
-        renderer.setSize(
-          width,
-          height,
-          false
-        );
+        renderer.setSize(width, height, false);
+        if (returning) {
+          start.setFromVector3(offset);
+          returnStarted = performance.now();
+        }
       };
-
-      const resizeObserver =
-        new ResizeObserver(resize);
-
+      const resizeObserver = new ResizeObserver(resize);
       resizeObserver.observe(element);
-
+      releases.push(() => resizeObserver.disconnect());
       resize();
 
-      /**
-       * Lưu góc camera mặc định sau lần resize đầu tiên.
-       */
-      tempVector
-        .copy(camera.position)
-        .sub(controls.target);
-
-      homeSpherical.setFromVector3(
-        tempVector
-      );
-
-      /**
-       * =========================================================
-       * INTERSECTION OBSERVER
-       * =========================================================
-       */
-
-      const intersectionObserver =
-        new IntersectionObserver(
-          ([entry]) => {
-            visible = entry.isIntersecting;
-          },
-          {
-            rootMargin: "150px",
-          }
-        );
-
-      intersectionObserver.observe(element);
-
-      /**
-       * =========================================================
-       * WEBGL CONTEXT LOST
-       * =========================================================
-       */
-
-      const handleContextLost = (
-        event: Event
-      ) => {
-        event.preventDefault();
-
-        loaded = false;
-
-        setReady(false);
-
-        setStatus(
-          "Không thể hiển thị mô hình 3D trên thiết bị này."
-        );
-      };
-
-      renderer.domElement.addEventListener(
-        "webglcontextlost",
-        handleContextLost,
-        false
-      );
-
-      /**
-       * =========================================================
-       * LOAD GLB
-       * =========================================================
-       */
-
-      const loader = new GLTFLoader();
-
-      const MODEL_URL =
-        "/traceability/heritage/magnet-2.glb";
-
-      const gltf =
-        await loader.loadAsync(
-          MODEL_URL
-        );
-
-      if (disposed) {
-        return;
-      }
-
-      const model = gltf.scene;
-
-      /**
-       * =========================================================
-       * APPLY GOLD MATERIAL
-       * =========================================================
-       */
-
-      model.traverse((object) => {
-        if (object instanceof THREE.Mesh) {
-          object.material = goldMaterial;
-
-          object.castShadow = false;
-          object.receiveShadow = false;
-
-          if (
-            !object.geometry.attributes.normal
-          ) {
-            object.geometry.computeVertexNormals();
+      const animate = (now: number) => {
+        if (now - lastTime < 1000 / 30) return;
+        const delta = Math.min((now - lastTime) / 1000, 0.05);
+        lastTime = now;
+        if (returning) {
+          const progress = reducedMotion.matches ? 1 : Math.min((now - returnStarted) / 950, 1);
+          const eased = progress * progress * (3 - 2 * progress);
+          const angle = Math.atan2(Math.sin(home.theta - start.theta), Math.cos(home.theta - start.theta));
+          current.set(
+            THREE.MathUtils.lerp(start.radius, home.radius, eased),
+            THREE.MathUtils.lerp(start.phi, home.phi, eased),
+            start.theta + angle * eased,
+          );
+          camera.position.copy(offset.setFromSpherical(current));
+          controls.target.set(0, 0, 0);
+          if (progress === 1) {
+            returning = false;
+            controls.enableDamping = false;
+            controls.autoRotate = !reducedMotion.matches;
           }
         }
+        controls.update(delta);
+        renderer.render(scene, camera);
+      };
+      const syncLoop = () => {
+        lastTime = performance.now();
+        renderer.setAnimationLoop(loaded && visible && !document.hidden && !contextLost ? animate : null);
+      };
+      const observer = new IntersectionObserver(([entry]) => {
+        visible = entry.isIntersecting;
+        syncLoop();
+      });
+      observer.observe(element);
+      releases.push(() => observer.disconnect());
+      document.addEventListener("visibilitychange", syncLoop);
+      releases.push(() => document.removeEventListener("visibilitychange", syncLoop));
+      releases.push(() => renderer.setAnimationLoop(null));
+
+      const onLost = (event: Event) => {
+        event.preventDefault();
+        contextLost = true;
+        clearTimeout(resumeTimer);
+        returning = false;
+        setReady(false);
+        setStatus("Hiển thị 3D tạm gián đoạn. Đang chờ khôi phục…");
+        syncLoop();
+      };
+      const onRestored = () => {
+        if (disposed) return;
+        // Render-target pixels are lost with the context and must be regenerated.
+        try {
+          rebuildEnvironment();
+        } catch (error) {
+          console.error("[ProductViewer]", error);
+          cleanup();
+          setReady(false);
+          setStatus("Không thể khôi phục mô hình 3D. Vui lòng tải lại trang.");
+          return;
+        }
+        contextLost = false;
+        controls.enableDamping = false;
+        controls.autoRotate = !reducedMotion.matches;
+        resize();
+        setReady(loaded);
+        setStatus(loaded ? "" : "Đang tải mô hình 3D…");
+        syncLoop();
+      };
+      renderer.domElement.addEventListener("webglcontextlost", onLost);
+      renderer.domElement.addEventListener("webglcontextrestored", onRestored);
+      releases.push(() => {
+        renderer.domElement.removeEventListener("webglcontextlost", onLost);
+        renderer.domElement.removeEventListener("webglcontextrestored", onRestored);
       });
 
-      /**
-       * =========================================================
-       * NORMALIZE MODEL SIZE
-       * =========================================================
-       */
-
-      let box =
-        new THREE.Box3().setFromObject(
-          model
-        );
-
-      const size =
-        new THREE.Vector3();
-
-      const center =
-        new THREE.Vector3();
-
-      box.getSize(size);
-      box.getCenter(center);
-
-      if (
-        !Number.isFinite(size.x) ||
-        !Number.isFinite(size.y) ||
-        !Number.isFinite(size.z)
-      ) {
-        throw new Error(
-          "Invalid GLB dimensions"
-        );
+      const gltf = await new GLTFLoader().loadAsync("/traceability/heritage/magnet-2.glb");
+      if (disposed) {
+        gltf.scenes.forEach(disposeModel);
+        return;
       }
+      releases.push(() => gltf.scenes.forEach(disposeModel));
+      const model = gltf.scene;
+      const box = new THREE.Box3().setFromObject(model);
+      const size = box.getSize(new THREE.Vector3());
+      const maximum = Math.max(size.x, size.y, size.z);
+      if (!Number.isFinite(maximum) || maximum <= 0) throw new Error("Invalid GLB dimensions");
 
-      /**
-       * Đưa model về tâm.
-       */
-      model.position.sub(center);
-
-      box =
-        new THREE.Box3().setFromObject(
-          model
-        );
-
-      box.getSize(size);
-
-      const maxDimension =
-        Math.max(
-          size.x,
-          size.y,
-          size.z
-        );
-
-      if (
-        maxDimension <= 0 ||
-        !Number.isFinite(maxDimension)
-      ) {
-        throw new Error(
-          "Invalid model size"
-        );
-      }
-
-      /**
-       * Chuẩn hóa kích thước.
-       */
-      const scale =
-        2 / maxDimension;
-
-      model.scale.setScalar(scale);
-
-      /**
-       * Tính lại tâm sau scale.
-       */
-      box =
-        new THREE.Box3().setFromObject(
-          model
-        );
-
-      box.getCenter(center);
-
-      model.position.sub(center);
-
-      scene.add(model);
-
-      /**
-       * =========================================================
-       * READY
-       * =========================================================
-       */
-
+      // Preserve authored transforms; normalize and center using a parent group.
+      const group = new THREE.Group();
+      group.add(model);
+      group.scale.setScalar(2 / maximum);
+      box.setFromObject(group);
+      group.position.sub(box.getCenter(new THREE.Vector3()));
+      scene.add(group);
+      radius = new THREE.Box3().setFromObject(group).getBoundingSphere(new THREE.Sphere()).radius;
+      const gold = new THREE.MeshStandardMaterial({ color: "#D9AA48", metalness: 0.82, roughness: 0.28, envMapIntensity: 1.25 });
+      releases.push(() => disposeMaterials(new Set([gold])));
+      const originals = new Set<Material>();
+      model.traverse((object) => {
+        if (object instanceof THREE.Mesh) {
+          (Array.isArray(object.material) ? object.material : [object.material]).forEach((m) => originals.add(m));
+          object.material = gold;
+          object.castShadow = false;
+          object.receiveShadow = false;
+          if (!object.geometry.attributes.normal) object.geometry.computeVertexNormals();
+        }
+      });
+      disposeMaterials(originals);
+      resize();
+      camera.position.setFromSpherical(home);
+      controls.update(0);
       loaded = true;
-
-      setReady(true);
-
-      /**
-       * Theo yêu cầu:
-       * không hiển thị text "Kéo để khám phá sản phẩm".
-       */
-      setStatus("");
-
-      /**
-       * =========================================================
-       * ANIMATION LOOP
-       * =========================================================
-       */
-
-      let lastTime =
-        performance.now();
-
-      renderer.setAnimationLoop(
-        (now) => {
-          if (
-            disposed ||
-            !loaded ||
-            !visible ||
-            document.hidden
-          ) {
-            lastTime = now;
-            return;
-          }
-
-          const delta =
-            Math.min(
-              (now - lastTime) / 1000,
-              0.05
-            );
-
-          lastTime = now;
-
-          /**
-           * =============================================
-           * RETURN TO HOME ANIMATION
-           * =============================================
-           */
-
-          if (returningHome) {
-            const elapsed =
-              now - returnStartTime;
-
-            const progress =
-              THREE.MathUtils.clamp(
-                elapsed /
-                  RETURN_DURATION,
-                0,
-                1
-              );
-
-            const eased =
-              easeInOutCubic(
-                progress
-              );
-
-            const thetaDifference =
-              normalizeAngleDelta(
-                homeSpherical.theta -
-                  returnStartSpherical.theta
-              );
-
-            const theta =
-              returnStartSpherical.theta +
-              thetaDifference *
-                eased;
-
-            const phi =
-              THREE.MathUtils.lerp(
-                returnStartSpherical.phi,
-                homeSpherical.phi,
-                eased
-              );
-
-            const radius =
-              THREE.MathUtils.lerp(
-                returnStartSpherical.radius,
-                homeSpherical.radius,
-                eased
-              );
-
-            const spherical =
-              new THREE.Spherical(
-                radius,
-                phi,
-                theta
-              );
-
-            tempVector.setFromSpherical(
-              spherical
-            );
-
-            camera.position
-              .copy(homeTarget)
-              .add(tempVector);
-
-            controls.target.lerp(
-              homeTarget,
-              eased
-            );
-
-            camera.lookAt(
-              controls.target
-            );
-
-            if (progress >= 1) {
-              returningHome = false;
-
-              controls.target.copy(
-                homeTarget
-              );
-
-              controls.autoRotate = true;
-            }
-          }
-
-          controls.update(delta);
-
-          renderer.render(
-            scene,
-            camera
-          );
-        }
-      );
-
-      /**
-       * =========================================================
-       * CLEANUP
-       * =========================================================
-       */
-
-      cleanup = () => {
-        if (resumeTimer) {
-          clearTimeout(resumeTimer);
-        }
-
-        renderer.setAnimationLoop(null);
-
-        resizeObserver.disconnect();
-
-        intersectionObserver.disconnect();
-
-        controls.removeEventListener(
-          "start",
-          handleInteractionStart
-        );
-
-        controls.removeEventListener(
-          "end",
-          handleInteractionEnd
-        );
-
-        controls.dispose();
-
-        renderer.domElement.removeEventListener(
-          "webglcontextlost",
-          handleContextLost
-        );
-
-        model.traverse((object) => {
-          if (object instanceof THREE.Mesh) {
-            object.geometry.dispose();
-          }
-        });
-
-        goldMaterial.dispose();
-
-        environmentTarget.dispose();
-
-        renderer.dispose();
-
-        renderer.domElement.remove();
-      };
+      if (!contextLost) {
+        // Only remove the fallback after the first successful render.
+        renderer.render(scene, camera);
+        setReady(true);
+        setStatus("");
+      }
+      syncLoop();
     }
 
-    init(hostElement).catch(
-      (error) => {
-        console.error(
-          "[ProductViewer]",
-          error
-        );
-
-        cleanup();
-
-        if (!disposed) {
-          setReady(false);
-
-          setStatus(
-            "Không thể tải mô hình 3D. Vui lòng tải lại trang."
-          );
-        }
-      }
-    );
-
-    return () => {
-      disposed = true;
+    init(element).catch((error) => {
       cleanup();
-    };
+      if (!disposed) {
+        console.error("[ProductViewer]", error);
+        setReady(false);
+        setStatus("Không thể tải mô hình 3D. Vui lòng tải lại trang.");
+      }
+    });
+    return () => { disposed = true; cleanup(); };
   }, []);
 
   return (
-    <div className="product-viewer">
-      {!ready && (
-        <Image
-          className="product-viewer-fallback"
-          src="/traceability/figma/product-front.png"
-          alt="Long Vân Lưu Tín"
-          fill
-          sizes="(max-width: 768px) 100vw, 50vw"
-        />
-      )}
-
-      <div
-        ref={host}
-        className="product-viewer-canvas"
-        role="img"
-        aria-label="Mô hình 3D Long Vân Lưu Tín. Kéo hoặc vuốt để xoay sản phẩm; cuộn chuột hoặc chụm hai ngón để thu phóng."
-      />
-
-      {status && (
-        <p
-          className="product-viewer-label"
-          role="status"
-        >
-          {status}
-        </p>
-      )}
+    <div className={styles.viewer}>
+      {!ready && <Image className={styles.fallback} src="/traceability/figma/product-front.png" alt="Long Vân Lưu Tín" fill sizes="(max-width: 800px) 100vw, 760px" />}
+      <div ref={host} className={styles.canvas} aria-hidden={!ready} role="img" aria-label="Mô hình 3D Long Vân Lưu Tín. Kéo hoặc vuốt để xoay; cuộn chuột hoặc chụm hai ngón để thu phóng." />
+      {status && <p className={styles.label} role="status">{status}</p>}
     </div>
   );
 }

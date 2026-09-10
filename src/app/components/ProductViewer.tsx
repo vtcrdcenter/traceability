@@ -34,7 +34,6 @@ export default function ProductViewer() {
         THREE,
         { OrbitControls },
         { GLTFLoader },
-        { RoomEnvironment },
       ] = await Promise.all([
         import("three"),
 
@@ -44,10 +43,6 @@ export default function ProductViewer() {
 
         import(
           "three/addons/loaders/GLTFLoader.js"
-        ),
-
-        import(
-          "three/addons/environments/RoomEnvironment.js"
         ),
       ]);
 
@@ -76,18 +71,19 @@ export default function ProductViewer() {
         )
       );
 
+      /*
+       * Quan trọng:
+       * output vẫn là sRGB,
+       * nhưng không dùng ACES để tránh làm cháy material.
+       */
       renderer.outputColorSpace =
         THREE.SRGBColorSpace;
 
-      /*
-       * Giữ ACES nhưng giảm exposure mạnh
-       * để vàng / xanh / đỏ không bị cháy thành trắng.
-       */
       renderer.toneMapping =
-        THREE.ACESFilmicToneMapping;
+        THREE.NoToneMapping;
 
       renderer.toneMappingExposure =
-        0.78;
+        1;
 
       renderer.setClearColor(
         0x000000,
@@ -116,6 +112,14 @@ export default function ProductViewer() {
 
       const scene =
         new THREE.Scene();
+
+      /*
+       * Không set scene.environment.
+       *
+       * Mục tiêu của bản này là kiểm tra
+       * màu material/texture gốc của GLB
+       * mà không bị environment map can thiệp.
+       */
 
       /* =====================================================
          CAMERA
@@ -148,33 +152,27 @@ export default function ProductViewer() {
       controls.enablePan = false;
 
       controls.enableDamping = true;
-      controls.dampingFactor = 0.06;
+
+      controls.dampingFactor =
+        0.06;
 
       controls.enableZoom = true;
-      controls.zoomSpeed = 0.4;
 
-      /*
-       * Tự xoay nhẹ.
-       */
-      controls.autoRotate = true;
+      controls.zoomSpeed =
+        0.4;
+
+      controls.autoRotate =
+        true;
 
       controls.autoRotateSpeed =
         0.42;
 
-      /*
-       * Không cho lật ngược model.
-       */
       controls.minPolarAngle =
         Math.PI * 0.24;
 
       controls.maxPolarAngle =
         Math.PI * 0.76;
 
-      /*
-       * Mobile:
-       * 1 ngón = xoay
-       * 2 ngón = zoom + xoay
-       */
       controls.touches.ONE =
         THREE.TOUCH.ROTATE;
 
@@ -182,45 +180,31 @@ export default function ProductViewer() {
         THREE.TOUCH.DOLLY_ROTATE;
 
       /* =====================================================
-         ENVIRONMENT LIGHTING
-      ===================================================== */
-
-      /*
-       * Environment là nguồn sáng chính.
-       * Không dùng AmbientLight mạnh nữa.
-       */
-      const environment =
-        new RoomEnvironment();
-
-      const pmrem =
-        new THREE.PMREMGenerator(
-          renderer
-        );
-
-      const environmentTarget =
-        pmrem.fromScene(
-          environment,
-          0.04
-        );
-
-      scene.environment =
-        environmentTarget.texture;
-
-      environment.dispose();
-      pmrem.dispose();
-
-      /* =====================================================
          LIGHTING
       ===================================================== */
 
       /*
-       * Chỉ bổ sung một nguồn sáng chính nhẹ.
-       * Không dùng 3 đèn mạnh như bản cũ.
+       * HemisphereLight cho ánh sáng mềm,
+       * ít gây cháy hơn Ambient + nhiều DirectionalLight.
+       */
+      const hemisphereLight =
+        new THREE.HemisphereLight(
+          0xffffff,
+          0x4b2b20,
+          1.15
+        );
+
+      scene.add(
+        hemisphereLight
+      );
+
+      /*
+       * Key light nhẹ để tạo chiều sâu.
        */
       const keyLight =
         new THREE.DirectionalLight(
-          0xfff4e5,
-          0.52
+          0xfff6e8,
+          0.72
         );
 
       keyLight.position.set(
@@ -234,18 +218,18 @@ export default function ProductViewer() {
       );
 
       /*
-       * Fill rất nhẹ để mặt tối không mất chi tiết.
+       * Fill cực nhẹ phía đối diện.
        */
       const fillLight =
         new THREE.DirectionalLight(
-          0xffe3ba,
+          0xffddae,
           0.16
         );
 
       fillLight.position.set(
         -4,
         1,
-        3
+        2
       );
 
       scene.add(
@@ -344,7 +328,7 @@ export default function ProductViewer() {
       }
 
       /* =====================================================
-         INTERACTION
+         RETURN HOME
       ===================================================== */
 
       function beginReturnHome() {
@@ -358,7 +342,8 @@ export default function ProductViewer() {
         controls.autoRotate =
           false;
 
-        returningHome = true;
+        returningHome =
+          true;
 
         returnStartTime =
           performance.now();
@@ -375,6 +360,10 @@ export default function ProductViewer() {
           tempVector
         );
       }
+
+      /* =====================================================
+         INTERACTION
+      ===================================================== */
 
       function handleInteractionStart() {
         if (resumeTimer) {
@@ -519,14 +508,16 @@ export default function ProductViewer() {
         gltf.scene;
 
       /* =====================================================
-         GIỮ NGUYÊN MATERIAL GỐC
+         MATERIAL / TEXTURE
       ===================================================== */
 
       model.traverse(
         (object) => {
           if (
-            !(object instanceof
-              THREE.Mesh)
+            !(
+              object instanceof
+              THREE.Mesh
+            )
           ) {
             return;
           }
@@ -556,20 +547,50 @@ export default function ProductViewer() {
           materials.forEach(
             (material) => {
               /*
-               * KHÔNG thay màu.
-               * KHÔNG thay material.
-               *
-               * Chỉ giảm cường độ phản xạ environment
-               * để tránh cháy sáng.
+               * Không đổi material.
+               * Không đổi màu.
+               * Không đổi metalness.
+               * Không đổi roughness.
                */
+
               if (
                 material instanceof
                   THREE.MeshStandardMaterial ||
                 material instanceof
                   THREE.MeshPhysicalMaterial
               ) {
+                /*
+                 * Nếu material có texture base color,
+                 * bảo đảm texture được đọc dưới sRGB.
+                 */
+                if (
+                  material.map
+                ) {
+                  material.map.colorSpace =
+                    THREE.SRGBColorSpace;
+
+                  material.map.needsUpdate =
+                    true;
+                }
+
+                /*
+                 * Emissive map nếu có cũng cần đúng color space.
+                 */
+                if (
+                  material.emissiveMap
+                ) {
+                  material.emissiveMap.colorSpace =
+                    THREE.SRGBColorSpace;
+
+                  material.emissiveMap.needsUpdate =
+                    true;
+                }
+
+                /*
+                 * Không dùng environment map.
+                 */
                 material.envMapIntensity =
-                  0.65;
+                  0;
 
                 material.needsUpdate =
                   true;
@@ -618,9 +639,6 @@ export default function ProductViewer() {
         );
       }
 
-      /*
-       * Đưa model về tâm.
-       */
       model.position.sub(
         center
       );
@@ -652,9 +670,6 @@ export default function ProductViewer() {
         );
       }
 
-      /*
-       * Scale model.
-       */
       const TARGET_SIZE =
         1.75;
 
@@ -667,7 +682,7 @@ export default function ProductViewer() {
       );
 
       /*
-       * Center lại sau scale.
+       * Center lại lần cuối.
        */
       box =
         new THREE.Box3().setFromObject(
@@ -720,9 +735,6 @@ export default function ProductViewer() {
           )
         );
 
-      /*
-       * Khoảng thở quanh model.
-       */
       cameraDistance *=
         1.55;
 
@@ -768,7 +780,7 @@ export default function ProductViewer() {
       setStatus("");
 
       /* =====================================================
-         ANIMATION LOOP
+         ANIMATION
       ===================================================== */
 
       let lastTime =
@@ -787,7 +799,8 @@ export default function ProductViewer() {
             !visible ||
             document.hidden
           ) {
-            lastTime = now;
+            lastTime =
+              now;
 
             return;
           }
@@ -800,11 +813,8 @@ export default function ProductViewer() {
               0.05
             );
 
-          lastTime = now;
-
-          /* =============================================
-             RETURN HOME
-          ============================================= */
+          lastTime =
+            now;
 
           if (
             returningHome
@@ -920,7 +930,9 @@ export default function ProductViewer() {
       ===================================================== */
 
       cleanup = () => {
-        if (resumeTimer) {
+        if (
+          resumeTimer
+        ) {
           clearTimeout(
             resumeTimer
           );
@@ -951,7 +963,9 @@ export default function ProductViewer() {
           handleContextLost
         );
 
-        if (model) {
+        if (
+          model
+        ) {
           model.traverse(
             (object) => {
               if (
@@ -983,8 +997,6 @@ export default function ProductViewer() {
           );
         }
 
-        environmentTarget.dispose();
-
         renderer.dispose();
 
         if (
@@ -1007,8 +1019,12 @@ export default function ProductViewer() {
 
         cleanup();
 
-        if (!disposed) {
-          setReady(false);
+        if (
+          !disposed
+        ) {
+          setReady(
+            false
+          );
 
           setStatus(
             "Không thể tải mô hình 3D. Vui lòng tải lại trang."
@@ -1018,7 +1034,8 @@ export default function ProductViewer() {
     );
 
     return () => {
-      disposed = true;
+      disposed =
+        true;
 
       cleanup();
     };

@@ -50,7 +50,7 @@ export default function ProductViewer() {
       // No residual damping is carried into the programmed return-home animation.
       controls.enableDamping = false;
       controls.autoRotate = false;
-      controls.autoRotateSpeed = 0.85;
+      controls.autoRotateSpeed = 1.0;
       controls.zoomSpeed = 0.45;
       controls.minPolarAngle = Math.PI * 0.24;
       controls.maxPolarAngle = Math.PI * 0.76;

@@ -15,7 +15,7 @@ const A = `${BASE}/figma`;
 export const metadata: Metadata = {
   title: "Long Vân Lưu Tín",
   icons: {
-    icon: `${A}/icon-cloud.png`,
+    icon: `${A}/vtc-merch-icon.png`,
   },
   description:
     "Hồ sơ truy xuất sản phẩm văn hóa Long Vân Lưu Tín của VTC Merch.",

@@ -6,10 +6,11 @@ import styles from "./ProductViewer.module.css";
 
 const MODEL_URL = "/traceability/heritage/magnet-2-web-quality.glb?v=1";
 
-export default function ProductViewer() {
+export default function ProductViewer({ language = "vi" }: { language?: "vi" | "en" }) {
+  const en = language === "en";
   const host = useRef<HTMLDivElement>(null);
   const reset = useRef<() => void>(() => {});
-  const [status, setStatus] = useState("Đang tải mô hình 3D…");
+  const [status, setStatus] = useState(en ? "Loading 3D model…" : "Đang tải mô hình 3D…");
   const [ready, setReady] = useState(false);
   const [retry, setRetry] = useState(0);
 
@@ -125,7 +126,7 @@ export default function ProductViewer() {
       const onContextLost = (event: Event) => {
         event.preventDefault(); contextLost = true; loaded = false;
         clearTimeout(resume); setReady(false);
-        setStatus("Không thể hiển thị mô hình 3D. Vui lòng thử lại.");
+        setStatus(en ? "Unable to display the 3D model. Please try again." : "Không thể hiển thị mô hình 3D. Vui lòng thử lại.");
       };
       renderer.domElement.addEventListener("webglcontextlost", onContextLost);
       releases.push(() => renderer.domElement.removeEventListener("webglcontextlost", onContextLost));
@@ -210,17 +211,17 @@ export default function ProductViewer() {
       cleanup();
       if (!disposed) {
         console.error("[ProductViewer]", error);
-        setReady(false); setStatus("Không thể tải mô hình 3D. Vui lòng thử lại.");
+        setReady(false); setStatus(en ? "Unable to load the 3D model. Please try again." : "Không thể tải mô hình 3D. Vui lòng thử lại.");
       }
     });
     return () => { disposed = true; abort.abort(); cleanup(); };
-  }, [retry]);
+  }, [retry, en]);
 
   return <div className={styles.viewer}>
     {!ready && <Image className={styles.fallback} src="/traceability/figma/product-front.png" alt="Long Vân Lưu Tín" fill sizes="(max-width: 800px) 90vw, 700px" />}
-    <div ref={host} className={styles.canvas} aria-hidden={!ready} role="img" aria-label="Mô hình 3D Long Vân Lưu Tín. Kéo hoặc vuốt để xoay; cuộn chuột hoặc chụm hai ngón để thu phóng." />
-    {ready && <button className={styles.home} onClick={() => reset.current()} aria-label="Đưa mô hình về góc nhìn ban đầu">↻ &nbsp; Xoay 360°</button>}
+    <div ref={host} className={styles.canvas} aria-hidden={!ready} role="img" aria-label={en ? "3D model of Long Vân Lưu Tín. Drag to rotate; scroll or pinch to zoom." : "Mô hình 3D Long Vân Lưu Tín. Kéo hoặc vuốt để xoay; cuộn chuột hoặc chụm hai ngón để thu phóng."} />
+    {ready && <button className={styles.home} onClick={() => reset.current()} aria-label={en ? "Return model to its starting view" : "Đưa mô hình về góc nhìn ban đầu"}>↻ &nbsp; {en ? "Rotate 360°" : "Xoay 360°"}</button>}
     {status && <p className={styles.label} role="status">{status}</p>}
-    {!ready && status.startsWith("Không") && <button className={styles.retry} onClick={() => { setStatus("Đang tải mô hình 3D…"); setRetry(value => value + 1); }}>Thử lại</button>}
+    {!ready && (status.startsWith("Không") || status.startsWith("Unable")) && <button className={styles.retry} onClick={() => { setStatus(en ? "Loading 3D model…" : "Đang tải mô hình 3D…"); setRetry(value => value + 1); }}>{en ? "Try again" : "Thử lại"}</button>}
   </div>;
 }

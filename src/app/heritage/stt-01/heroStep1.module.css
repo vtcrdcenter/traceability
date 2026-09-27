@@ -2,7 +2,12 @@
 .heroGrid { position: relative; min-height: clamp(470px, 37vw, 590px); display: flex; align-items: center; }
 .heroCopy { position: relative; z-index: 2; width: 43%; padding: 52px 0 58px; }
 .heroImage { position: absolute; z-index: 0; top: 0; bottom: 0; left: 33%; right: calc((min(1240px, 89vw) - 100vw) / 2); }
-.heroImage img {  object-fit: cover;  object-position: 65% 48%; }
+.heroImage img {    object-fit: cover;
+    object-position: center 44%;
+    transform: none;
+
+    -webkit-mask-image: none;
+    mask-image: none; }
 .heroImage::after { content: ""; position: absolute; inset: 0; background: linear-gradient(90deg, #7f1821 0%, #7f1821e6 12%, #7f182173 32%, transparent 60%); }
 .attestation { display: flex; align-items: center; gap: 20px; width: min(450px, 100%); margin-top: 38px; padding: 16px 20px; border: 1px solid #ffb100; border-radius: 8px; background: #5b1017; }
 .attestationIcon { flex: 0 0 48px; color: #dfbd74; }

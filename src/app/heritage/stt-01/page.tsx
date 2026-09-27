@@ -40,7 +40,7 @@ const certificates = [
     eyebrow: "ĐƠN VỊ BẢO CHỨNG",
     title: "Bảo tàng Lịch sử Quốc gia",
     copy:
-      "Đơn vị xác nhận nguồn tham chiếu văn hóa của sản phẩm, bảo chứng nội dung khai thác giá trị văn hóa từ hình tượng mũ thượng triều thời Nguyễn, hồ sơ thiết kế và nghệ thuật trang sức cung đình Việt Nam.",
+      "Đơn vị xác nhận ngày 29/08/2006 về nguồn tham chiếu văn hóa của sản phẩm; bảo chứng nội dung khai thác giá trị văn hóa từ hình tượng mũ thượng triều thời Nguyễn, hồ sơ thiết kế và nghệ thuật trang sức cung đình Việt Nam.",
     link: "Tìm hiểu về BTLSQG →",
     href: "https://baotanglichsu.vn/",
   },

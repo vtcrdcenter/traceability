@@ -22,3 +22,12 @@
   .attestationText small { font-size: 8px; }
   .attestationText strong { font-size: 18px; }
 }
+
+@media (min-width: 1200px) {
+  .heroImage img {
+    object-fit: contain;
+    object-position: right center;
+    transform: scale(0.88);
+    transform-origin: right center;
+  }
+}

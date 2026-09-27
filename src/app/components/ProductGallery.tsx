@@ -37,7 +37,7 @@ const galleryItems: GalleryItem[] = [
   },
 ];
 
-export default function ProductGallery({ language = "vi" }: { language?: "vi" | "en" }) {
+export default function ProductGallery() {
   const id = useId();
   const buttons = useRef<(HTMLButtonElement | null)[]>([]);
   const [activeIndex, setActiveIndex] = useState(0);
@@ -108,7 +108,7 @@ export default function ProductGallery({ language = "vi" }: { language?: "vi" | 
       <div
         className={styles.thumbs}
         role="tablist"
-        aria-label={language === "en" ? "Product images" : "Hình ảnh sản phẩm"}
+        aria-label="Hình ảnh sản phẩm"
       >
         {galleryItems.map((item, index) => {
           const active = index === activeIndex;
@@ -119,7 +119,7 @@ export default function ProductGallery({ language = "vi" }: { language?: "vi" | 
               type="button"
               role="tab"
               aria-selected={active}
-              aria-label={language === "en" ? `View image ${index + 1}` : `Xem hình ${index + 1}: ${item.alt}`}
+              aria-label={`Xem hình ${index + 1}: ${item.alt}`}
               className={styles.thumb}
               id={`${id}-tab-${index}`}
               aria-controls={`${id}-panel`}

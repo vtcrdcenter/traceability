@@ -1,144 +1,898 @@
 import type { Metadata } from "next";
 import Image from "next/image";
-import ProductGallery from "../../../components/ProductGallery";
-import ProductViewer from "../../../components/ProductViewer";
-import styles from "../../../heritage/stt-01/stt01.module.css";
-import heroStyles from "../../../heritage/stt-01/heroStep1.module.css";
+import {
+  ArrowDown,
+  ArrowUpRight,
+  Check,
+  CheckCircle2,
+  FileBadge2,
+  FileText,
+  Fingerprint,
+  Landmark,
+  PackageCheck,
+  ShieldCheck,
+  Sparkles,
+} from "lucide-react";
 
-const BASE = "/traceability";
-const A = `${BASE}/figma`;
+import TraceHeader from "../../../components/TraceHeader";
+import AdvancedInfo from "../../../components/AdvancedInfo";
+import {
+  getStt01Content,
+} from "../../../data/stt-01";
+
+/* =========================================================
+   METADATA
+========================================================= */
 
 export const metadata: Metadata = {
-  title: "Long Vân Lưu Tín",
-  description: "VTC Merch cultural product traceability record for Long Vân Lưu Tín.",
-  icons: { icon: `${A}/vtc-merch-icon.png` },
+  title: "Nguyen Imperial Court Imprint",
+
+  description:
+    "Traceability record for Nguyen Imperial Court Imprint, including product verification, cultural references, attestation, copyright and traceability data.",
+
   alternates: {
-    canonical: "/en/heritage/stt-01/",
-    languages: { "vi-VN": "/heritage/stt-01/", "en-US": "/en/heritage/stt-01/" },
+    canonical:
+      "/en/heritage/stt-01",
+    languages: {
+      "vi-VN":
+        "/heritage/stt-01",
+      "en-US":
+        "/en/heritage/stt-01",
+    },
+  },
+
+  openGraph: {
+    type: "website",
+    locale: "en_US",
+
+    title:
+      "Nguyen Imperial Court Imprint · VTC Traceability Platform",
+
+    description:
+      "Verify product information, explore the cultural story, attestation records, copyright information and traceability data of Nguyen Imperial Court Imprint.",
+
+    url:
+      "https://vtcrdcenter.github.io/traceability/en/heritage/stt-01/",
   },
 };
 
-const facts = [
-  ["Product name", "Long Vân Lưu Tín"],
-  ["Product code", "893-110006-001-1"],
-  ["Product type", "Refrigerator magnet"],
-  ["Dimensions", "6.8 × 7.4 cm, 0.7 cm thick"],
-  ["Materials", "Alloy, gold-plated edges, pearls"],
-  ["Origin", "Vietnam"],
-  ["Production date", "09/2026"],
-  ["Manufacturer", "ENSA Gift Company"],
-  ["Brand", "VTC Merchandise"],
-];
+/* =========================================================
+   BASE PATH
+========================================================= */
 
-const certificates = [
-  {
-    number: "01", logo: "museum.png", eyebrow: "CULTURAL ATTESTATION",
-    title: "Vietnam National Museum of History",
-    copy: "The institution that confirms the product's cultural references and attests to its interpretation of the Nguyen-dynasty imperial court hat, design records and Vietnamese court jewellery.",
-    link: "Learn about the museum →", href: "https://baotanglichsu.vn/",
-  },
-  {
-    number: "02", logo: "copyright.png", eyebrow: "COPYRIGHT REGISTRATION",
-    title: "Copyright Office of Vietnam",
-    copy: "The design titled ‘Dấu Ấn Thượng triều Nguyễn’ has been granted a copyright registration certificate.",
-    link: "View certificate →", href: `${BASE}/heritage/copyright-certificate.png`,
-  },
-  {
-    number: "03", logo: "vtc.png", eyebrow: "PLATFORM OPERATOR",
-    title: "VTC Corporation",
-    copy: "Vietnam Multimedia Corporation (VTC) operates the platform that stores and provides access to the product's digital record.",
-    link: "Learn about VTC →", href: "https://vtc.org.vn/",
-  },
-];
+const BASE = "/traceability";
 
-function MuseumIcon() {
-  return <svg viewBox="0 0 48 48" aria-hidden="true" focusable="false" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <path d="M6 18L24 7L42 18M9 18H39M12 21V36M20 21V36M28 21V36M36 21V36M8 39H40M5 43H43" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" />
-  </svg>;
-}
+/* =========================================================
+   PAGE
+========================================================= */
 
 export default function Stt01EnglishPage() {
-  return <main className={styles.landing}>
-    <header className={styles.header}>
-      <Image src={`${A}/raw-01.png`} alt="VTC Merch" width={118} height={30} priority />
-      <nav aria-label="Language"><a href={`${BASE}/`}>VI</a><span>|</span><b>EN</b></nav>
-    </header>
+  const content =
+    getStt01Content("en");
 
-    <section className={`${styles.hero} ${heroStyles.hero}`}>
-      <span aria-hidden="true" className={`${styles.ornament} ${styles.heroCloud}`} />
-      <span aria-hidden="true" className={`${styles.ornament} ${styles.heroCloudLow}`} />
-      <div className={`${styles.shell} ${heroStyles.heroGrid}`}>
-        <div className={`${styles["hero-copy"]} ${heroStyles.heroCopy}`}>
-          <span className={styles.kicker}>CULTURAL PRODUCT</span>
-          <h1><span>Long Vân</span>Lưu Tín</h1>
-          <p>This gift is a gentle reminder: the greatest heritage is sometimes close to home. It shines in everyday life whenever you reach out to touch it, preserving the connections you treasure most today.</p>
-          <div className={heroStyles.attestation}>
-            <div className={heroStyles.attestationIcon} aria-hidden="true"><MuseumIcon /></div>
-            <div className={heroStyles.attestationText}><small>ATTESTED ON 29/08/2026 BY</small><strong>Vietnam National Museum of History</strong></div>
+  const {
+    product,
+    overview,
+    verification,
+    heritage,
+    merch,
+    documents,
+    footer,
+  } = content;
+
+  /* =========================================================
+     VERIFICATION ICONS
+  ========================================================= */
+
+  const verificationIcons = {
+    trace: Fingerprint,
+    attestation: Landmark,
+    copyright: FileBadge2,
+  };
+
+  return (
+    <main className="trace-page">
+      {/* =====================================================
+          HEADER
+      ===================================================== */}
+
+      <TraceHeader />
+
+      {/* =====================================================
+          01 — OVERVIEW
+      ===================================================== */}
+
+      <section
+        id="overview"
+        className="hero section-pad chapter-wine"
+      >
+        {/* ===================================================
+            HERO COPY
+        =================================================== */}
+
+        <div className="hero-copy">
+          <p className="eyebrow">
+            {overview.eyebrow}
+          </p>
+
+          <h1>
+            {overview.titleLine1}
+            <br />
+
+            <em>
+              {overview.titleLine2}
+            </em>
+          </h1>
+
+          <p className="hero-lead">
+            {overview.description}
+          </p>
+
+          {/* ===============================================
+              PRODUCT META
+          =============================================== */}
+
+          <div className="hero-meta">
+            <span>
+              <small>
+                {overview.meta.codeLabel}
+              </small>
+
+              <b>
+                {product.code}
+              </b>
+            </span>
+
+            <span>
+              <small>
+                {overview.meta.typeLabel}
+              </small>
+
+              <b>
+                {product.type}
+              </b>
+            </span>
+
+            <span>
+              <small>
+                {overview.meta.traceLabel}
+              </small>
+
+              <b>
+                {product.traceCode}
+              </b>
+            </span>
+          </div>
+
+          {/* ===============================================
+              HERO ACTIONS
+          =============================================== */}
+
+          <div className="hero-actions">
+            <a
+              className="primary-button"
+              href="#verification"
+            >
+              <ShieldCheck
+                size={15}
+                aria-hidden="true"
+              />
+
+              <span>
+                {overview.primaryAction}
+              </span>
+            </a>
+
+            <a href="#heritage-story">
+              <span>
+                {overview.secondaryAction}
+              </span>
+
+              <ArrowDown
+                size={14}
+                aria-hidden="true"
+              />
+            </a>
           </div>
         </div>
-        <div className={heroStyles.heroImage}><Image src={`${A}/hero.png`} alt="Long Vân Lưu Tín in a living space" fill priority sizes="(max-width: 800px) 100vw, 71vw" /></div>
-      </div>
-    </section>
 
-    <section className={`${styles.section} ${styles.product}`} id="product-info">
-      <div className={styles.shell}><h2>Product information</h2>
-        <div className={styles["product-grid"]}>
-          <ProductGallery language="en" />
-          <dl className={styles.facts}>{facts.map(([label, value]) => <div key={label}><dt>{label}</dt><dd>{value}</dd></div>)}</dl>
-        </div>
-      </div>
-    </section>
+        {/* ===================================================
+            HERO VISUAL
+        =================================================== */}
 
-    <section className={`${styles.section} ${styles.certificates}`} id="certificates">
-      <span aria-hidden="true" className={`${styles.ornament} ${styles.cloudLeft}`} />
-      <span aria-hidden="true" className={`${styles.ornament} ${styles.cloudRight}`} />
-      <span aria-hidden="true" className={`${styles.ornament} ${styles.cloudDivider}`} />
-      <div className={styles.shell}><h2>Cultural value certification</h2>
-        <div className={styles["card-grid"]}>{certificates.map(card => <article className={styles.card} key={card.number}>
-          <span className={styles["card-number"]}>{card.number}</span>
-          <div className={styles["card-logo"]}><Image src={`${A}/${card.logo}`} alt="" fill sizes="164px" /></div>
-          <small>{card.eyebrow}</small><h3>{card.title}</h3><p>{card.copy}</p>
-          <a href={card.href} target={card.href.startsWith("http") ? "_blank" : undefined} rel={card.href.startsWith("http") ? "noopener noreferrer" : undefined}>{card.link}</a>
-        </article>)}</div>
-      </div>
-    </section>
+        <div className="hero-image">
+          <Image
+            src={`${BASE}/heritage/stt-01-product.webp`}
+            alt={product.name}
+            width={1200}
+            height={1200}
+            priority
+          />
 
-    <section className={styles.experience} id="experience">
-      <span aria-hidden="true" className={`${styles.ornament} ${styles.cloudTitleLeft}`} />
-      <span aria-hidden="true" className={`${styles.ornament} ${styles.cloudTitleRight}`} />
-      <span aria-hidden="true" className={`${styles.ornament} ${styles.cloudCornerLeft}`} />
-      <span aria-hidden="true" className={`${styles.ornament} ${styles.cloudCornerRight}`} />
-      <div className={styles.shell}><h2>Explore the product from every angle</h2>
-        <p>Rotate, zoom in and out, and discover the product&apos;s patterns and structure with the interactive 3D model.</p>
-        <div className={styles["viewer-stage"]}><ProductViewer language="en" /></div>
-      </div>
-    </section>
+          <div
+            className="edition"
+            aria-hidden="true"
+          >
+            <span>
+              STT
+            </span>
 
-    <section className={`${styles.section} ${styles.story}`} id="story">
-      <span aria-hidden="true" className={`${styles.ornament} ${styles.cloudRight}`} />
-      <span aria-hidden="true" className={`${styles.ornament} ${styles.storyCloudBottom}`} />
-      <div className={styles.shell}><h2>A sky of heritage in the modern home</h2>
-        <div className={styles.source}><b>PRIMARY SOURCE OF INSPIRATION</b><p>The imperial court hat was worn by the emperor when holding court, deciding major national affairs, conducting state ceremonies or receiving foreign envoys. This rare palace artefact dates from the 19th–20th centuries and was exquisitely crafted with gold, gemstones, coral and gold thread.</p></div>
-        <div className={styles["story-grid"]}>
-          <div><b>THE PRODUCT STORY</b>
-            <p>More than a century ago, beneath the vast sky and swirling clouds of the imperial capital, master goldsmiths poured their skill into every gold leaf and jewel to create a majestic court hat.</p>
-            <p>The <strong>“Long Vân” design</strong> – dragons and phoenixes soaring among layers of clouds – symbolised supreme royal power and a vision of a vast, harmonious universe. Each carefully placed pearl, piece of coral and gemstone brought together the finest elements of nature.</p>
-            <p>Today, <strong>“Long Vân Lưu Tín”</strong> brings that world of heritage into a small magnet on the refrigerator in your home. No longer carrying the weight of a royal crown, this miniature becomes a familiar keeper of family messages: a new recipe, a loving reminder or a photograph from a joyful trip.</p>
+            <b>
+              01
+            </b>
           </div>
-          <div className={styles["story-image"]}><Image src={`${A}/story.png`} alt="Nguyen-dynasty imperial court hat" fill sizes="(max-width: 800px) 100vw, 560px" /></div>
-        </div>
-        <div className={styles["meaning-grid"]}>
-          <article><Image src={`${A}/icon-cloud.png`} alt="" width={60} height={60} /><div><h3>Long Vân (Dragons and Clouds)</h3><p>Dragons and phoenixes weave through the clouds, representing ambition and freedom.</p></div></article>
-          <article><Image src={`${A}/icon-note.png`} alt="" width={60} height={60} /><div><h3>Lưu Tín (Keeping Messages)</h3><p>The magnet holds notes, messages and familiar connections within the family.</p></div></article>
-        </div>
-      </div>
-    </section>
 
-    <footer className={styles.footer}>
-      <Image src={`${A}/raw-01.png`} alt="VTC Merch" width={118} height={30} />
-      <p>Platform operated by<br /><b>Vietnam Multimedia Corporation (VTC)</b></p>
-      <small>© 2026 VTC Merch. All rights reserved.</small>
-    </footer>
-  </main>;
+          <div className="status-chip">
+            <CheckCircle2
+              size={22}
+              aria-hidden="true"
+            />
+
+            <div>
+              <small>
+                {overview.status.label}
+              </small>
+
+              <b>
+                {overview.status.value}
+              </b>
+            </div>
+          </div>
+        </div>
+
+        {/* ===================================================
+            QUICK NAVIGATION
+        =================================================== */}
+
+        <div className="quick-nav">
+          <p>
+            <span>
+              {overview.quickNavLabel}
+            </span>
+
+            {overview.quickNavDescription}
+          </p>
+
+          <div>
+            {content.nav
+              .filter((item) =>
+                [
+                  "verification",
+                  "heritage-story",
+                  "merch",
+                  "documents",
+                ].includes(item.id)
+              )
+              .map((item) => (
+                <a
+                  key={item.id}
+                  href={`#${item.id}`}
+                >
+                  <i>
+                    {item.number}
+                  </i>
+
+                  <span>
+                    {item.label}
+                  </span>
+
+                  <ArrowDown
+                    size={13}
+                    aria-hidden="true"
+                  />
+                </a>
+              ))}
+          </div>
+        </div>
+      </section>
+
+      {/* =====================================================
+          02 — VERIFICATION
+      ===================================================== */}
+
+      <section
+        id="verification"
+        className="content-section section-pad chapter-cream"
+      >
+        {/* ===================================================
+            HEADING
+        =================================================== */}
+
+        <div className="section-heading">
+          <span className="section-number">
+            {verification.number}
+          </span>
+
+          <div>
+            <p className="eyebrow">
+              {verification.eyebrow}
+            </p>
+
+            <h2>
+              {verification.title}
+            </h2>
+
+            <p>
+              {verification.description}
+            </p>
+          </div>
+        </div>
+
+        {/* ===================================================
+            SUMMARY CARDS
+        =================================================== */}
+
+        <div className="verification-summary">
+          {verification.items.map(
+            (item) => {
+              const Icon =
+                verificationIcons[
+                  item.key
+                ];
+
+              return (
+                <article
+                  key={item.key}
+                  className="verification-summary-card"
+                >
+                  <Icon
+                    aria-hidden="true"
+                  />
+
+                  <small>
+                    {item.eyebrow}
+                  </small>
+
+                  <h3>
+                    {item.title}
+                  </h3>
+
+                  <p>
+                    {item.description}
+                  </p>
+                </article>
+              );
+            }
+          )}
+        </div>
+
+        {/* ===================================================
+            BASIC + TRACE RESULT
+        =================================================== */}
+
+        <div className="verification-basic-grid">
+          {/* BASIC INFORMATION */}
+
+          <article className="basic-product-info">
+            <p className="eyebrow">
+              {
+                verification
+                  .productInfo
+                  .eyebrow
+              }
+            </p>
+
+            <h3>
+              {
+                verification
+                  .productInfo
+                  .title
+              }
+            </h3>
+
+            <dl>
+              {verification.productInfo.fields.map(
+                (item) => (
+                  <div key={item.label}>
+                    <dt>
+                      {item.label}
+                    </dt>
+
+                    <dd>
+                      {item.value}
+                    </dd>
+                  </div>
+                )
+              )}
+            </dl>
+          </article>
+
+          {/* TRACE RESULT */}
+
+          <article className="basic-trace-result">
+            <div>
+              <Fingerprint
+                size={30}
+                aria-hidden="true"
+              />
+
+              <span className="valid">
+                <Check
+                  size={13}
+                  aria-hidden="true"
+                />
+
+                {
+                  verification
+                    .traceResult
+                    .validLabel
+                }
+              </span>
+            </div>
+
+            <p className="eyebrow">
+              {
+                verification
+                  .traceResult
+                  .eyebrow
+              }
+            </p>
+
+            <h3>
+              {
+                verification
+                  .traceResult
+                  .codeLabel
+              }
+            </h3>
+
+            <p>
+              {
+                verification
+                  .traceResult
+                  .description
+              }
+            </p>
+
+            <a
+              className="advanced-link"
+              href="#advanced"
+            >
+              <span>
+                {
+                  verification
+                    .traceResult
+                    .advancedLink
+                }
+              </span>
+
+              <ArrowDown
+                size={14}
+                aria-hidden="true"
+              />
+            </a>
+          </article>
+        </div>
+      </section>
+
+      {/* =====================================================
+          03 — HERITAGE STORY
+      ===================================================== */}
+
+      <section
+        id="heritage-story"
+        className="content-section section-pad chapter-wine"
+      >
+        {/* ===================================================
+            HEADING
+        =================================================== */}
+
+        <div className="section-heading">
+          <span className="section-number">
+            {heritage.number}
+          </span>
+
+          <div>
+            <p className="eyebrow">
+              {heritage.eyebrow}
+            </p>
+
+            <h2>
+              {heritage.title}
+            </h2>
+
+            <p>
+              {heritage.description}
+            </p>
+          </div>
+        </div>
+
+        {/* ===================================================
+            HERITAGE STORY
+        =================================================== */}
+
+        <div className="heritage-grid">
+          <figure>
+            <Image
+              src={`${BASE}/heritage/heritage-hat-front.webp`}
+              alt="Cuu Long Thong Thien imperial court hat"
+              width={1100}
+              height={1100}
+            />
+
+            <figcaption>
+              {heritage.sourceCaption}
+            </figcaption>
+          </figure>
+
+          <div className="heritage-story">
+            <p className="eyebrow">
+              {heritage.storyEyebrow}
+            </p>
+
+            <blockquote>
+              {heritage.storyTitle}
+            </blockquote>
+
+            <p>
+              {heritage.storyDescription}
+            </p>
+
+            <a
+              className="story-more-link"
+              href="#advanced"
+            >
+              <span>
+                {heritage.advancedLink}
+              </span>
+
+              <ArrowDown
+                size={14}
+                aria-hidden="true"
+              />
+            </a>
+          </div>
+        </div>
+
+        {/* ===================================================
+            HIGHLIGHTS
+        =================================================== */}
+
+        <div className="heritage-depth">
+          {heritage.highlights.map(
+            (item) => (
+              <article
+                key={item.number}
+              >
+                <span>
+                  {item.number}
+                </span>
+
+                <div>
+                  <h3>
+                    {item.title}
+                  </h3>
+
+                  <p>
+                    {item.description}
+                  </p>
+                </div>
+              </article>
+            )
+          )}
+        </div>
+      </section>
+
+      {/* =====================================================
+          04 — VTC MERCH
+      ===================================================== */}
+
+      <section
+        id="merch"
+        className="content-section section-pad chapter-cream"
+      >
+        {/* ===================================================
+            HEADING
+        =================================================== */}
+
+        <div className="section-heading">
+          <span className="section-number">
+            {merch.number}
+          </span>
+
+          <div>
+            <p className="eyebrow">
+              {merch.eyebrow}
+            </p>
+
+            <h2>
+              {merch.title}
+            </h2>
+
+            <p>
+              {merch.description}
+            </p>
+          </div>
+        </div>
+
+        {/* ===================================================
+            FEATURE
+        =================================================== */}
+
+        <div className="merch-feature">
+          <div className="merch-feature-copy">
+            <p className="eyebrow">
+              {merch.feature.eyebrow}
+            </p>
+
+            <h3>
+              {merch.feature.title}
+            </h3>
+
+            <p>
+              {merch.feature.description}
+            </p>
+
+            <a
+              className="primary-button"
+              href="#"
+              aria-label={
+                merch.feature.cta
+              }
+            >
+              <span>
+                {merch.feature.cta}
+              </span>
+
+              <ArrowUpRight
+                size={15}
+                aria-hidden="true"
+              />
+            </a>
+          </div>
+
+          <div className="merch-feature-visual">
+            <Image
+              src={`${BASE}/heritage/product-lifestyle.webp`}
+              alt="VTC Merch"
+              width={1400}
+              height={1000}
+            />
+          </div>
+        </div>
+
+        {/* ===================================================
+            MERCH CARDS
+        =================================================== */}
+
+        <div className="merch-cards">
+          {merch.cards.map(
+            (item, index) => {
+              const icons = [
+                PackageCheck,
+                Sparkles,
+                Landmark,
+              ];
+
+              const Icon =
+                icons[index] ??
+                Sparkles;
+
+              return (
+                <article
+                  key={`${item.eyebrow}-${item.title}`}
+                >
+                  <Icon
+                    aria-hidden="true"
+                  />
+
+                  <small>
+                    {item.eyebrow}
+                  </small>
+
+                  <h3>
+                    {item.title}
+                  </h3>
+
+                  <p>
+                    {item.description}
+                  </p>
+                </article>
+              );
+            }
+          )}
+        </div>
+      </section>
+
+      {/* =====================================================
+          05 — DOCUMENTS
+      ===================================================== */}
+
+      <section
+        id="documents"
+        className="records section-pad chapter-wine"
+      >
+        {/* ===================================================
+            LEFT
+        =================================================== */}
+
+        <div>
+          <span className="section-number">
+            {documents.number}
+          </span>
+
+          <p className="eyebrow">
+            {documents.eyebrow}
+          </p>
+
+          <h2>
+            {documents.title}
+          </h2>
+
+          <p>
+            {documents.description}
+          </p>
+        </div>
+
+        {/* ===================================================
+            RIGHT
+        =================================================== */}
+
+        <div>
+          {documents.items.map(
+            (item, index) => {
+              const icons = [
+                ShieldCheck,
+                FileText,
+              ];
+
+              const Icon =
+                icons[index] ??
+                FileText;
+
+              return (
+                <div
+                  key={item.title}
+                  className="record-row"
+                >
+                  <Icon
+                    size={20}
+                    aria-hidden="true"
+                  />
+
+                  <div>
+                    <b>
+                      {item.title}
+                    </b>
+
+                    <small>
+                      {item.subtitle}
+                    </small>
+
+                    <small>
+                      {item.meta}
+                    </small>
+                  </div>
+
+                  <CheckCircle2
+                    size={18}
+                    aria-hidden="true"
+                  />
+                </div>
+              );
+            }
+          )}
+
+          <a
+            className="records-advanced-link"
+            href="#advanced"
+          >
+            <span>
+              {documents.advancedLink}
+            </span>
+
+            <ArrowDown
+              size={14}
+              aria-hidden="true"
+            />
+          </a>
+        </div>
+      </section>
+
+      {/* =====================================================
+          06 — ADVANCED
+      ===================================================== */}
+
+      <AdvancedInfo locale="en" />
+
+      {/* =====================================================
+          FOOTER
+      ===================================================== */}
+
+      <footer className="site-footer">
+        {/* ===================================================
+            PLATFORM
+        =================================================== */}
+
+        <div className="footer-brand">
+          <span
+            className="brand-seal"
+            aria-hidden="true"
+          >
+            ẤN
+          </span>
+
+          <div>
+            <b>
+              {footer.platformTitle}
+            </b>
+
+            <small>
+              {footer.platformSubtitle}
+            </small>
+          </div>
+        </div>
+
+        {/* ===================================================
+            FOOTER NAV
+        =================================================== */}
+
+        <div className="footer-info">
+          <p>
+            {footer.navTitle}
+          </p>
+
+          {content.nav.map(
+            (item) => (
+              <a
+                key={item.id}
+                href={`#${item.id}`}
+              >
+                {item.label}
+              </a>
+            )
+          )}
+        </div>
+
+        {/* ===================================================
+            OPERATOR
+        =================================================== */}
+
+        <div className="footer-operator">
+          <Image
+            src={`${BASE}/heritage/vtc-logo.webp`}
+            alt="VTC"
+            width={180}
+            height={90}
+          />
+
+          <div>
+            <small>
+              {footer.operatorLabel}
+            </small>
+
+            <b>
+              {footer.operatorName}
+            </b>
+
+            <em>
+              {footer.operatorDescription}
+            </em>
+          </div>
+        </div>
+
+        {/* ===================================================
+            BACK TO TOP
+        =================================================== */}
+
+        <a
+          className="back-top"
+          href="#overview"
+        >
+          <span>
+            {footer.backToTop}
+          </span>
+
+          <ArrowUpRight
+            size={14}
+            aria-hidden="true"
+          />
+        </a>
+
+        <p className="footer-bottom">
+          {footer.copyright}
+        </p>
+      </footer>
+    </main>
+  );
 }

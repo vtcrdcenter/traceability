@@ -230,7 +230,7 @@ export default function Stt01Page() {
                 className={heroStyles.attestationText}
               >
                 <small>
-                  ĐƯỢC TRUY XUẤT NGÀY 29/08/2026 BỞI
+                  ĐƯỢC TRUY XUẤT NGÀY 29/08/2006 BỞI
                 </small>
 
                 <strong>

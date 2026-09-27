@@ -17,11 +17,11 @@
 .section { position: relative; isolation: isolate; overflow: hidden; padding-block: clamp(34px, 3.2vw, 48px); }
 .product { background: var(--cream); }
 .product h2::after { content: ""; display: inline-block; vertical-align: middle; width: 175px; height: 64px; margin-left: 18px; background: url('/traceability/figma/cloud-ornament.svg') center / contain no-repeat; opacity: .45; }
-.product-grid { display: grid; grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr); gap: clamp(24px, 3vw, 42px); align-items: stretch; }
-.facts { min-width: 0; width: 100%; margin: 0; border: 1px solid #ddcfbe; border-radius: 7px; overflow: hidden; display: grid; grid-template-rows: repeat(9, minmax(0, 1fr)); }
+.product-grid { display: grid; grid-template-columns: minmax(0, 1.22fr) minmax(0, 1fr); gap: clamp(24px, 3vw, 42px); align-items: start; }
+.facts { min-width: 0; width: 100%; margin: 0; border: 1px solid #ddcfbe; border-radius: 7px; overflow: hidden; display: grid; }
 .facts > div { display: grid; grid-template-columns: minmax(0, .9fr) minmax(0, 1.2fr); gap: 18px; padding: 10px 20px; border-bottom: 1px solid #ddcfbe; align-items: center; }
 .facts > div:last-child { border-bottom: 0; }
-.facts dt, .facts dd { min-width: 0; overflow-wrap: break-word; font-size: 12px; line-height: 1.65; }
+.facts dt, .facts dd { min-width: 0; overflow-wrap: anywhere; font-size: 12px; line-height: 1.65; }
 .facts dt { color: #756052; font-weight: 300; }
 .facts dd { margin: 0; max-width: none; text-align: left; font-weight: 400; }
 .certificates { background: #faf6ee; border-top: 1px solid #e6d9c8; padding-bottom: 120px; }
@@ -87,8 +87,7 @@
   .section { padding-block: 34px; }
   .product-grid, .story-grid, .card-grid, .meaning-grid { grid-template-columns: minmax(0, 1fr); }
   .product h2::after { position: absolute; right: -85px; top: -15px; width: 150px; margin: 0; z-index: -1; }
-  .product-grid { gap: 22px; align-items: start; }
-  .facts { grid-template-rows: none; }
+  .product-grid { gap: 22px; }
   .facts > div { padding: 13px 16px; grid-template-columns: 1fr 1fr; }
   .facts dt, .facts dd { font-size: 11px; }
   .certificates { padding: 42px 0 110px; }
